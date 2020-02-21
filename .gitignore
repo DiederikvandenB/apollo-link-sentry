@@ -1,6 +1,7 @@
 # Directories
 /lib
 node_modules/
+tests/coverage/
 
 # Logs
 *.log

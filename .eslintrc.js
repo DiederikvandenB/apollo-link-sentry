@@ -2,7 +2,7 @@ module.exports = {
   root: true,
   extends: ['airbnb-typescript/base'],
   parserOptions: {
-    project: "tsconfig.json",
+    project: 'tsconfig.eslint.json',
   },
   rules: {
     'no-console': [1, { allow: ['warn', 'error'] }],

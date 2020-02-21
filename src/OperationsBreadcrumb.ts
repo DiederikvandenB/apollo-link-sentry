@@ -104,6 +104,7 @@ export class OperationsBreadcrumb {
   /**
    * Stringify the breadcrumb
    */
+  /* istanbul ignore next */
   public toString(): string {
     return stringifyObject(this.breadcrumb);
   }

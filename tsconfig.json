@@ -1,14 +1,17 @@
 {
+  "include": [
+    "./src"
+  ],
+
   "compilerOptions":{
     "target": "es5",
     "module": "commonjs",
-    "lib": ["es6", "dom", "esnext"],
-    "types": ["node"],
+    "lib": ["es6", "esnext", "dom"],
+    "types": ["node", "jest"],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./lib",
-    "rootDir": "./src",
     "removeComments": true,
     "importHelpers": true,
     "strict": true,
@@ -18,7 +21,5 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/__tests__/*.ts", "src/old"]
+  }
 }
