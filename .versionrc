@@ -1,0 +1,14 @@
+{
+  "releaseCommitMessageFormat": "release: v{{currentTag}}",
+  "types": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug fixes" },
+    { "type": "test", "section": "Tests" },
+    { "type": "chore", "section": "Chores" },
+    { "type": "docs", "section": "Docs" },
+    { "type": "style", "hidden": true },
+    { "type": "refactor", "hidden": true },
+    { "type": "release", "hidden": true },
+    { "type": "perf", "hidden": true }
+  ]
+}

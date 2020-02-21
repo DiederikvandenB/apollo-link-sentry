@@ -1,0 +1,38 @@
+{
+  "name": "apollo-link-sentry",
+  "version": "0.1.0",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "keywords": [
+    "apollo",
+    "graphql",
+    "sentry",
+    "error reporting"
+  ],
+  "scripts": {
+    "release": "standard-version"
+  },
+  "dependencies": {
+    "@sentry/browser": "^5.12.1",
+    "@sentry/types": "^5.12.4",
+    "apollo-link": "^1.2.13",
+    "apollo-link-error": "^1.1.12",
+    "debug": "^4.1.1",
+    "deepmerge": "^4.2.2",
+    "graphql": "^14.6.0"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.5",
+    "@types/node": "^13.7.1",
+    "@types/react": "^16.9.19",
+    "@types/react-dom": "^16.9.5",
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.2",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-airbnb-typescript": "^7.0.0",
+    "eslint-plugin-import": "^2.20.1",
+    "tsc-watch": "~4.1.0",
+    "typescript": "^3.7.5"
+  }
+}
