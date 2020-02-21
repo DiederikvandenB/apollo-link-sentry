@@ -5,6 +5,7 @@ module.exports = {
     project: "tsconfig.json",
   },
   rules: {
+    'no-console': [1, { allow: ['warn', 'error'] }],
     'import/prefer-default-export': 0,
     'lines-between-class-members': 0,
   }
