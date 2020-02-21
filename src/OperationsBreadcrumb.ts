@@ -4,7 +4,7 @@ import { ApolloLinkSentry } from './types';
 import { OperationsObserver } from './OperationsObserver';
 import { stringifyObject, trimObject } from './utils';
 
-export class LinkSentryBreadcrumb {
+export class OperationsBreadcrumb {
   public flushed: boolean;
   private readonly breadcrumb: ApolloLinkSentry.Breadcrumb.Data;
 
@@ -24,7 +24,7 @@ export class LinkSentryBreadcrumb {
    * Sets the breadcrumb's log level
    * @param level
    */
-  public level(level: Sentry.Severity): LinkSentryBreadcrumb {
+  public level(level: Sentry.Severity): OperationsBreadcrumb {
     this.breadcrumb.level = level;
     return this;
   }
@@ -33,7 +33,7 @@ export class LinkSentryBreadcrumb {
    * Sets the breadcrumb's category, which is prefixed with `graphQL`
    * @param category
    */
-  public category(category?: ApolloLinkSentry.Breadcrumb.Category): LinkSentryBreadcrumb {
+  public category(category?: ApolloLinkSentry.Breadcrumb.Category): OperationsBreadcrumb {
     this.breadcrumb.category = `gql ${category || ''}`.trim();
     return this;
   }
@@ -42,7 +42,7 @@ export class LinkSentryBreadcrumb {
    * Set the breadcrumb's message, normally the graphQL operation's name
    * @param message
    */
-  public message(message?: string): LinkSentryBreadcrumb {
+  public message(message?: string): OperationsBreadcrumb {
     this.breadcrumb.message = message;
     return this;
   }
@@ -51,7 +51,7 @@ export class LinkSentryBreadcrumb {
    * Set the breadcrumb's extra data
    * @param data
    */
-  public data(data: ApolloLinkSentry.Operation.Data): LinkSentryBreadcrumb {
+  public data(data: ApolloLinkSentry.Operation.Data): OperationsBreadcrumb {
     this.breadcrumb.data = {
       ...this.breadcrumb.data,
       ...data,
@@ -64,7 +64,7 @@ export class LinkSentryBreadcrumb {
    * Set the breadcrumb's type, normally `http`
    * @param type
    */
-  public type(type: string): LinkSentryBreadcrumb {
+  public type(type: string): OperationsBreadcrumb {
     this.breadcrumb.type = type;
     return this;
   }
@@ -89,7 +89,7 @@ export class LinkSentryBreadcrumb {
   /**
    * Tell Sentry about our breadcrumb
    */
-  public addToEvent(): LinkSentryBreadcrumb {
+  public addToEvent(): OperationsBreadcrumb {
     if (this.flushed) {
       console.warn('[apollo-link-sentry] OperationsBreadcrumb.addToEvent() was called on an already flushed breadrumb');
       return this;

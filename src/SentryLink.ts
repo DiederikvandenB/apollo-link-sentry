@@ -6,7 +6,7 @@ import deepMerge from 'deepmerge';
 import { Severity } from '@sentry/types';
 
 import { OperationsObserver } from './OperationsObserver';
-import { LinkSentryBreadcrumb } from './OperationsBreadcrumb';
+import { OperationsBreadcrumb } from './OperationsBreadcrumb';
 import { ApolloLinkSentry } from './types';
 import { stringifyObject } from './utils';
 
@@ -41,7 +41,7 @@ export class SentryLink extends ApolloLink {
     const operation = new OperationsObserver(op, this.options);
 
     // Create a new breadcrumb for this specific operation
-    const breadcrumb = new LinkSentryBreadcrumb();
+    const breadcrumb = new OperationsBreadcrumb();
     breadcrumb.fillFromOperation(operation);
 
     // Start observing the operation for results
