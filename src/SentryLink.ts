@@ -55,7 +55,7 @@ export class SentryLink extends ApolloLink {
 
         // Successful operations end up here, after which we send the breadcrumb to Sentry
         complete: () => {
-          breadcrumb.addToEvent();
+          breadcrumb.attachToEvent();
           observer.complete.bind(observer);
         },
 
@@ -65,7 +65,7 @@ export class SentryLink extends ApolloLink {
             .level(Severity.Error)
             .type('error')
             .data({ error: stringifyObject(error) })
-            .addToEvent();
+            .attachToEvent();
 
           observer.error(error);
         },

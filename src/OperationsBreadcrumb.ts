@@ -89,9 +89,9 @@ export class OperationsBreadcrumb {
   /**
    * Tell Sentry about our breadcrumb
    */
-  public addToEvent(): OperationsBreadcrumb {
+  public attachToEvent(): OperationsBreadcrumb {
     if (this.flushed) {
-      console.warn('[apollo-link-sentry] OperationsBreadcrumb.addToEvent() was called on an already flushed breadrumb');
+      console.warn('[apollo-link-sentry] OperationsBreadcrumb.attachToEvent() was called on an already flushed breadrumb');
       return this;
     }
 
