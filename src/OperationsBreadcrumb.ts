@@ -73,14 +73,14 @@ export class OperationsBreadcrumb {
    * Fill the breadcrumb with information from an OperationsObserver
    * @param operation
    */
-  public fillFromOperation(operation: OperationsObserver): void {
+  public fillFromOperation(operation: OperationsObserver): OperationsBreadcrumb {
     const data: ApolloLinkSentry.Operation.Data = trimObject({
       query: operation.query,
       cache: stringifyObject(operation.cache),
       variables: stringifyObject(operation.variables),
     });
 
-    this
+    return this
       .message(operation.name)
       .category(operation.type)
       .data(data);
@@ -102,7 +102,7 @@ export class OperationsBreadcrumb {
   }
 
   /**
-   * Stringify the breadcrumb
+   * Stringify the breadcrumb, used for debugging purposes
    */
   /* istanbul ignore next */
   public toString(): string {

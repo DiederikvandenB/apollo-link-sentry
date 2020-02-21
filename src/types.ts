@@ -10,7 +10,6 @@ export namespace ApolloLinkSentry {
       cache?: object;
       response?: string;
       error?: string;
-      operationType?: Operation.Type;
     }
   }
 
