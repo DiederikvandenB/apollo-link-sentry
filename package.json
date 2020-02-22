@@ -17,7 +17,7 @@
     "test:coverage": "jest --coverage --watchAll=false"
   },
   "dependencies": {
-    "@sentry/browser": "^5.12.1",
+    "@sentry/browser": "^5.12.4",
     "@sentry/types": "^5.12.4",
     "apollo-link": "^1.2.13",
     "apollo-link-error": "^1.1.12",
