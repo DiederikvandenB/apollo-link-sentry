@@ -10,9 +10,11 @@
     "error reporting"
   ],
   "scripts": {
+    "build": "tsc",
     "watch": "tsc-watch -p ./tsconfig.json",
     "release": "standard-version",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --coverage --watchAll=false"
   },
   "dependencies": {
     "@sentry/browser": "^5.12.1",
