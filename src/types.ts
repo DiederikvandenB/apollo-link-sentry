@@ -22,17 +22,17 @@ export namespace ApolloLinkSentry {
   }
 
   export interface BreadcrumbOptions {
-    enable: boolean;
-    includeQuery: boolean;
-    includeVariables: boolean;
-    includeError: boolean;
-    includeResponse: boolean;
-    includeCache: boolean;
+    enable?: boolean;
+    includeQuery?: boolean;
+    includeVariables?: boolean;
+    includeError?: boolean;
+    includeResponse?: boolean;
+    includeCache?: boolean;
     // includeHeaders: boolean; (TODO: implement includeHeaders)
   }
 
   export interface ExceptionOptions {
-    report: boolean;
+    report?: boolean;
   }
 
   export interface Options {
