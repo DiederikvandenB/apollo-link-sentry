@@ -1,12 +1,12 @@
 import {
-  ApolloLink, NextLink, Observable, Operation,
+  ApolloLink, NextLink, Observable, Operation as ApolloOperation,
 } from 'apollo-link';
 import * as Sentry from '@sentry/browser';
 import deepMerge from 'deepmerge';
 import { FetchResult } from 'apollo-link/lib/types';
 import { Severity } from '@sentry/types';
 
-import { OperationsObserver } from './OperationsObserver';
+import { Operation } from './Operation';
 import { OperationsBreadcrumb } from './OperationsBreadcrumb';
 import { ApolloLinkSentry } from './types';
 
@@ -46,9 +46,9 @@ export class SentryLink extends ApolloLink {
    * @param op
    * @param forward
    */
-  request = (op: Operation, forward: NextLink): Observable<FetchResult> | null => {
+  request = (op: ApolloOperation, forward: NextLink): Observable<FetchResult> | null => {
     // Obtain necessary data from the operation
-    const operation = new OperationsObserver(op);
+    const operation = new Operation(op);
 
     // Create a new breadcrumb for this specific operation
     const breadcrumb = new OperationsBreadcrumb();
@@ -75,7 +75,7 @@ export class SentryLink extends ApolloLink {
    * @param breadcrumb
    * @param operation
    */
-  fillBreadcrumb = (breadcrumb: OperationsBreadcrumb, operation: OperationsObserver): void => {
+  fillBreadcrumb = (breadcrumb: OperationsBreadcrumb, operation: Operation): void => {
     breadcrumb
       .setMessage(operation.getName())
       .setCategory(operation.getType());
