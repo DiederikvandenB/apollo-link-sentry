@@ -11,8 +11,8 @@ export class OperationsBreadcrumb {
    * Start a new ApolloLinkSentry Breadcrumb
    */
   constructor() {
-    this.breadcrumb = {};
     this.flushed = false;
+    this.breadcrumb = {};
 
     this
       .setLevel(Severity.Log)
