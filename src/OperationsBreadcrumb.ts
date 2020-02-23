@@ -1,8 +1,7 @@
-import * as Sentry from '@sentry/browser';
+import { Severity } from '@sentry/browser';
 
 import { ApolloLinkSentry } from './types';
-import { OperationsObserver } from './OperationsObserver';
-import { stringifyObject, trimObject } from './utils';
+import { stringifyObject } from './utils';
 
 export class OperationsBreadcrumb {
   public flushed: boolean;
@@ -16,7 +15,7 @@ export class OperationsBreadcrumb {
     this.flushed = false;
 
     this
-      .level(Sentry.Severity.Log)
+      .level(Severity.Log)
       .category();
   }
 
@@ -24,7 +23,7 @@ export class OperationsBreadcrumb {
    * Sets the breadcrumb's log level
    * @param level
    */
-  level = (level: Sentry.Severity): OperationsBreadcrumb => {
+  level = (level: Severity): OperationsBreadcrumb => {
     this.breadcrumb.level = level;
     return this;
   };
@@ -70,35 +69,11 @@ export class OperationsBreadcrumb {
   };
 
   /**
-   * Fill the breadcrumb with information from an OperationsObserver
-   * @param operation
+   * We flush the breadcrumb after it's been sent to Sentry, so we can prevent duplicates
    */
-  fillFromOperation = (operation: OperationsObserver): OperationsBreadcrumb => {
-    const data: ApolloLinkSentry.Operation.Data = trimObject({
-      query: operation.query,
-      cache: stringifyObject(operation.cache),
-      variables: stringifyObject(operation.variables),
-    });
-
-    return this
-      .message(operation.name)
-      .category(operation.type)
-      .data(data);
-  };
-
-  /**
-   * Tell Sentry about our breadcrumb
-   */
-  attachToEvent = (): OperationsBreadcrumb => {
-    if (this.flushed) {
-      console.warn('[apollo-link-sentry] OperationsBreadcrumb.attachToEvent() was called on an already flushed breadrumb');
-      return this;
-    }
-
-    Sentry.addBreadcrumb(this.breadcrumb);
+  flush = (): ApolloLinkSentry.Breadcrumb.Data => {
     this.flushed = true;
-
-    return this;
+    return this.breadcrumb;
   };
 
   /**
