@@ -1,14 +1,14 @@
-import { FetchResult } from 'apollo-link/lib/types';
 import {
   ApolloLink, NextLink, Observable, Operation,
 } from 'apollo-link';
+import * as Sentry from '@sentry/browser';
 import deepMerge from 'deepmerge';
+import { FetchResult } from 'apollo-link/lib/types';
 import { Severity } from '@sentry/types';
 
 import { OperationsObserver } from './OperationsObserver';
 import { OperationsBreadcrumb } from './OperationsBreadcrumb';
 import { ApolloLinkSentry } from './types';
-import { stringifyObject } from './utils';
 
 const defaultOptions: ApolloLinkSentry.Options = {
   setTransaction: true,
@@ -31,44 +31,35 @@ const defaultOptions: ApolloLinkSentry.Options = {
 export class SentryLink extends ApolloLink {
   private readonly options: ApolloLinkSentry.Options;
 
+  /**
+   * Create a new ApolloLinkSentry
+   * @param options
+   */
   constructor(options: ApolloLinkSentry.Options = {}) {
     super();
     this.options = deepMerge(defaultOptions, options);
   }
 
+  /**
+   * This is where the GraphQL operation is received
+   * A breadcrumb will be created for the operation, and error/response data will be handled
+   * @param op
+   * @param forward
+   */
   request = (op: Operation, forward: NextLink): Observable<FetchResult> | null => {
     // Obtain necessary data from the operation
-    const operation = new OperationsObserver(op, this.options);
+    const operation = new OperationsObserver(op);
 
     // Create a new breadcrumb for this specific operation
     const breadcrumb = new OperationsBreadcrumb();
-    breadcrumb.fillFromOperation(operation);
+    this.fillBreadcrumb(breadcrumb, operation);
 
     // Start observing the operation for results
     return new Observable<FetchResult>((observer) => {
       const subscription = forward(op).subscribe({
-        // This is where the operation's response is received, which is then added to the breadcrumb
-        next: (result: FetchResult) => {
-          breadcrumb.data({ response: stringifyObject(result.data) });
-          observer.next(result);
-        },
-
-        // Successful operations end up here, after which we send the breadcrumb to Sentry
-        complete: () => {
-          breadcrumb.attachToEvent();
-          observer.complete.bind(observer);
-        },
-
-        // If an operation fails, we can catch the error here
-        error: (error) => {
-          breadcrumb
-            .level(Severity.Error)
-            .type('error')
-            .data({ error: stringifyObject(error) })
-            .attachToEvent();
-
-          observer.error(error);
-        },
+        next: (result: FetchResult) => this.handleResult(result, breadcrumb, observer),
+        complete: () => this.handleComplete(breadcrumb, observer),
+        error: (error: any) => this.handleError(breadcrumb, error, observer),
       });
 
       // Close the subscription
@@ -76,5 +67,89 @@ export class SentryLink extends ApolloLink {
         if (subscription) subscription.unsubscribe();
       };
     });
+  };
+
+  /**
+   * Fill the breadcrumb with information, respecting the provided options
+   * The breadcrumb is not yet attached to Sentry after this method
+   * @param breadcrumb
+   * @param operation
+   */
+  fillBreadcrumb = (breadcrumb: OperationsBreadcrumb, operation: OperationsObserver): void => {
+    breadcrumb
+      .setMessage(operation.getName())
+      .setCategory(operation.getType());
+
+    if (this.options.breadcrumb?.includeQuery) {
+      breadcrumb.addQuery(operation.getQuery());
+    }
+
+    if (this.options.breadcrumb?.includeCache) {
+      breadcrumb.addCache(operation.getApolloCache());
+    }
+
+    if (this.options.breadcrumb?.includeVariables) {
+      breadcrumb.addVariables(operation.getVariables());
+    }
+  };
+
+  /**
+   * Handle the operation's response
+   * The breadcrumb is not yet attached to Sentry after this method
+   * @param result
+   * @param breadcrumb
+   * @param observer
+   */
+  handleResult = (result: FetchResult, breadcrumb: OperationsBreadcrumb, observer: any): void => {
+    if (this.options.breadcrumb?.includeResponse) {
+      breadcrumb.addResponse(result);
+    }
+
+    observer.next(result);
+  };
+
+  /**
+   * Changes the level and type of the breadcrumb to `error`
+   * Furthermore, if the includeError option is truthy, the error data will be attached
+   * Then, the error will be attached to Sentry
+   * @param breadcrumb
+   * @param error
+   * @param observer
+   */
+  handleError = (breadcrumb: OperationsBreadcrumb, error: any, observer: any): void => {
+    breadcrumb
+      .setLevel(Severity.Error)
+      .setType('error');
+
+    if (this.options.breadcrumb?.includeError) {
+      breadcrumb.addError(error);
+    }
+
+    this.attachToEvent(breadcrumb);
+
+    observer.error(error);
+  };
+
+  /**
+   * Since no error occurred, it is time to attach the breadcrumb to Sentry
+   * @param breadcrumb
+   * @param observer
+   */
+  handleComplete = (breadcrumb: OperationsBreadcrumb, observer: any): void => {
+    this.attachToEvent(breadcrumb);
+    observer.complete.bind(observer);
+  };
+
+  /**
+   * Attach the breadcrumb to the Sentry event
+   * @param breadcrumb
+   */
+  attachToEvent = (breadcrumb: OperationsBreadcrumb): void => {
+    if (breadcrumb.flushed) {
+      console.warn('[apollo-link-sentry] OperationsBreadcrumb.attachToEvent() was called on an already flushed breadcrumb');
+      return;
+    }
+
+    Sentry.addBreadcrumb(breadcrumb.flush());
   };
 }
