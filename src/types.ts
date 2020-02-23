@@ -3,21 +3,19 @@ import { Breadcrumb as SentryBreadcrumb } from '@sentry/types';
 export namespace ApolloLinkSentry {
   export namespace Operation {
     export type Type = 'query' | 'mutation' | 'subscription' | undefined;
-
-    export interface Data {
-      query?: string;
-      variables?: string;
-      cache?: object;
-      response?: string;
-      error?: string;
-    }
   }
 
   export namespace Breadcrumb {
     export type Category = 'query' | 'mutation' | 'subscription' | 'response' | 'error';
 
     export interface Data extends SentryBreadcrumb {
-      data?: Operation.Data;
+      data?: {
+        query?: string,
+        variables?: string,
+        cache?: string,
+        response?: string,
+        error?: string,
+      }
     }
   }
 
