@@ -1,21 +1,9 @@
-import { Operation } from 'apollo-link';
-import * as Sentry from '@sentry/browser';
 import { Severity } from '@sentry/types';
-import sentryTestkit from 'sentry-testkit';
 
 import { OperationsBreadcrumb } from '../src/OperationsBreadcrumb';
-import { OperationsObserver } from '../src/OperationsObserver';
-import { ApolloLinkSentry } from '../src';
 import { stringifyObject } from '../src/utils';
 
-jest.mock('../src/OperationsObserver');
-
-const { testkit, sentryTransport } = sentryTestkit();
-
-Sentry.init({
-  dsn: 'https://acacaeaccacacacabcaacdacdacadaca@sentry.io/000001',
-  transport: <any>sentryTransport,
-});
+jest.mock('../src/Operation');
 
 it('is possible to create a new breadcrumb', () => {
   const { category, level } = new OperationsBreadcrumb()['breadcrumb'];
@@ -26,106 +14,77 @@ it('is possible to create a new breadcrumb', () => {
 
 it('is possible to change the breadcrumb level', () => {
   const breadcrumb = new OperationsBreadcrumb();
-  const { level } = breadcrumb.level(Severity.Error)['breadcrumb'];
+  const { level } = breadcrumb.setLevel(Severity.Error)['breadcrumb'];
 
   expect(level).toBe(Severity.Error);
 });
 
 it('is possible to change the breadcrumb category', () => {
   const breadcrumb = new OperationsBreadcrumb();
-  const { category } = breadcrumb.category('query')['breadcrumb'];
+  const { category } = breadcrumb.setCategory('query')['breadcrumb'];
 
   expect(category).toBe('gql query'); // The category is prefixed with 'gql'
 });
 
-it('is possible to change the breadcrumb data', () => {
-  const breadcrumb = new OperationsBreadcrumb();
-  const testData: ApolloLinkSentry.Operation.Data = {
-    response: 'api response',
-  };
-
-  const { data } = breadcrumb.data(testData)['breadcrumb'];
-
-  expect(data).toEqual(testData);
-});
-
 it('is possible to change the breadcrumb type', () => {
   const breadcrumb = new OperationsBreadcrumb();
-  const { type } = breadcrumb.type('http')['breadcrumb'];
+  const { type } = breadcrumb.setType('error')['breadcrumb'];
 
-  expect(type).toBe('http');
+  expect(type).toBe('error');
 });
 
 it('is possible to change the breadcrumb message', () => {
   const breadcrumb = new OperationsBreadcrumb();
-  const { message } = breadcrumb.message('TestQuery')['breadcrumb'];
+  const { message } = breadcrumb.setMessage('TestQuery')['breadcrumb'];
 
   expect(message).toBe('TestQuery');
 });
 
-it('is possible to fill a breadcrumb from an operation', () => {
-  const operation = new OperationsObserver(<Operation>{}, {});
+it('is possible to add the cache to the breadcrumb', () => {
+  const cache = {
+    data: {
+      '"ROOT_QUERY"': {
+        'hello({})': 'Hello World!',
+      },
+    },
+  };
+
   const breadcrumb = new OperationsBreadcrumb();
+  const { data } = breadcrumb.addCache(cache)['breadcrumb'];
 
-  const name = 'TestQuery';
-  const type: ApolloLinkSentry.Operation.Type = 'query';
-  const query = 'query TestQuery { name id }';
-  const variables = { response: 'api response' };
-  const cache = { ROOT_QUERY: {} };
-
-  operation['name'] = name;
-  operation['type'] = type;
-  operation['query'] = query;
-  operation['variables'] = variables;
-  operation['cache'] = cache;
-
-  const filled = breadcrumb.fillFromOperation(operation)['breadcrumb'];
-
-  expect(filled.message).toBe(name);
-  expect(filled.category).toBe(`gql ${type}`);
-  expect(filled.data?.query).toBe(query);
-  expect(filled.data?.variables).toBe(stringifyObject(variables));
-  expect(filled.data?.cache).toBe(stringifyObject(cache));
+  expect(data?.cache).toBe(stringifyObject(cache));
 });
 
-it('is possible to attach the breadcrumb to sentry', () => {
-  new OperationsBreadcrumb().attachToEvent();
+it('is possible to add the variables to the breadcrumb', () => {
+  const variables = { name: 'TestName' };
 
-  const error = new Error('error to look for');
-  Sentry.captureException(error);
+  const breadcrumb = new OperationsBreadcrumb();
+  const { data } = breadcrumb.addVariables(variables)['breadcrumb'];
 
-  expect(testkit.isExist(error)).toBe(true);
-  const [caughtError] = testkit.reports();
-  const [breadcrumb] = caughtError.breadcrumbs;
-
-  expect(breadcrumb.category).toBe('gql');
+  expect(data?.variables).toBe(stringifyObject(variables));
 });
 
-it('flushes the breadcrumb after sending', () => {
-  const breadcrumb = new OperationsBreadcrumb().attachToEvent();
+it('is possible to add a response to the breadcrumb', () => {
+  const response = { status: 200, data: { success: true } };
+
+  const breadcrumb = new OperationsBreadcrumb();
+  const { data } = breadcrumb.addResponse(response)['breadcrumb'];
+
+  expect(data?.response).toBe(stringifyObject(response));
+});
+
+it('is possible to add an error to the breadcrumb', () => {
+  const error = { status: 401, data: { error: 'Unauthorized' } };
+
+  const breadcrumb = new OperationsBreadcrumb();
+  const { data } = breadcrumb.addError(error)['breadcrumb'];
+
+  expect(data?.error).toBe(stringifyObject(error));
+});
+
+it('is possible to flush the breadcrumb', () => {
+  const breadcrumb = new OperationsBreadcrumb();
+  breadcrumb.flush();
+
   expect(breadcrumb.flushed).toBeTruthy();
-});
-
-it('does not allow attaching the breadcrumb twice', () => {
-  console.warn = () => {};
-  const breadcrumb = new OperationsBreadcrumb().attachToEvent();
-  breadcrumb.attachToEvent();
-
-  const error = new Error('error to look for');
-  Sentry.captureException(error);
-
-  expect(testkit.isExist(error)).toBe(true);
-  const [caughtError] = testkit.reports();
-
-  expect(caughtError.breadcrumbs).toHaveLength(1);
-});
-
-it('warns when the breadcrumb is attached twice', () => {
-  const mockedWarn = jest.fn();
-  console.warn = mockedWarn;
-
-  const breadcrumb = new OperationsBreadcrumb().attachToEvent();
-  breadcrumb.attachToEvent();
-
-  expect(mockedWarn).toBeCalledTimes(1);
 });
