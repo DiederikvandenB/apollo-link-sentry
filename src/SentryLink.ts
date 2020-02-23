@@ -137,7 +137,7 @@ export class SentryLink extends ApolloLink {
    */
   handleComplete = (breadcrumb: OperationsBreadcrumb, observer: any): void => {
     this.attachToEvent(breadcrumb);
-    observer.complete.bind(observer);
+    observer.complete();
   };
 
   /**
