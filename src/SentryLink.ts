@@ -4,7 +4,7 @@ import {
 import * as Sentry from '@sentry/browser';
 import deepMerge from 'deepmerge';
 import { FetchResult } from 'apollo-link/lib/types';
-import { Severity } from '@sentry/types';
+import { Scope, Severity } from '@sentry/types';
 
 import { Operation } from './Operation';
 import { OperationsBreadcrumb } from './OperationsBreadcrumb';
@@ -80,6 +80,18 @@ export class SentryLink extends ApolloLink {
       .setMessage(operation.getName())
       .setCategory(operation.getType());
 
+    // TODO: Maybe move this to a different place? It isn't a breadcrumb
+    // TODO: Add test
+    if (this.options.setTransaction) {
+      this.setTransaction(operation);
+    }
+
+    // TODO: Maybe move this to a different place? It isn't a breadcrumb
+    // TODO: Add test
+    if (this.options.setFingerprint) {
+      this.setFingerprint();
+    }
+
     if (this.options.breadcrumb?.includeQuery) {
       breadcrumb.addQuery(operation.getQuery());
     }
@@ -138,6 +150,28 @@ export class SentryLink extends ApolloLink {
   handleComplete = (breadcrumb: OperationsBreadcrumb, observer: any): void => {
     this.attachToEvent(breadcrumb);
     observer.complete();
+  };
+
+  /**
+   * Set the Sentry transaction
+   * @param operation
+   */
+  setTransaction = (operation: Operation): void => {
+    Sentry.configureScope((scope: Scope) => {
+      scope.setTransaction(operation.getName());
+    });
+  };
+
+  /**
+   * Set the Sentry fingerprint
+   */
+  setFingerprint = (): void => {
+    Sentry.configureScope((scope: Scope) => {
+      scope.setFingerprint([
+        '{{default}}',
+        '{{transaction}}',
+      ]);
+    });
   };
 
   /**
