@@ -53,7 +53,7 @@ const client = new ApolloClient({
   - default: `true`
   - Toggle to add query / mutations as breadcrumbs
 - `breadcrumb.includeCache`
-  - default: `true`
+  - default: `false`
   - Toggle to add the Apollo cache to the breadcrumb. As the cache can get quite large, it is not recommended to enable this for production environments. It can be useful for debugging purposes
 - `breadcrumb.includeError`
   - default: `true`
