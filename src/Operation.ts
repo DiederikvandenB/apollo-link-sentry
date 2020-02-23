@@ -1,17 +1,17 @@
-import { Operation } from 'apollo-link';
+import { Operation as ApolloOperation } from 'apollo-link';
 
 import { ApolloLinkSentry } from './types';
 import { isEmpty } from './utils';
 
-export class OperationsObserver {
+export class Operation {
   /** The operation received from Apollo Link */
-  private readonly operation: Operation;
+  private readonly operation: ApolloOperation;
 
   /**
    * Observe a GraphQL Operation
    * @param operation
    */
-  constructor(operation: Operation) {
+  constructor(operation: ApolloOperation) {
     this.operation = operation;
   }
 
