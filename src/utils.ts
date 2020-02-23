@@ -2,24 +2,9 @@
  * Check if an object is empty
  * @param target
  */
-export const isEmpty = (target: object): boolean => (
+export const isEmpty = (target?: object): boolean => (
   target == null || !(Object.keys(target) || target).length
 );
-
-/**
- * Omit empty values from an object
- * @param target
- */
-export const trimObject = (target: any): object => {
-  if (isEmpty(target)) return {};
-
-  return Object.keys(target)
-    .filter((key: string) => target?.[key])
-    .reduce((a: object, key: string): object => ({
-      ...a,
-      [key]: target[key],
-    }), {});
-};
 
 /**
  * Nicely format an object
