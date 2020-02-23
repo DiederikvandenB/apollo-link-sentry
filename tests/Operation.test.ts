@@ -2,6 +2,10 @@ import { Operation } from '../src/Operation';
 
 import OperationStub from './stubs/Operation';
 
+it('is possible to create a new operation', () => {
+  expect(() => new Operation(OperationStub)).not.toThrow();
+});
+
 it('is possible to get the name from the operation', () => {
   const operation = new Operation(OperationStub);
   expect(operation.getName()).toBe(OperationStub.operationName);

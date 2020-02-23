@@ -41,7 +41,7 @@ export class Operation {
    */
   getApolloCache(): object | undefined {
     const context = this.operation.getContext();
-    const cache = context.cache.data.data;
+    const cache = context.cache?.data?.data;
 
     return !isEmpty(cache) ? cache : undefined;
   }
