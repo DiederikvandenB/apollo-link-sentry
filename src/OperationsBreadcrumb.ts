@@ -1,7 +1,7 @@
 import { Severity } from '@sentry/browser';
 
 import { ApolloLinkSentry } from './types';
-import { stringifyObject } from './utils';
+import { isEmpty, stringifyObject } from './utils';
 
 export class OperationsBreadcrumb {
   public flushed: boolean;
@@ -15,15 +15,15 @@ export class OperationsBreadcrumb {
     this.flushed = false;
 
     this
-      .level(Severity.Log)
-      .category();
+      .setLevel(Severity.Log)
+      .setCategory();
   }
 
   /**
    * Sets the breadcrumb's log level
    * @param level
    */
-  level = (level: Severity): OperationsBreadcrumb => {
+  setLevel = (level: Severity): OperationsBreadcrumb => {
     this.breadcrumb.level = level;
     return this;
   };
@@ -32,7 +32,7 @@ export class OperationsBreadcrumb {
    * Sets the breadcrumb's category, which is prefixed with `graphQL`
    * @param category
    */
-  category = (category?: ApolloLinkSentry.Breadcrumb.Category): OperationsBreadcrumb => {
+  setCategory = (category?: ApolloLinkSentry.Breadcrumb.Category): OperationsBreadcrumb => {
     this.breadcrumb.category = `gql ${category || ''}`.trim();
     return this;
   };
@@ -41,30 +41,92 @@ export class OperationsBreadcrumb {
    * Set the breadcrumb's message, normally the graphQL operation's name
    * @param message
    */
-  message = (message?: string): OperationsBreadcrumb => {
+  setMessage = (message?: string): OperationsBreadcrumb => {
     this.breadcrumb.message = message;
     return this;
   };
 
   /**
-   * Set the breadcrumb's extra data
-   * @param data
+   * Set the breadcrumb's type
+   * @param type
    */
-  data = (data: ApolloLinkSentry.Operation.Data): OperationsBreadcrumb => {
+  setType = (type: string): OperationsBreadcrumb => {
+    this.breadcrumb.type = type;
+    return this;
+  };
+
+  /**
+   * Set the breadcrumb's query data
+   * @param query
+   */
+  addQuery = (query: string | undefined): OperationsBreadcrumb => {
+    if (!query) return this;
+
     this.breadcrumb.data = {
       ...this.breadcrumb.data,
-      ...data,
+      query,
     };
 
     return this;
   };
 
   /**
-   * Set the breadcrumb's type, normally `http`
-   * @param type
+   * Set the breadcrumb's cache data
+   * @param cache
    */
-  type = (type: string): OperationsBreadcrumb => {
-    this.breadcrumb.type = type;
+  addCache = (cache: object | undefined): OperationsBreadcrumb => {
+    if (isEmpty(cache)) return this;
+
+    this.breadcrumb.data = {
+      ...this.breadcrumb.data,
+      cache: stringifyObject(cache),
+    };
+
+    return this;
+  };
+
+  /**
+   * Set the breadcrumb's variables data
+   * @param variables
+   */
+  addVariables = (variables: object | undefined): OperationsBreadcrumb => {
+    if (isEmpty(variables)) return this;
+
+    this.breadcrumb.data = {
+      ...this.breadcrumb.data,
+      variables: stringifyObject(variables),
+    };
+
+    return this;
+  };
+
+  /**
+   * Set the breadcrumb's response data
+   * @param response
+   */
+  addResponse = (response: object | undefined): OperationsBreadcrumb => {
+    if (isEmpty(response)) return this;
+
+    this.breadcrumb.data = {
+      ...this.breadcrumb.data,
+      response: stringifyObject(response),
+    };
+
+    return this;
+  };
+
+  /**
+   * Set the breadcrumb's error data
+   * @param error
+   */
+  addError = (error: any | undefined): OperationsBreadcrumb => {
+    if (isEmpty(error)) return this;
+
+    this.breadcrumb.data = {
+      ...this.breadcrumb.data,
+      error: stringifyObject(error),
+    };
+
     return this;
   };
 
