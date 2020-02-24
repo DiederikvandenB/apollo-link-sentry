@@ -72,35 +72,48 @@ const client = new ApolloClient({
   - **Not yet implemented**
 
 ## FAQ
-- I don't see any events appearing in my Sentry stream
+- **I don't see any events appearing in my Sentry stream**
   - Note that this package (currently) only adds breadcrumbs. This means that you are still responsible for reporting errors to Sentry. You can do this by calling `Sentry.captureException()`. See this example:
-
-```jsx
-<Mutation mutation={ERROR_MUTATION}>
-  {(mutate, { data, error, loading }) => {
-    if (loading) return <div>loading</div>;
-    if (error) return <div>{error.toString()}</div>;
-
-    const onClick = () => mutate().catch((error) => {
-      Sentry.captureException(error);
-    });
-
-    return <div>
-      <button type="button" onClick={() => onClick()}>Mutate</button>
-      {JSON.stringify(data)}
-    </div>
-  }}
-</Mutation>
-``` 
+  ```jsx
+  <Mutation mutation={ERROR_MUTATION}>
+    {(mutate, { data, error, loading }) => {
+      if (loading) return <div>loading</div>;
+      if (error) return <div>{error.toString()}</div>;
   
+      const onClick = () => mutate().catch((error) => {
+        Sentry.captureException(error);
+      });
+  
+      return <div>
+        <button type="button" onClick={() => onClick()}>Mutate</button>
+        {JSON.stringify(data)}
+      </div>
+    }}
+  </Mutation>
+  ```
+- **GraphQL operations are also logged as fetch breadcrumbs**
+  - Sentry by default attaches all fetch events as breadcrumbs. This means that there are two ways to ensure GraphQL operations appear but once:
+    1. Disable the default integration for fetch requests. Note that this is only recommended if you **only** use GraphQL requests in your application. The default integration can be disabled like this:
+    ```js
+    Sentry.init({
+      dsn: '',
+      defaultIntegrations: [
+        new Sentry.Integrations.Breadcrumbs({ fetch: false }),
+      ],
+    });
+    ```
+    2. Otherwise, it will be possible to use the `beforeBreadcrumb` option of Sentry to filter out the duplicates. This feature is not yet implemented in this package, but it is on the roadmap (see below). 
+
 ## Roadmap
 - Finish the following options:
   - `breadcrumb.enable`
+    - Also add option to exclude successful operations
 - Add the possibility to exclude:
   - Operations
   - URLs?
 - Add error observer
-- Add breadcrumb filter to remove duplicate XHR requests
+- Add breadcrumb filter to remove duplicate fetch requests
+- Add operation's filter
 - Maybe add a callback for `setFingerprint`?
 
 ## Caveats
