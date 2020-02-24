@@ -138,7 +138,7 @@ export class SentryLink extends ApolloLink {
       breadcrumb.addError(error);
     }
 
-    this.attachToEvent(breadcrumb);
+    this.attachBreadcrumbToSentry(breadcrumb);
 
     observer.error(error);
   };
@@ -149,7 +149,7 @@ export class SentryLink extends ApolloLink {
    * @param observer
    */
   handleComplete = (breadcrumb: OperationsBreadcrumb, observer: any): void => {
-    this.attachToEvent(breadcrumb);
+    this.attachBreadcrumbToSentry(breadcrumb);
     observer.complete();
   };
 
@@ -179,9 +179,9 @@ export class SentryLink extends ApolloLink {
    * Attach the breadcrumb to the Sentry event
    * @param {OperationsBreadcrumb} breadcrumb
    */
-  attachToEvent = (breadcrumb: OperationsBreadcrumb): void => {
+  attachBreadcrumbToSentry = (breadcrumb: OperationsBreadcrumb): void => {
     if (breadcrumb.flushed) {
-      console.warn('[apollo-link-sentry] OperationsBreadcrumb.attachToEvent() was called on an already flushed breadcrumb');
+      console.warn('[apollo-link-sentry] SentryLink.attachBreadcrumbToSentry() was called on an already flushed breadcrumb');
       return;
     }
 

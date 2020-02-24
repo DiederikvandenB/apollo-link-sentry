@@ -202,12 +202,12 @@ it('does not allow attaching the same breadcrumb twice', () => {
   const link = new SentryLink(enableAll);
   const breadcrumb = new OperationsBreadcrumb();
   const operation = new Operation(OperationStub);
-
   link.fillBreadcrumb(breadcrumb, operation);
-  link.attachToEvent(breadcrumb);
 
+  link.attachBreadcrumbToSentry(breadcrumb);
   expect(breadcrumb.flushed).toBeTruthy();
-  // link.attachToEvent(breadcrumb);
+
+  link.attachBreadcrumbToSentry(breadcrumb);
 
   Sentry.captureException(new Error('We need to throw something'));
 
@@ -224,8 +224,8 @@ it('warns when the same breadcrumb is added twice', () => {
   const operation = new Operation(OperationStub);
 
   link.fillBreadcrumb(breadcrumb, operation);
-  link.attachToEvent(breadcrumb);
-  link.attachToEvent(breadcrumb);
+  link.attachBreadcrumbToSentry(breadcrumb);
+  link.attachBreadcrumbToSentry(breadcrumb);
 
   expect(mockedWarn).toBeCalledTimes(1);
 });
