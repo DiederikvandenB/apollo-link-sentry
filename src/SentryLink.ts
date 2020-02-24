@@ -33,7 +33,7 @@ export class SentryLink extends ApolloLink {
 
   /**
    * Create a new ApolloLinkSentry
-   * @param options
+   * @param {ApolloLinkSentry.Options} options
    */
   constructor(options: ApolloLinkSentry.Options = {}) {
     super();
@@ -43,8 +43,9 @@ export class SentryLink extends ApolloLink {
   /**
    * This is where the GraphQL operation is received
    * A breadcrumb will be created for the operation, and error/response data will be handled
-   * @param op
-   * @param forward
+   * @param {Operation} op
+   * @param {NextLink} forward
+   * @returns {Observable<FetchResult> | null}
    */
   request = (op: ApolloOperation, forward: NextLink): Observable<FetchResult> | null => {
     // Obtain necessary data from the operation
@@ -72,8 +73,8 @@ export class SentryLink extends ApolloLink {
   /**
    * Fill the breadcrumb with information, respecting the provided options
    * The breadcrumb is not yet attached to Sentry after this method
-   * @param breadcrumb
-   * @param operation
+   * @param {OperationsBreadcrumb} breadcrumb
+   * @param {Operation} operation
    */
   fillBreadcrumb = (breadcrumb: OperationsBreadcrumb, operation: Operation): void => {
     breadcrumb
@@ -108,8 +109,8 @@ export class SentryLink extends ApolloLink {
   /**
    * Handle the operation's response
    * The breadcrumb is not yet attached to Sentry after this method
-   * @param result
-   * @param breadcrumb
+   * @param {FetchResult} result
+   * @param {OperationsBreadcrumb} breadcrumb
    * @param observer
    */
   handleResult = (result: FetchResult, breadcrumb: OperationsBreadcrumb, observer: any): void => {
@@ -124,7 +125,7 @@ export class SentryLink extends ApolloLink {
    * Changes the level and type of the breadcrumb to `error`
    * Furthermore, if the includeError option is truthy, the error data will be attached
    * Then, the error will be attached to Sentry
-   * @param breadcrumb
+   * @param {OperationsBreadcrumb} breadcrumb
    * @param error
    * @param observer
    */
@@ -144,7 +145,7 @@ export class SentryLink extends ApolloLink {
 
   /**
    * Since no error occurred, it is time to attach the breadcrumb to Sentry
-   * @param breadcrumb
+   * @param {OperationsBreadcrumb} breadcrumb
    * @param observer
    */
   handleComplete = (breadcrumb: OperationsBreadcrumb, observer: any): void => {
@@ -154,7 +155,7 @@ export class SentryLink extends ApolloLink {
 
   /**
    * Set the Sentry transaction
-   * @param operation
+   * @param {Operation} operation
    */
   setTransaction = (operation: Operation): void => {
     Sentry.configureScope((scope: Scope) => {
@@ -176,7 +177,7 @@ export class SentryLink extends ApolloLink {
 
   /**
    * Attach the breadcrumb to the Sentry event
-   * @param breadcrumb
+   * @param {OperationsBreadcrumb} breadcrumb
    */
   attachToEvent = (breadcrumb: OperationsBreadcrumb): void => {
     if (breadcrumb.flushed) {
