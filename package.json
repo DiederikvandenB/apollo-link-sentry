@@ -21,7 +21,7 @@
     "test:coverage": "jest --coverage --watchAll=false",
     "prerelease": "yarn test && yarn build",
     "release": "standard-version",
-    "deploy": "deploy"
+    "deploy": "yarn publish --non-interactive"
   },
   "dependencies": {
     "@sentry/browser": "^5.12.4",
