@@ -3,13 +3,16 @@ import { Operation as ApolloOperation } from 'apollo-link';
 import { ApolloLinkSentry } from './types';
 import { isEmpty } from './utils';
 
+/**
+ * TODO: perhaps extend ApolloOperation
+ */
 export class Operation {
   /** The operation received from Apollo Link */
   private readonly operation: ApolloOperation;
 
   /**
    * Observe a GraphQL Operation
-   * @param operation
+   * @param {Operation} operation
    */
   constructor(operation: ApolloOperation) {
     this.operation = operation;

@@ -21,7 +21,8 @@ export class OperationsBreadcrumb {
 
   /**
    * Sets the breadcrumb's log level
-   * @param level
+   * @param {Severity} level
+   * @returns {OperationsBreadcrumb}
    */
   setLevel = (level: Severity): OperationsBreadcrumb => {
     this.breadcrumb.level = level;
@@ -30,7 +31,8 @@ export class OperationsBreadcrumb {
 
   /**
    * Sets the breadcrumb's category, which is prefixed with `graphQL`
-   * @param category
+   * @param {ApolloLinkSentry.Breadcrumb.Category} category
+   * @returns {OperationsBreadcrumb}
    */
   setCategory = (category?: ApolloLinkSentry.Breadcrumb.Category): OperationsBreadcrumb => {
     this.breadcrumb.category = `gql ${category || ''}`.trim();
@@ -39,7 +41,8 @@ export class OperationsBreadcrumb {
 
   /**
    * Set the breadcrumb's message, normally the graphQL operation's name
-   * @param message
+   * @param {string} message
+   * @returns {OperationsBreadcrumb}
    */
   setMessage = (message?: string): OperationsBreadcrumb => {
     this.breadcrumb.message = message;
@@ -48,7 +51,8 @@ export class OperationsBreadcrumb {
 
   /**
    * Set the breadcrumb's type
-   * @param type
+   * @param {string} type
+   * @returns {OperationsBreadcrumb}
    */
   setType = (type: string): OperationsBreadcrumb => {
     this.breadcrumb.type = type;
@@ -57,7 +61,8 @@ export class OperationsBreadcrumb {
 
   /**
    * Set the breadcrumb's query data
-   * @param query
+   * @param {string | undefined} query
+   * @returns {OperationsBreadcrumb}
    */
   addQuery = (query: string | undefined): OperationsBreadcrumb => {
     if (!query) return this;
@@ -72,7 +77,8 @@ export class OperationsBreadcrumb {
 
   /**
    * Set the breadcrumb's cache data
-   * @param cache
+   * @param {object | undefined} cache
+   * @returns {OperationsBreadcrumb}
    */
   addCache = (cache: object | undefined): OperationsBreadcrumb => {
     if (isEmpty(cache)) return this;
@@ -87,7 +93,8 @@ export class OperationsBreadcrumb {
 
   /**
    * Set the breadcrumb's variables data
-   * @param variables
+   * @param {object | undefined} variables
+   * @returns {OperationsBreadcrumb}
    */
   addVariables = (variables: object | undefined): OperationsBreadcrumb => {
     if (isEmpty(variables)) return this;
@@ -102,7 +109,8 @@ export class OperationsBreadcrumb {
 
   /**
    * Set the breadcrumb's response data
-   * @param response
+   * @param {object | undefined} response
+   * @returns {OperationsBreadcrumb}
    */
   addResponse = (response: object | undefined): OperationsBreadcrumb => {
     if (isEmpty(response)) return this;
@@ -117,7 +125,8 @@ export class OperationsBreadcrumb {
 
   /**
    * Set the breadcrumb's error data
-   * @param error
+   * @param {any | undefined} error
+   * @returns {OperationsBreadcrumb}
    */
   addError = (error: any | undefined): OperationsBreadcrumb => {
     if (isEmpty(error)) return this;
@@ -132,6 +141,7 @@ export class OperationsBreadcrumb {
 
   /**
    * We flush the breadcrumb after it's been sent to Sentry, so we can prevent duplicates
+   * @returns {ApolloLinkSentry.Breadcrumb.Data}
    */
   flush = (): ApolloLinkSentry.Breadcrumb.Data => {
     this.flushed = true;
@@ -140,6 +150,7 @@ export class OperationsBreadcrumb {
 
   /**
    * Stringify the breadcrumb, used for debugging purposes
+   * @returns {string}
    */
   /* istanbul ignore next */
   toString = (): string => stringifyObject(this.breadcrumb);
