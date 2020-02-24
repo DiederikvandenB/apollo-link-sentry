@@ -19,7 +19,7 @@
     "build": "tsc",
     "test": "jest",
     "test:coverage": "jest --coverage --watchAll=false",
-    "prerelease": "build",
+    "prerelease": "yarn build",
     "release": "standard-version",
     "deploy": "deploy"
   },
