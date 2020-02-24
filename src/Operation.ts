@@ -10,25 +10,37 @@ export class Operation {
   /** The operation received from Apollo Link */
   private readonly operation: ApolloOperation;
 
+  /** ApolloLinkSentry Operation data */
+  public name: string;
+  public type: ApolloLinkSentry.Operation.Type;
+  public cache: object | undefined;
+  public variables: object | undefined;
+  public query: string | undefined;
+
   /**
    * Observe a GraphQL Operation
    * @param {Operation} operation
    */
   constructor(operation: ApolloOperation) {
     this.operation = operation;
+    this.name = this.getName();
+    this.type = this.getType();
+    this.cache = this.getApolloCache();
+    this.variables = this.getVariables();
+    this.query = this.getQuery();
   }
 
   /**
    * Get the name of the operation
    */
-  getName(): string {
+  private getName(): string {
     return this.operation.operationName;
   }
 
   /**
    * Get the operation type
    */
-  getType(): ApolloLinkSentry.Operation.Type {
+  private getType(): ApolloLinkSentry.Operation.Type {
     if (!this.operation) return undefined;
 
     const { query } = this.operation;
@@ -42,7 +54,7 @@ export class Operation {
   /**
    * Get the Apollo Cache from the operation
    */
-  getApolloCache(): object | undefined {
+  private getApolloCache(): object | undefined {
     const context = this.operation.getContext();
     const cache = context.cache?.data?.data;
 
@@ -52,7 +64,7 @@ export class Operation {
   /**
    * Get the variables from the operation
    */
-  getVariables(): object | undefined {
+  private getVariables(): object | undefined {
     const { variables } = this.operation;
 
     return !isEmpty(variables) ? variables : undefined;
@@ -61,7 +73,7 @@ export class Operation {
   /**
    * Get the operation's query
    */
-  getQuery = (): string | undefined => {
+  private getQuery = (): string | undefined => {
     if (this.operation.query.loc?.source) {
       return this.operation.query.loc.source.body;
     }

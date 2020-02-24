@@ -102,11 +102,11 @@ it('is possible to fill a breadcrumb from an operation', () => {
 
   link.fillBreadcrumb(breadcrumb, operation);
 
-  expect(breadcrumb['breadcrumb'].message).toBe(operation.getName());
-  expect(breadcrumb['breadcrumb'].category).toBe(`gql ${operation.getType()}`);
-  expect(breadcrumb['breadcrumb'].data?.query).toBe(operation.getQuery());
-  expect(breadcrumb['breadcrumb'].data?.cache).toBe(stringifyObject(operation.getApolloCache()));
-  expect(breadcrumb['breadcrumb'].data?.variables).toBe(stringifyObject(operation.getVariables()));
+  expect(breadcrumb['breadcrumb'].message).toBe(operation.name);
+  expect(breadcrumb['breadcrumb'].category).toBe(`gql ${operation.type}`);
+  expect(breadcrumb['breadcrumb'].data?.query).toBe(operation.query);
+  expect(breadcrumb['breadcrumb'].data?.cache).toBe(stringifyObject(operation.cache));
+  expect(breadcrumb['breadcrumb'].data?.variables).toBe(stringifyObject(operation.variables));
 });
 
 it('allows disabling attaching the query', () => {
