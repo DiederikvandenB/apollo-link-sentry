@@ -6,6 +6,14 @@
 ## Features
 Apollo Link middleware to enrich SentryJS events with GraphQL data.
 
+Turn this:
+
+<p align="center"><img src="screenshots/before.png" alt="Before" width="auto" align="center" /></p>
+
+Into this:
+
+<p align="center"><img src="screenshots/after.png" alt="After" width="auto" /></p>
+
 ## Installation
 Add `apollo-link-sentry` to your dependencies:
 
