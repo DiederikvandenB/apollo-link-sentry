@@ -32,6 +32,7 @@ export class Operation {
 
   /**
    * Get the name of the operation
+   * @returns {string}
    */
   private getName(): string {
     return this.operation.operationName;
@@ -39,6 +40,7 @@ export class Operation {
 
   /**
    * Get the operation type
+   * @returns {ApolloLinkSentry.Operation.Type}
    */
   private getType(): ApolloLinkSentry.Operation.Type {
     if (!this.operation) return undefined;
@@ -53,6 +55,7 @@ export class Operation {
 
   /**
    * Get the Apollo Cache from the operation
+   * @returns {object | undefined}
    */
   private getApolloCache(): object | undefined {
     const context = this.operation.getContext();
@@ -63,6 +66,7 @@ export class Operation {
 
   /**
    * Get the variables from the operation
+   * @returns {object | undefined}
    */
   private getVariables(): object | undefined {
     const { variables } = this.operation;
@@ -72,6 +76,7 @@ export class Operation {
 
   /**
    * Get the operation's query
+   * @returns {string | undefined}
    */
   private getQuery = (): string | undefined => {
     if (this.operation.query.loc?.source) {
