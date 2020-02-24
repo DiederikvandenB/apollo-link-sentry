@@ -30,18 +30,18 @@ const client = new ApolloClient({
     new SentryLink({
       setTransaction: true,
       setFingerprint: true,
-      
+
       breadcrumb: {
         enable: true,
-        includeCache: false,
-        includeError: true,
         includeQuery: true,
+        includeError: true,
+        includeCache: false,
         includeVariables: false,
-        includeResponse: true,
+        includeResponse: false,
       },
-
+                   
       exception: {
-        report: true,
+        report: true
       },
     }),
     new HttpLink({ uri: 'http://localhost:4000' }),
@@ -60,18 +60,18 @@ const client = new ApolloClient({
 - `breadcrumb.enable`
   - default: `true`
   - Toggle to add query / mutations as breadcrumbs
-- `breadcrumb.includeCache`
-  - default: `false`
-  - Toggle to add the Apollo cache to the breadcrumb. As the cache can get quite large, it is not recommended to enable this for production environments. It can be useful for debugging purposes
-- `breadcrumb.includeError`
-  - default: `true`
-  - Toggle to add the error to the breadcrumb, if one is received
-- `breadcrumb.includeVariables`
-  - default: `false`
-  - Toggle to add the operation's variables to the breadcrumb. This is disabled by default because it could lead to sensitive information being sent to Sentry (think of email addresses, passwords and other sensitive user information). Use with caution.
 - `breadcrumb.includeQuery`
   - default: `true`
   - Toggle to add the query / mutation string to the breadcrumb
+- `breadcrumb.includeError`
+  - default: `true`
+  - Toggle to add the error to the breadcrumb, if one is received
+- `breadcrumb.includeCache`
+  - default: `false`
+  - Toggle to add the Apollo cache to the breadcrumb. As the cache can get quite large, it is not recommended to enable this for production environments. It can be useful for debugging purposes
+- `breadcrumb.includeVariables`
+  - default: `false`
+  - Toggle to add the operation's variables to the breadcrumb. This is disabled by default because it could lead to sensitive information being sent to Sentry (think of email addresses, passwords and other sensitive user information). Use with caution.
 - `breadcrumb.includeResponse`
   - default: `true`
   - Toggle to add query / mutations response to the breadcrumb. This is specifically useful when dealing with a third-party API of which you can not access the logs

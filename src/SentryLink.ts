@@ -16,11 +16,11 @@ const defaultOptions: ApolloLinkSentry.Options = {
 
   breadcrumb: {
     enable: true,
-    includeCache: false,
-    includeError: true,
     includeQuery: true,
+    includeError: true,
+    includeCache: false,
     includeVariables: false,
-    includeResponse: true,
+    includeResponse: false,
   },
 
   exception: {
