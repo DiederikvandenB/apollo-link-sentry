@@ -78,8 +78,8 @@ export class SentryLink extends ApolloLink {
    */
   fillBreadcrumb = (breadcrumb: OperationsBreadcrumb, operation: Operation): void => {
     breadcrumb
-      .setMessage(operation.getName())
-      .setCategory(operation.getType());
+      .setMessage(operation.name)
+      .setCategory(operation.type);
 
     // TODO: Maybe move this to a different place? It isn't a breadcrumb
     // TODO: Add test
@@ -94,15 +94,15 @@ export class SentryLink extends ApolloLink {
     }
 
     if (this.options.breadcrumb?.includeQuery) {
-      breadcrumb.addQuery(operation.getQuery());
+      breadcrumb.addQuery(operation.query);
     }
 
     if (this.options.breadcrumb?.includeCache) {
-      breadcrumb.addCache(operation.getApolloCache());
+      breadcrumb.addCache(operation.cache);
     }
 
     if (this.options.breadcrumb?.includeVariables) {
-      breadcrumb.addVariables(operation.getVariables());
+      breadcrumb.addVariables(operation.variables);
     }
   };
 
@@ -159,7 +159,7 @@ export class SentryLink extends ApolloLink {
    */
   setTransaction = (operation: Operation): void => {
     Sentry.configureScope((scope: Scope) => {
-      scope.setTransaction(operation.getName());
+      scope.setTransaction(operation.name);
     });
   };
 
