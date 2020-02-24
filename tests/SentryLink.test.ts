@@ -1,4 +1,4 @@
-import { ApolloLink, execute, Observable } from 'apollo-link';
+import { ApolloLink, Observable, execute } from 'apollo-link';
 import gql from 'graphql-tag';
 
 import { SentryLink } from '../src';
