@@ -116,6 +116,16 @@ const operation: Operation = {
         freezeResults: false,
       },
     },
+    headers: {
+      'App-Impersonation-Key': 'a0cb2511-d7b1-47a2-ad59-da06bf2f1a10',
+    },
+    someOtherContext: {
+      lorem: {
+        ipsum: {
+          dorem: true,
+        },
+      },
+    },
   }),
 
   setContext: (): any => {},

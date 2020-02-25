@@ -261,5 +261,22 @@ describe('SentryLink', () => {
 
       expect(originalReport.fingerprint).toBeUndefined();
     });
+
+    test('should add context keys to the breadcrumb', () => {
+      const keys = ['headers', 'someOtherContext.lorem.ipsum'];
+      const link = new SentryLink({ breadcrumb: { includeContextKeys: keys } });
+      const breadcrumb = new OperationsBreadcrumb();
+      const operation = new Operation(OperationStub);
+      const context = operation['getContextKeys'](keys);
+
+      link.fillBreadcrumb(breadcrumb, operation);
+      link.attachBreadcrumbToSentry(breadcrumb);
+      Sentry.captureException(new Error('Error'));
+
+      const [report] = testkit.reports();
+      const [crumb] = report.breadcrumbs;
+
+      expect(crumb.data?.context).toBe(stringifyObject(context));
+    });
   });
 });

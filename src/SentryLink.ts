@@ -21,6 +21,7 @@ const defaultOptions: ApolloLinkSentry.Options = {
     includeVariables: false,
     includeResponse: false,
     includeError: false,
+    includeContextKeys: [],
   },
 };
 
@@ -97,6 +98,10 @@ export class SentryLink extends ApolloLink {
 
     if (this.options.breadcrumb?.includeVariables) {
       breadcrumb.addVariables(operation.variables);
+    }
+
+    if (this.options?.breadcrumb?.includeContextKeys?.length) {
+      breadcrumb.addContext(operation.getContextKeys(this.options.breadcrumb.includeContextKeys));
     }
   };
 
