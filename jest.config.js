@@ -49,7 +49,7 @@ module.exports = {
   errorOnDeprecated: true,
 
   // Use this configuration option to add custom reporters to Jest
-  // reporters: undefined,
+  reporters: ['jest-spec-reporter'],
 
   // The root directory that Jest should scan for tests and modules within
   // rootDir: './tests',
