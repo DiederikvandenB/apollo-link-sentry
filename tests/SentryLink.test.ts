@@ -38,9 +38,11 @@ describe('SentryLink', () => {
   beforeEach(() => {
     testkit.reset();
 
-    // Clear breadcrumbs from previous tests
+    // Clear breadcrumbs, the transaction and the fingerprint
     Sentry.configureScope((scope) => {
       scope.clearBreadcrumbs();
+      scope.setTransaction();
+      scope.setFingerprint([]);
     });
   });
 
@@ -230,6 +232,20 @@ describe('SentryLink', () => {
           done();
         },
       });
+    });
+
+    test('should not set the transaction if the option is disabled', () => {
+      const link = new SentryLink({ setTransaction: false });
+      const breadcrumb = new OperationsBreadcrumb();
+      const operation = new Operation(OperationStub);
+
+      link.fillBreadcrumb(breadcrumb, operation);
+
+      Sentry.captureException(new Error('test error'));
+      const [report] = testkit.reports();
+      const { originalReport } = report;
+
+      expect(originalReport.transaction).toBeUndefined();
     });
   });
 });

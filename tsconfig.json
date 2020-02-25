@@ -4,6 +4,7 @@
   ],
 
   "compilerOptions":{
+    "outDir": "./lib",
     "target": "es5",
     "module": "commonjs",
     "lib": ["es6", "esnext", "dom"],
@@ -11,7 +12,6 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "outDir": "./lib",
     "removeComments": true,
     "importHelpers": true,
     "strict": true,

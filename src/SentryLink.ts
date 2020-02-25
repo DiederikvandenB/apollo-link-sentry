@@ -82,7 +82,6 @@ export class SentryLink extends ApolloLink {
       .setCategory(operation.type);
 
     // TODO: Maybe move this to a different place? It isn't a breadcrumb
-    // TODO: Add test
     if (this.options.setTransaction) {
       this.setTransaction(operation);
     }
