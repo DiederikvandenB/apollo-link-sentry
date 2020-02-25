@@ -180,6 +180,8 @@ export class SentryLink extends ApolloLink {
    * @param {OperationsBreadcrumb} breadcrumb
    */
   attachBreadcrumbToSentry = (breadcrumb: OperationsBreadcrumb): void => {
+    if (this.options.breadcrumb?.enable === false) return;
+
     if (breadcrumb.flushed) {
       console.warn('[apollo-link-sentry] SentryLink.attachBreadcrumbToSentry() was called on an already flushed breadcrumb');
       return;
