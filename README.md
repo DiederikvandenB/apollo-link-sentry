@@ -51,35 +51,70 @@ const client = new ApolloClient({
 ```
 
 ## Options
-- `setTransaction`
-  - default: `true`
-  - Set the Sentry `transaction` to the `operationName` of the query / mutation
-- `setFingerprint`
-  - default: `true`
-  - Narrow the Sentry event `fingerprint` by adding the transaction name
-- `breadcrumb.enable`
-  - default: `true`
-  - Toggle to add query / mutations as breadcrumbs
-- `breadcrumb.includeQuery`
-  - default: `true`
-  - Toggle to add the query / mutation string to the breadcrumb
-- `breadcrumb.includeError`
-  - default: `true`
-  - Toggle to add the error to the breadcrumb, if one is received
-- `breadcrumb.includeCache`
-  - default: `false`
-  - Toggle to add the Apollo cache to the breadcrumb. As the cache can get quite large, it is not recommended to enable this for production environments. It can be useful for debugging purposes
-- `breadcrumb.includeVariables`
-  - default: `false`
-  - Toggle to add the operation's variables to the breadcrumb. This is disabled by default because it could lead to sensitive information being sent to Sentry (think of email addresses, passwords and other sensitive user information). Use with caution.
-- `breadcrumb.includeResponse`
-  - default: `true`
-  - Toggle to add query / mutations response to the breadcrumb. This is specifically useful when dealing with a third-party API of which you can not access the logs
-- `exception.report`
-  - default: `true`
-  - **Not yet implemented**
+```js
+const defaultOptions = {
+  /**
+   * Set the Sentry `transaction` to the `operationName` of the query / mutation. Note that this
+   * only works if the transaction is not overwritten later in your app.
+   */
+  setTransaction: true,
 
-## Compatibility with other Apollo Links
+  /**
+   * Narrow Sentry's fingerprint by appending the operation's name to Sentry's {{default}} key.
+   * It works in such a way that only the last operation is added, not every operation that's been
+   * through the link. Note that if you override this somewhere else in your app, it is possible
+   * that the value set by `apollo-link-sentry` is overwritten.
+   */
+  setFingerprint: true,
+
+  breadcrumb: {
+    /**
+     * Set to false to disable attaching GraphQL operations as breadcrumbs. If only this breadcrumb
+     * option is toggled, the breadcrumb will only show the operation name and it's type.
+     */
+    enable: true,
+
+    /**
+     * Include the query / mutation string in the breadcrumb.
+     */
+    includeQuery: false,
+
+    /**
+     * Include the entire Apollo cache in the breadcrumb. It is not recommended to enable this
+     * option in production environment, for several reasons, see "Be careful what you include".
+     * This option is specifically useful for debugging purposes, but when applied in combination
+     * with `beforeBreadcrumb` can also be used in production.
+     */
+    includeCache: false,
+
+    /**
+     * Include the operation's variables in the breadcrumb. Again, be careful what you include,
+     * or apply a filter.
+     */
+    includeVariables: false,
+
+    /**
+     * Include the operation's fetch result in the breadcrumb.
+     */
+    includeResponse: false,
+
+    /**
+     * If an error is received, it can be included in the breadcrumb. Regardless of this option,
+     * the breadcrumb's type is set to error to reflect a failed operation in the Sentry UI.
+     */
+    includeError: false,
+
+    /**
+     * Include context keys as extra data in the breadcrumb. Accepts dot notation.
+     * The data is stringified and formatted. Can be used to include headers for instance.
+     * Note that this option is not yet implemented.
+     */
+    includeContextKeys: [],
+  },
+};
+```
+
+### Compatibility with other Apollo Links
 `apollo-link-sentry` aims to be friendly with other `apollo-link` packages, in the sense that we would like for you to be able to attach as much data as you want. For example, if you would like to add the HTTP headers you set with `apollo-link-context`, you can do that by setting `includeContextKeys: ['headers']`.
 
 In case you find that there's a piece of data you're missing, feel free to open an issue.
@@ -122,18 +157,18 @@ Furthermore, much of the data you are sending to Sentry can include (sensitive) 
     ```
     2. Otherwise, it will be possible to use the `beforeBreadcrumb` option of Sentry to filter out the duplicates. This feature is not yet implemented in this package, but it is on the roadmap (see below). 
 
-## Roadmap
-- Finish the following options:
-  - `breadcrumb.enable`
-    - Also add option to exclude successful operations
-- Add the possibility to exclude:
-  - Operations
-  - URLs?
-- Add error observer
-- Add breadcrumb filter to remove duplicate fetch requests
-- Add operation's filter
-- Maybe add a callback for `setFingerprint`?
-
 ## Caveats
 - This package has not been tested for subscriptions
 - We also need to test for different links, i.e. `apollo-link-rest`
+
+## Roadmap / notes
+- Add the possibility to exclude:
+  - Operations
+  - URLs?
+- Write best practice scenario:
+  - setting `includeError` true
+  - catch errors manually
+  - throw custom error
+  - how to use together with `apollo-link-error`?
+    - does it report errors twice if you do sentry capture there and in your catch
+- Add breadcrumb filter to remove duplicate fetch requests
