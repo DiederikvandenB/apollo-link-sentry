@@ -43,8 +43,6 @@ export class Operation {
    * @returns {ApolloLinkSentry.Operation.Type}
    */
   private getType(): ApolloLinkSentry.Operation.Type {
-    if (!this.operation) return undefined;
-
     const { query } = this.operation;
     const definition = query.definitions[0];
 
@@ -61,7 +59,9 @@ export class Operation {
     const context = this.operation.getContext();
     const cache = context.cache?.data?.data;
 
-    return !isEmpty(cache) ? cache : undefined;
+    return !isEmpty(cache)
+      ? cache
+      : undefined;
   }
 
   /**
@@ -71,18 +71,18 @@ export class Operation {
   private getVariables(): object | undefined {
     const { variables } = this.operation;
 
-    return !isEmpty(variables) ? variables : undefined;
+    return !isEmpty(variables)
+      ? variables
+      : undefined;
   }
 
   /**
    * Get the operation's query
    * @returns {string | undefined}
    */
-  private getQuery = (): string | undefined => {
-    if (this.operation.query.loc?.source) {
-      return this.operation.query.loc.source.body;
-    }
-
-    return undefined;
-  };
+  private getQuery = (): string | undefined => (
+    this.operation.query.loc?.source
+      ? this.operation.query?.loc.source.body
+      : undefined
+  );
 }
