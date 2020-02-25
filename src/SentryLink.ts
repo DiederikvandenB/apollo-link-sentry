@@ -16,15 +16,11 @@ const defaultOptions: ApolloLinkSentry.Options = {
 
   breadcrumb: {
     enable: true,
-    includeQuery: true,
-    includeError: true,
+    includeQuery: false,
     includeCache: false,
     includeVariables: false,
     includeResponse: false,
-  },
-
-  exception: {
-    report: true,
+    includeError: false,
   },
 };
 
@@ -50,8 +46,6 @@ export class SentryLink extends ApolloLink {
   request = (op: ApolloOperation, forward: NextLink): Observable<FetchResult> | null => {
     // Obtain necessary data from the operation
     const operation = new Operation(op);
-
-    console.log(op.getContext());
 
     // Create a new breadcrumb for this specific operation
     const breadcrumb = new OperationsBreadcrumb();

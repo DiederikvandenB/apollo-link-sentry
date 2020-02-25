@@ -22,15 +22,10 @@ export namespace ApolloLinkSentry {
   export interface BreadcrumbOptions {
     enable?: boolean;
     includeQuery?: boolean;
-    includeVariables?: boolean;
-    includeError?: boolean;
-    includeResponse?: boolean;
     includeCache?: boolean;
-    // includeHeaders: boolean; (TODO: implement includeHeaders)
-  }
-
-  export interface ExceptionOptions {
-    report?: boolean;
+    includeVariables?: boolean;
+    includeResponse?: boolean;
+    includeError?: boolean;
   }
 
   export interface Options {
@@ -38,6 +33,5 @@ export namespace ApolloLinkSentry {
     setFingerprint?: boolean;
 
     breadcrumb?: BreadcrumbOptions;
-    exception?: ExceptionOptions;
   }
 }

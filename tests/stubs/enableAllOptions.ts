@@ -7,14 +7,10 @@ const enableAll: ApolloLinkSentry.Options = {
   breadcrumb: {
     enable: true,
     includeQuery: true,
-    includeVariables: true,
-    includeError: true,
-    includeResponse: true,
     includeCache: true,
-  },
-
-  exception: {
-    report: true,
+    includeVariables: true,
+    includeResponse: true,
+    includeError: true,
   },
 };
 
