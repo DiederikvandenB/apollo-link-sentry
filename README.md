@@ -1,6 +1,6 @@
 # Apollo Link Sentry
 
-[![Coverage Status](https://coveralls.io/repos/github/DiederikvandenB/apollo-link-sentry/badge.svg)](https://coveralls.io/github/DiederikvandenB/apollo-link-sentry)
+[![Coverage Status](https://coveralls.io/repos/github/DiederikvandenB/apollo-link-sentry/badge.svg?branch=master)](https://coveralls.io/github/DiederikvandenB/apollo-link-sentry?branch=master)
 ![Test](https://github.com/DiederikvandenB/apollo-link-sentry/workflows/Test/badge.svg)
 
 ## Features
