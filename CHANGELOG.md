@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v0.1.0...v0.2.0) (2020-02-25)
+
+
+### Features
+
+* allow disabling attaching a breadcrumb ([2ba8188](https://github.com/DiederikvandenB/apollo-link-sentry/commit/2ba8188222a4065f00ad5cd09b32a8229f9564c1))
+
+
+### Chores
+
+* improves jest reporter ([dd56299](https://github.com/DiederikvandenB/apollo-link-sentry/commit/dd56299edae0a20f06a570a7e9e34619356f7e5e))
+* updates yarn lock file ([315673a](https://github.com/DiederikvandenB/apollo-link-sentry/commit/315673a8636c34c7a4be4c2e09ea4d784e58c133))
+
+
+### Documentation
+
+* add return types for Operation.ts ([5868bc1](https://github.com/DiederikvandenB/apollo-link-sentry/commit/5868bc1213cc7e0ec62ab8362e2e5defd51c1d17))
+
 ## 0.1.0 (2020-02-24)
 
 
