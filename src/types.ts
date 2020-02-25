@@ -15,6 +15,7 @@ export namespace ApolloLinkSentry {
         cache?: string,
         response?: string,
         error?: string,
+        context?: string,
       }
     }
   }
@@ -26,6 +27,7 @@ export namespace ApolloLinkSentry {
     includeVariables?: boolean;
     includeResponse?: boolean;
     includeError?: boolean;
+    includeContextKeys?: string[];
   }
 
   export interface Options {

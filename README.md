@@ -90,7 +90,6 @@ const defaultOptions = {
     /**
      * Include context keys as extra data in the breadcrumb. Accepts dot notation.
      * The data is stringified and formatted. Can be used to include headers for instance.
-     * Note that this option is not yet implemented.
      */
     includeContextKeys: [],
   },

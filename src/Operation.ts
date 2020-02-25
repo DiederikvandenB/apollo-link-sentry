@@ -1,4 +1,5 @@
 import { Operation as ApolloOperation } from 'apollo-link';
+import dotProp from 'dot-prop';
 
 import { ApolloLinkSentry } from './types';
 import { isEmpty } from './utils';
@@ -82,4 +83,21 @@ export class Operation {
       ? this.operation.query?.loc.source.body
       : undefined
   );
+
+  /**
+   * Get a set of keys from the context using dot notation
+   * @param {string[]} keys
+   * @returns {{[p: string]: any} | undefined}
+   */
+  public getContextKeys = (keys: string[]): { [s: string]: any } | undefined => {
+    const context = this.operation.getContext();
+
+    const find = keys
+      .map((key): object | undefined => ({ [key]: dotProp.get(context, key) }))
+      .reduce((a: object, b: any): object => ({ ...a, ...b }), {});
+
+    return !isEmpty(find)
+      ? find
+      : undefined;
+  };
 }

@@ -38,4 +38,15 @@ describe('Operation', () => {
     const query = OperationStub.query.loc?.source.body;
     expect(operation['getQuery']()).toEqual(query);
   });
+
+  it('should be possible to get context keys', () => {
+    const operation = new Operation(OperationStub);
+    const { headers } = OperationStub.getContext();
+
+    const keys = ['headers', 'someOtherContext.lorem.ipsum'];
+    const context = operation['getContextKeys'](keys);
+
+    expect(context?.headers).toEqual(headers);
+    expect(context?.['someOtherContext.lorem.ipsum']).toBeTruthy();
+  });
 });

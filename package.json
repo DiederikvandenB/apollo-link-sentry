@@ -28,6 +28,7 @@
     "@sentry/types": "^5.12.4",
     "apollo-link": "^1.2.13",
     "deepmerge": "^4.2.2",
+    "dot-prop": "^5.2.0",
     "graphql": "^14.6.0"
   },
   "devDependencies": {

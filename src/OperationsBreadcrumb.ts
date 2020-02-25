@@ -108,6 +108,22 @@ export class OperationsBreadcrumb {
   };
 
   /**
+   * Set the breadcrumb's context
+   * @param {object | undefined} context
+   * @returns {OperationsBreadcrumb}
+   */
+  addContext = (context: object | undefined): OperationsBreadcrumb => {
+    if (isEmpty(context)) return this;
+
+    this.breadcrumb.data = {
+      ...this.breadcrumb.data,
+      context: stringifyObject(context),
+    };
+
+    return this;
+  };
+
+  /**
    * Set the breadcrumb's response data
    * @param {object | undefined} response
    * @returns {OperationsBreadcrumb}
