@@ -3676,6 +3676,14 @@ jest-snapshot@^25.1.0:
     pretty-format "^25.1.0"
     semver "^7.1.1"
 
+jest-spec-reporter@^1.0.12:
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/jest-spec-reporter/-/jest-spec-reporter-1.0.12.tgz#8e45e63d1058c1be06ee75926248454c517e1ea7"
+  integrity sha512-PF0BcU2OIatHlc9Jw1xLDwYTwWKCitOzY+vWDvfV0+wUscX+wbgyVvsJ6T+rP3pxOeFBAOv4Rx+bKRL+Os7puQ==
+  dependencies:
+    chalk "3.0.0"
+    moment "2.24.0"
+
 jest-util@^25.1.0:
   version "25.1.0"
   resolved "https://registry.yarnpkg.com/jest-util/-/jest-util-25.1.0.tgz#7bc56f7b2abd534910e9fa252692f50624c897d9"
@@ -4269,6 +4277,11 @@ modify-values@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
+
+moment@2.24.0:
+  version "2.24.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
+  integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
 
 ms@2.0.0:
   version "2.0.0"
