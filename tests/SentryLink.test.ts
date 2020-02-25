@@ -247,5 +247,19 @@ describe('SentryLink', () => {
 
       expect(originalReport.transaction).toBeUndefined();
     });
+
+    test('should not set the fingerprint if the option is disabled', () => {
+      const link = new SentryLink({ setFingerprint: false });
+      const breadcrumb = new OperationsBreadcrumb();
+      const operation = new Operation(OperationStub);
+
+      link.fillBreadcrumb(breadcrumb, operation);
+
+      Sentry.captureException(new Error('test error'));
+      const [report] = testkit.reports();
+      const { originalReport } = report;
+
+      expect(originalReport.fingerprint).toBeUndefined();
+    });
   });
 });
