@@ -51,6 +51,8 @@ export class SentryLink extends ApolloLink {
     // Obtain necessary data from the operation
     const operation = new Operation(op);
 
+    console.log(op.getContext());
+
     // Create a new breadcrumb for this specific operation
     const breadcrumb = new OperationsBreadcrumb();
     this.fillBreadcrumb(breadcrumb, operation);

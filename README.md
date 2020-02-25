@@ -85,9 +85,9 @@ const client = new ApolloClient({
 In case you find that there's a piece of data you're missing, feel free to open an issue.
 
 ### Be careful what you include
-Please note that Sentry sets some limits to how big events can be. For instance, events greater than 200KiB are immediately dropped (pre decompression). More information on that [here](https://docs.sentry.io/accounts/quotas/#attributes-limits). Be especially careful with the `includeCache` option, as caches can become quite large.
+Please note that Sentry sets some limits to how big events can be. For instance, **events greater than 200KiB are immediately dropped (pre decompression)**. More information on that [here](https://docs.sentry.io/accounts/quotas/#attributes-limits). Be especially careful with the `includeCache` option, as caches can become quite large.
 
-Furthermore, much of the data you are sending to Sentry can include (sensitive) personal information. This might lead you to violating the terms of the GDPR. We are planning on adding more features in the future that will enable filtering through a callback, but in the meantime it is recommended to disable certain options in `production` but for instance not in a `staging` environment with dummy data.
+Furthermore, much of the data you are sending to Sentry can include (sensitive) personal information. This might lead you to violating the terms of the GDPR. Use Sentry's `beforeBreadrcrumb` function to filter out all sensitive data.
 
 ## FAQ
 - **I don't see any events appearing in my Sentry stream**
