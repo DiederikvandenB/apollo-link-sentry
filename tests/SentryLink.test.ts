@@ -1,13 +1,16 @@
 import { ApolloLink, Observable, execute } from 'apollo-link';
 import gql from 'graphql-tag';
+import * as Sentry from '@sentry/browser';
+import sentryTestkit from 'sentry-testkit';
 
 import { SentryLink } from '../src';
-import { Sentry, testkit } from './utils/sentry';
+import { Operation } from '../src/Operation';
 import { OperationsBreadcrumb } from '../src/OperationsBreadcrumb';
+import { stringifyObject } from '../src/utils';
 import OperationStub from './stubs/Operation';
 import enableAll from './stubs/enableAllOptions';
-import { Operation } from '../src/Operation';
-import { stringifyObject } from '../src/utils';
+
+const { testkit, sentryTransport } = sentryTestkit();
 
 const TEST_QUERY = gql`query TestQuery {
   user {
@@ -23,15 +26,46 @@ const ERROR_QUERY = gql`query ErrorQuery {
   }
 }`;
 
-it('attaches a sentry breadcrumb for an operation', (done) => {
-  const link = ApolloLink.from([
-    new SentryLink(enableAll),
-    new ApolloLink(() => new Observable(
-      (observer) => observer.error(new Error('Something went wrong')),
-    )),
-  ]);
+describe('SentryLink', () => {
+  beforeAll(() => {
+    Sentry.init({
+      dsn: 'https://acacaeaccacacacabcaacdacdacadaca@sentry.io/000001',
+      transport: <any>sentryTransport,
+      defaultIntegrations: false,
+    });
+  });
 
-  try {
+  beforeEach(() => {
+    testkit.reset();
+
+    // Clear breadcrumbs from previous tests
+    Sentry.configureScope((scope) => {
+      scope.clearBreadcrumbs();
+    });
+  });
+
+  test('should fill a breadcrumb from an operation', () => {
+    const link = new SentryLink(enableAll);
+    const breadcrumb = new OperationsBreadcrumb();
+    const operation = new Operation(OperationStub);
+
+    link.fillBreadcrumb(breadcrumb, operation);
+
+    expect(breadcrumb['breadcrumb'].message).toBe(operation.name);
+    expect(breadcrumb['breadcrumb'].category).toBe(`gql ${operation.type}`);
+    expect(breadcrumb['breadcrumb'].data?.query).toBe(operation.query);
+    expect(breadcrumb['breadcrumb'].data?.cache).toBe(stringifyObject(operation.cache));
+    expect(breadcrumb['breadcrumb'].data?.variables).toBe(stringifyObject(operation.variables));
+  });
+
+  test('should attach a sentry breadcrumb for an operation', (done) => {
+    const link = ApolloLink.from([
+      new SentryLink(enableAll),
+      new ApolloLink(() => new Observable(
+        (observer) => observer.error(new Error('Something went wrong')),
+      )),
+    ]);
+
     execute(link, { query: TEST_QUERY }).subscribe({
       error: (exception) => {
         Sentry.captureException(exception);
@@ -45,28 +79,24 @@ it('attaches a sentry breadcrumb for an operation', (done) => {
         done();
       },
     });
-  } catch (exception) {
-    done.fail(exception);
-  }
-});
+  });
 
-it('attaches breadcrumbs for multiple queries', (done) => {
-  const successLink = ApolloLink.from([
-    new SentryLink(enableAll),
-    new ApolloLink(() => new Observable((observer) => {
-      observer.next({});
-      observer.complete();
-    })),
-  ]);
+  test('should attach a breadcrumb for each operation', (done) => {
+    const successLink = ApolloLink.from([
+      new SentryLink(enableAll),
+      new ApolloLink(() => new Observable((observer) => {
+        observer.next({});
+        observer.complete();
+      })),
+    ]);
 
-  const errorLink = ApolloLink.from([
-    new SentryLink(enableAll),
-    new ApolloLink(() => new Observable(
-      (observer) => observer.error(new Error('Something went wrong')),
-    )),
-  ]);
+    const errorLink = ApolloLink.from([
+      new SentryLink(enableAll),
+      new ApolloLink(() => new Observable(
+        (observer) => observer.error(new Error('Something went wrong')),
+      )),
+    ]);
 
-  try {
     execute(successLink, { query: TEST_QUERY })
       .subscribe({
         complete() {
@@ -88,144 +118,118 @@ it('attaches breadcrumbs for multiple queries', (done) => {
             });
         },
       });
-  } catch (exception) {
-    done.fail(exception);
-  } finally {
-    done();
-  }
-});
+  });
 
-it('is possible to fill a breadcrumb from an operation', () => {
-  const link = new SentryLink(enableAll);
-  const breadcrumb = new OperationsBreadcrumb();
-  const operation = new Operation(OperationStub);
+  test('should not allow attaching the same breadcrumb twice', () => {
+    console.warn = jest.fn();
 
-  link.fillBreadcrumb(breadcrumb, operation);
+    const link = new SentryLink(enableAll);
+    const breadcrumb = new OperationsBreadcrumb();
+    const operation = new Operation(OperationStub);
+    link.fillBreadcrumb(breadcrumb, operation);
 
-  expect(breadcrumb['breadcrumb'].message).toBe(operation.name);
-  expect(breadcrumb['breadcrumb'].category).toBe(`gql ${operation.type}`);
-  expect(breadcrumb['breadcrumb'].data?.query).toBe(operation.query);
-  expect(breadcrumb['breadcrumb'].data?.cache).toBe(stringifyObject(operation.cache));
-  expect(breadcrumb['breadcrumb'].data?.variables).toBe(stringifyObject(operation.variables));
-});
+    link.attachBreadcrumbToSentry(breadcrumb);
+    expect(breadcrumb.flushed).toBeTruthy();
 
-it('allows disabling attaching the query', () => {
-  const link = new SentryLink({ breadcrumb: { includeQuery: false } });
-  const breadcrumb = new OperationsBreadcrumb();
-  const operation = new Operation(OperationStub);
+    link.attachBreadcrumbToSentry(breadcrumb);
 
-  link.fillBreadcrumb(breadcrumb, operation);
+    Sentry.captureException(new Error('Error'));
 
-  expect(breadcrumb['breadcrumb'].data?.query).toBeUndefined();
-});
+    const [report] = testkit.reports();
+    expect(report.breadcrumbs).toHaveLength(1);
+  });
 
-it('allows disabling attaching the variables', () => {
-  const link = new SentryLink({ breadcrumb: { includeVariables: false } });
-  const breadcrumb = new OperationsBreadcrumb();
-  const operation = new Operation(OperationStub);
+  test('should show a warning if the same breadcrumb is attached twice', () => {
+    const mockedWarn = jest.fn();
+    console.warn = mockedWarn;
 
-  link.fillBreadcrumb(breadcrumb, operation);
+    const link = new SentryLink(enableAll);
+    const breadcrumb = new OperationsBreadcrumb();
+    const operation = new Operation(OperationStub);
 
-  expect(breadcrumb['breadcrumb'].data?.variables).toBeUndefined();
-});
+    link.fillBreadcrumb(breadcrumb, operation);
+    link.attachBreadcrumbToSentry(breadcrumb);
+    link.attachBreadcrumbToSentry(breadcrumb);
 
-it('allows disabling attaching apollo cache', () => {
-  const link = new SentryLink({ breadcrumb: { includeCache: false } });
-  const breadcrumb = new OperationsBreadcrumb();
-  const operation = new Operation(OperationStub);
+    expect(mockedWarn).toBeCalledTimes(1);
+  });
 
-  link.fillBreadcrumb(breadcrumb, operation);
+  describe('options', () => {
+    test('should not attach the breadcrumb if the option is disabled', () => {});
 
-  expect(breadcrumb['breadcrumb'].data?.cache).toBeUndefined();
-});
+    test('should not attach the query if the option is disabled', () => {
+      const link = new SentryLink({ breadcrumb: { includeQuery: false } });
+      const breadcrumb = new OperationsBreadcrumb();
+      const operation = new Operation(OperationStub);
 
-it('allows disabling attaching the error', (done) => {
-  const link = ApolloLink.from([
-    new SentryLink({ breadcrumb: { includeError: false } }),
-    new ApolloLink(() => new Observable(
-      (observer) => observer.error(new Error('Something went wrong')),
-    )),
-  ]);
+      link.fillBreadcrumb(breadcrumb, operation);
 
-  try {
-    execute(link, { query: TEST_QUERY }).subscribe({
-      error: (exception) => {
-        Sentry.captureException(exception);
-
-        const [report] = testkit.reports();
-        const [breadcrumb] = report.breadcrumbs;
-
-        expect(breadcrumb.data?.error).toBeUndefined();
-
-        done();
-      },
+      expect(breadcrumb['breadcrumb'].data?.query).toBeUndefined();
     });
-  } catch (exception) {
-    done.fail(exception);
-  } finally {
-    done();
-  }
-});
 
-it('allows disabling attaching the response', (done) => {
-  const link = ApolloLink.from([
-    new SentryLink({ breadcrumb: { includeResponse: false } }),
-    new ApolloLink(() => new Observable((observer) => {
-      observer.next(<any>{ status: 200, data: { success: true } });
-      observer.complete();
-    })),
-  ]);
+    test('should not attach the variables if the option is disabled', () => {
+      const link = new SentryLink({ breadcrumb: { includeVariables: false } });
+      const breadcrumb = new OperationsBreadcrumb();
+      const operation = new Operation(OperationStub);
 
-  try {
-    execute(link, { query: TEST_QUERY }).subscribe({
-      complete: () => {
-        Sentry.captureException(new Error('We need to throw something'));
+      link.fillBreadcrumb(breadcrumb, operation);
 
-        const [report] = testkit.reports();
-        const [breadcrumb] = report.breadcrumbs;
-
-        expect(breadcrumb.data?.response).toBeUndefined();
-
-        done();
-      },
+      expect(breadcrumb['breadcrumb'].data?.variables).toBeUndefined();
     });
-  } catch (exception) {
-    done.fail(exception);
-  } finally {
-    done();
-  }
-});
 
-it('does not allow attaching the same breadcrumb twice', () => {
-  console.warn = jest.fn();
+    test('should not attach the apollo cache if the option is disabled', () => {
+      const link = new SentryLink({ breadcrumb: { includeCache: false } });
+      const breadcrumb = new OperationsBreadcrumb();
+      const operation = new Operation(OperationStub);
 
-  const link = new SentryLink(enableAll);
-  const breadcrumb = new OperationsBreadcrumb();
-  const operation = new Operation(OperationStub);
-  link.fillBreadcrumb(breadcrumb, operation);
+      link.fillBreadcrumb(breadcrumb, operation);
 
-  link.attachBreadcrumbToSentry(breadcrumb);
-  expect(breadcrumb.flushed).toBeTruthy();
+      expect(breadcrumb['breadcrumb'].data?.cache).toBeUndefined();
+    });
 
-  link.attachBreadcrumbToSentry(breadcrumb);
+    test('should not attach the response data if the option is disabled', (done) => {
+      const link = ApolloLink.from([
+        new SentryLink({ breadcrumb: { includeResponse: false } }),
+        new ApolloLink(() => new Observable((observer) => {
+          observer.next(<any>{ status: 200, data: { success: true } });
+          observer.complete();
+        })),
+      ]);
 
-  Sentry.captureException(new Error('We need to throw something'));
+      execute(link, { query: TEST_QUERY }).subscribe({
+        complete: () => {
+          Sentry.captureException(new Error('We need to throw something'));
 
-  const [report] = testkit.reports();
-  expect(report.breadcrumbs).toHaveLength(1);
-});
+          const [report] = testkit.reports();
+          const [breadcrumb] = report.breadcrumbs;
 
-it('warns when the same breadcrumb is added twice', () => {
-  const mockedWarn = jest.fn();
-  console.warn = mockedWarn;
+          expect(breadcrumb.data?.response).toBeUndefined();
 
-  const link = new SentryLink(enableAll);
-  const breadcrumb = new OperationsBreadcrumb();
-  const operation = new Operation(OperationStub);
+          done();
+        },
+      });
+    });
 
-  link.fillBreadcrumb(breadcrumb, operation);
-  link.attachBreadcrumbToSentry(breadcrumb);
-  link.attachBreadcrumbToSentry(breadcrumb);
+    test('should not attach the error data if the option is disabled', (done) => {
+      const link = ApolloLink.from([
+        new SentryLink({ breadcrumb: { includeError: false } }),
+        new ApolloLink(() => new Observable(
+          (observer) => observer.error(new Error('Something went wrong')),
+        )),
+      ]);
 
-  expect(mockedWarn).toBeCalledTimes(1);
+      execute(link, { query: TEST_QUERY }).subscribe({
+        error: (exception) => {
+          Sentry.captureException(exception);
+
+          const [report] = testkit.reports();
+          const [breadcrumb] = report.breadcrumbs;
+
+          expect(breadcrumb.data?.error).toBeUndefined();
+
+          done();
+        },
+      });
+    });
+  });
 });
