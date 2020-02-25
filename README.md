@@ -3,6 +3,11 @@
 [![Coverage Status](https://coveralls.io/repos/github/DiederikvandenB/apollo-link-sentry/badge.svg?branch=master)](https://coveralls.io/github/DiederikvandenB/apollo-link-sentry?branch=master)
 ![Test](https://github.com/DiederikvandenB/apollo-link-sentry/workflows/Test/badge.svg)
 
+## Installation
+```
+yarn add apollo-link-sentry
+```
+
 ## Features
 Apollo Link middleware to enrich SentryJS events with GraphQL data.
 
@@ -14,36 +19,14 @@ Into this:
 
 <p align="center"><img src="https://raw.githubusercontent.com/DiederikvandenB/apollo-link-sentry/master/screenshots/after.png" alt="After" width="auto" /></p>
 
-## Installation
-Add `apollo-link-sentry` to your dependencies:
-
-```
-yarn add apollo-link-sentry
-```
-
+## Basic setup
 Initialize Sentry as you would normally. Then, add `apollo-link-sentry` to your Apollo Client's `link` array:
 ```js
 import { SentryLink } from 'apollo-link-sentry';
 
 const client = new ApolloClient({
   link: ApolloLink.from([
-    new SentryLink({
-      setTransaction: true,
-      setFingerprint: true,
-
-      breadcrumb: {
-        enable: true,
-        includeQuery: true,
-        includeError: true,
-        includeCache: false,
-        includeVariables: false,
-        includeResponse: false,
-      },
-                   
-      exception: {
-        report: true
-      },
-    }),
+    new SentryLink(/* See options */),
     new HttpLink({ uri: 'http://localhost:4000' }),
   ]),
   cache: new InMemoryCache(),
