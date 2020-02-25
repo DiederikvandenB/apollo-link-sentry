@@ -5,86 +5,88 @@ import { stringifyObject } from '../src/utils';
 
 jest.mock('../src/Operation');
 
-it('is possible to create a new breadcrumb', () => {
-  const { category, level } = new OperationsBreadcrumb()['breadcrumb'];
+describe('OperationsBreadcrumb', () => {
+  it('should set defaults when creating a new breadcrumb', () => {
+    const { category, level } = new OperationsBreadcrumb()['breadcrumb'];
 
-  expect(level).toBe(Severity.Log); // The default log level
-  expect(category).toBe('gql'); // The default category
-});
+    expect(level).toBe(Severity.Log); // The default log level
+    expect(category).toBe('gql'); // The default category
+  });
 
-it('is possible to change the breadcrumb level', () => {
-  const breadcrumb = new OperationsBreadcrumb();
-  const { level } = breadcrumb.setLevel(Severity.Error)['breadcrumb'];
+  it('should be possible to set the level', () => {
+    const breadcrumb = new OperationsBreadcrumb();
+    const { level } = breadcrumb.setLevel(Severity.Error)['breadcrumb'];
 
-  expect(level).toBe(Severity.Error);
-});
+    expect(level).toBe(Severity.Error);
+  });
 
-it('is possible to change the breadcrumb category', () => {
-  const breadcrumb = new OperationsBreadcrumb();
-  const { category } = breadcrumb.setCategory('query')['breadcrumb'];
+  it('should be possible to set the category', () => {
+    const breadcrumb = new OperationsBreadcrumb();
+    const { category } = breadcrumb.setCategory('query')['breadcrumb'];
 
-  expect(category).toBe('gql query'); // The category is prefixed with 'gql'
-});
+    expect(category).toBe('gql query'); // The category is prefixed with 'gql'
+  });
 
-it('is possible to change the breadcrumb type', () => {
-  const breadcrumb = new OperationsBreadcrumb();
-  const { type } = breadcrumb.setType('error')['breadcrumb'];
+  it('should be possible to set the type', () => {
+    const breadcrumb = new OperationsBreadcrumb();
+    const { type } = breadcrumb.setType('error')['breadcrumb'];
 
-  expect(type).toBe('error');
-});
+    expect(type).toBe('error');
+  });
 
-it('is possible to change the breadcrumb message', () => {
-  const breadcrumb = new OperationsBreadcrumb();
-  const { message } = breadcrumb.setMessage('TestQuery')['breadcrumb'];
+  it('should be possible to set the message', () => {
+    const breadcrumb = new OperationsBreadcrumb();
+    const { message } = breadcrumb.setMessage('TestQuery')['breadcrumb'];
 
-  expect(message).toBe('TestQuery');
-});
+    expect(message).toBe('TestQuery');
+  });
 
-it('is possible to add the cache to the breadcrumb', () => {
-  const cache = {
-    data: {
-      '"ROOT_QUERY"': {
-        'hello({})': 'Hello World!',
+  it('should be possible to set the cache', () => {
+    const cache = {
+      data: {
+        '"ROOT_QUERY"': {
+          'hello({})': 'Hello World!',
+        },
       },
-    },
-  };
+    };
 
-  const breadcrumb = new OperationsBreadcrumb();
-  const { data } = breadcrumb.addCache(cache)['breadcrumb'];
+    const breadcrumb = new OperationsBreadcrumb();
+    const { data } = breadcrumb.addCache(cache)['breadcrumb'];
 
-  expect(data?.cache).toBe(stringifyObject(cache));
-});
+    expect(data?.cache).toBe(stringifyObject(cache));
+  });
 
-it('is possible to add the variables to the breadcrumb', () => {
-  const variables = { name: 'TestName' };
+  it('should be possible to set the variables', () => {
+    const variables = { name: 'TestName' };
 
-  const breadcrumb = new OperationsBreadcrumb();
-  const { data } = breadcrumb.addVariables(variables)['breadcrumb'];
+    const breadcrumb = new OperationsBreadcrumb();
+    const { data } = breadcrumb.addVariables(variables)['breadcrumb'];
 
-  expect(data?.variables).toBe(stringifyObject(variables));
-});
+    expect(data?.variables).toBe(stringifyObject(variables));
+  });
 
-it('is possible to add a response to the breadcrumb', () => {
-  const response = { status: 200, data: { success: true } };
+  it('should be possible to add a response', () => {
+    const response = { status: 200, data: { success: true } };
 
-  const breadcrumb = new OperationsBreadcrumb();
-  const { data } = breadcrumb.addResponse(response)['breadcrumb'];
+    const breadcrumb = new OperationsBreadcrumb();
+    const { data } = breadcrumb.addResponse(response)['breadcrumb'];
 
-  expect(data?.response).toBe(stringifyObject(response));
-});
+    expect(data?.response).toBe(stringifyObject(response));
+  });
 
-it('is possible to add an error to the breadcrumb', () => {
-  const error = { status: 401, data: { error: 'Unauthorized' } };
+  it('should be possible to add an error', () => {
+    const error = { status: 401, data: { error: 'Unauthorized' } };
 
-  const breadcrumb = new OperationsBreadcrumb();
-  const { data } = breadcrumb.addError(error)['breadcrumb'];
+    const breadcrumb = new OperationsBreadcrumb();
+    const { data } = breadcrumb.addError(error)['breadcrumb'];
 
-  expect(data?.error).toBe(stringifyObject(error));
-});
+    expect(data?.error).toBe(stringifyObject(error));
+  });
 
-it('is possible to flush the breadcrumb', () => {
-  const breadcrumb = new OperationsBreadcrumb();
-  breadcrumb.flush();
+  it('should be possible to flush', () => {
+    const breadcrumb = new OperationsBreadcrumb();
+    breadcrumb.flush();
 
-  expect(breadcrumb.flushed).toBeTruthy();
+    expect(breadcrumb.flushed).toBeTruthy();
+  });
 });
