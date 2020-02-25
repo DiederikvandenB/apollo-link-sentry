@@ -65,6 +65,15 @@ describe('OperationsBreadcrumb', () => {
     expect(data?.variables).toBe(stringifyObject(variables));
   });
 
+  it('should be possible to set the context', () => {
+    const context = { headers: { 'X-Debug': true } };
+
+    const breadcrumb = new OperationsBreadcrumb();
+    const { data } = breadcrumb.addContext(context)['breadcrumb'];
+
+    expect(data?.context).toBe(stringifyObject(context));
+  });
+
   it('should be possible to add a response', () => {
     const response = { status: 200, data: { success: true } };
 
