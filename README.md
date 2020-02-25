@@ -1,7 +1,11 @@
 # Apollo Link Sentry
+Apollo Link middleware to enrich SentryJS events with GraphQL data.
 
-[![Coverage Status](https://coveralls.io/repos/github/DiederikvandenB/apollo-link-sentry/badge.svg?branch=master)](https://coveralls.io/github/DiederikvandenB/apollo-link-sentry?branch=master)
-![Test](https://github.com/DiederikvandenB/apollo-link-sentry/workflows/Test/badge.svg)
+[![npm](https://img.shields.io/npm/v/apollo-link-sentry)](https://www.npmjs.com/package/apollo-link-sentry)
+[![David](https://img.shields.io/david/diederikvandenb/apollo-link-sentry)](https://github.com/diederikvandenb/apollo-link-sentry)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/DiederikvandenB/apollo-link-sentry/Test)](https://github.com/DiederikvandenB/apollo-link-sentry/actions)
+[![Coveralls github branch](https://img.shields.io/coveralls/github/DiederikvandenB/apollo-link-sentry/master)](https://coveralls.io/github/DiederikvandenB/apollo-link-sentry?branch=master)
+[![npm-downloads](https://img.shields.io/npm/dt/apollo-link-sentry)](https://www.npmjs.com/package/apollo-link-sentry)
 
 ## Installation
 ```
@@ -9,8 +13,6 @@ yarn add apollo-link-sentry
 ```
 
 ## Features
-Apollo Link middleware to enrich SentryJS events with GraphQL data.
-
 Turn this:
 
 <p align="center"><img src="https://raw.githubusercontent.com/DiederikvandenB/apollo-link-sentry/master/screenshots/before.png" alt="Before" width="auto" align="center" /></p>
