@@ -79,6 +79,11 @@ const client = new ApolloClient({
   - default: `true`
   - **Not yet implemented**
 
+## Compatibility with other Apollo Links
+`apollo-link-sentry` aims to be friendly with other `apollo-link` packages, in the sense that we would like for you to be able to attach as much data as you want. For example, if you would like to add the HTTP headers you set with `apollo-link-context`, you can do that by setting `includeContextKeys: ['headers']`.
+
+In case you find that there's a piece of data you're missing, feel free to open an issue.
+
 ## FAQ
 - **I don't see any events appearing in my Sentry stream**
   - Note that this package (currently) only adds breadcrumbs. This means that you are still responsible for reporting errors to Sentry. You can do this by calling `Sentry.captureException()`. See this example:
