@@ -23,6 +23,8 @@ export interface Options {
     includeError?: boolean;
     includeContextKeys?: string[];
   }
+
+  filter?: (operation: Operation) => boolean;
 }
 
 const defaultOptions: Options = {
@@ -89,6 +91,12 @@ export class SentryLink extends ApolloLink {
    * @param {Operation} operation
    */
   fillBreadcrumb = (breadcrumb: OperationsBreadcrumb, operation: Operation): void => {
+    // Apply the filter option
+    if (typeof this.options.filter === 'function') {
+      const stop = breadcrumb.filter(this.options.filter(operation));
+      if (stop) return;
+    }
+
     breadcrumb
       .setMessage(operation.name)
       .setCategory(operation.type);
@@ -195,6 +203,7 @@ export class SentryLink extends ApolloLink {
    */
   attachBreadcrumbToSentry = (breadcrumb: OperationsBreadcrumb): void => {
     if (this.options.breadcrumb?.enable === false) return;
+    if (breadcrumb.filtered) return;
 
     if (breadcrumb.flushed) {
       console.warn('[apollo-link-sentry] SentryLink.attachBreadcrumbToSentry() was called on an already flushed breadcrumb');
