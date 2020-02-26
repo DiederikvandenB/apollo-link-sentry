@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v1.0.0...v1.1.0) (2020-02-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename class and methods in OperationBreadcrumb.ts (#11)
+
+### Features
+
+* allow adding keys from the context to the breadcrumb ([#7](https://github.com/DiederikvandenB/apollo-link-sentry/issues/7)) ([15ea217](https://github.com/DiederikvandenB/apollo-link-sentry/commit/15ea21727abd19932d487e0001ca0b70ad2ef876))
+* allows altering breadcrumb with beforeBreadcrumb ([8b101e9](https://github.com/DiederikvandenB/apollo-link-sentry/commit/8b101e968eb0859bb2c14d3a7c54766384ca97e1))
+* provides callback for filtering operations ([a330abd](https://github.com/DiederikvandenB/apollo-link-sentry/commit/a330abdcb671267590e379bdbdbd5e4a4bea0a4f))
+
+
+### Documentation
+
+* adds section on beforeBreadcrumb ([1923195](https://github.com/DiederikvandenB/apollo-link-sentry/commit/1923195ba11b6a2ec9149f03358ea42424871714))
+* adds section on filter option ([0a0e6ce](https://github.com/DiederikvandenB/apollo-link-sentry/commit/0a0e6ceb31bfb9321212fefe7b3c711bd34f7d2a))
+
+
+* rename class and methods in OperationBreadcrumb.ts ([#11](https://github.com/DiederikvandenB/apollo-link-sentry/issues/11)) ([72b6b67](https://github.com/DiederikvandenB/apollo-link-sentry/commit/72b6b67c10f25d56554375ef0d9692e8beb27865))
+
 ## 1.0.0 (2020-02-25)
 
 
