@@ -95,6 +95,13 @@ const defaultOptions = {
      */
     includeContextKeys: [],
   },
+
+  /**
+   * Provide a callback function which receives an instance of this package's Operation class
+   * Only operations that pass the test are sent to Sentry. Leave undefined if you want all
+   * operations to pass. See PR #9 for more details.
+   */
+  filter: (operation) => true,
 };
 ```
 
@@ -147,8 +154,9 @@ Furthermore, much of the data you are sending to Sentry can include (sensitive) 
 
 ## Roadmap / notes
 - Add the possibility to exclude:
-  - Operations
-  - URLs?
+  - data through a custom beforeBreadcrumb
+- Provide wrapper for Sentry's beforeBreadcrumb to filter out fetch requests
+  - Caveat: people using `unfetch`?
 - Write best practice scenario:
   - setting `includeError` true
   - catch errors manually
