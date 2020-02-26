@@ -18,7 +18,7 @@ export namespace Breadcrumb {
   }
 }
 
-export class OperationsBreadcrumb {
+export class OperationBreadcrumb {
   public filtered: boolean;
   public flushed: boolean;
   private readonly breadcrumb: Breadcrumb.Data;
@@ -39,9 +39,9 @@ export class OperationsBreadcrumb {
   /**
    * Sets the breadcrumb's log level
    * @param {Severity} level
-   * @returns {OperationsBreadcrumb}
+   * @returns {OperationBreadcrumb}
    */
-  setLevel = (level: Severity): OperationsBreadcrumb => {
+  setLevel = (level: Severity): OperationBreadcrumb => {
     this.breadcrumb.level = level;
     return this;
   };
@@ -49,9 +49,9 @@ export class OperationsBreadcrumb {
   /**
    * Sets the breadcrumb's category, which is prefixed with `graphQL`
    * @param {Breadcrumb.Category} category
-   * @returns {OperationsBreadcrumb}
+   * @returns {OperationBreadcrumb}
    */
-  setCategory = (category?: Breadcrumb.Category): OperationsBreadcrumb => {
+  setCategory = (category?: Breadcrumb.Category): OperationBreadcrumb => {
     this.breadcrumb.category = `gql ${category || ''}`.trim();
     return this;
   };
@@ -59,9 +59,9 @@ export class OperationsBreadcrumb {
   /**
    * Set the breadcrumb's message, normally the graphQL operation's name
    * @param {string} message
-   * @returns {OperationsBreadcrumb}
+   * @returns {OperationBreadcrumb}
    */
-  setMessage = (message?: string): OperationsBreadcrumb => {
+  setMessage = (message?: string): OperationBreadcrumb => {
     this.breadcrumb.message = message;
     return this;
   };
@@ -69,9 +69,9 @@ export class OperationsBreadcrumb {
   /**
    * Set the breadcrumb's type
    * @param {string} type
-   * @returns {OperationsBreadcrumb}
+   * @returns {OperationBreadcrumb}
    */
-  setType = (type: string): OperationsBreadcrumb => {
+  setType = (type: string): OperationBreadcrumb => {
     this.breadcrumb.type = type;
     return this;
   };
@@ -79,9 +79,9 @@ export class OperationsBreadcrumb {
   /**
    * Set the breadcrumb's query data
    * @param {string | undefined} query
-   * @returns {OperationsBreadcrumb}
+   * @returns {OperationBreadcrumb}
    */
-  addQuery = (query: string | undefined): OperationsBreadcrumb => {
+  setQuery = (query: string | undefined): OperationBreadcrumb => {
     if (!query) return this;
 
     this.breadcrumb.data = {
@@ -95,9 +95,9 @@ export class OperationsBreadcrumb {
   /**
    * Set the breadcrumb's cache data
    * @param {object | undefined} cache
-   * @returns {OperationsBreadcrumb}
+   * @returns {OperationBreadcrumb}
    */
-  addCache = (cache: object | undefined): OperationsBreadcrumb => {
+  setCache = (cache: object | undefined): OperationBreadcrumb => {
     if (isEmpty(cache)) return this;
 
     this.breadcrumb.data = {
@@ -111,9 +111,9 @@ export class OperationsBreadcrumb {
   /**
    * Set the breadcrumb's variables data
    * @param {object | undefined} variables
-   * @returns {OperationsBreadcrumb}
+   * @returns {OperationBreadcrumb}
    */
-  addVariables = (variables: object | undefined): OperationsBreadcrumb => {
+  setVariables = (variables: object | undefined): OperationBreadcrumb => {
     if (isEmpty(variables)) return this;
 
     this.breadcrumb.data = {
@@ -127,9 +127,9 @@ export class OperationsBreadcrumb {
   /**
    * Set the breadcrumb's context
    * @param {object | undefined} context
-   * @returns {OperationsBreadcrumb}
+   * @returns {OperationBreadcrumb}
    */
-  addContext = (context: object | undefined): OperationsBreadcrumb => {
+  setContext = (context: object | undefined): OperationBreadcrumb => {
     if (isEmpty(context)) return this;
 
     this.breadcrumb.data = {
@@ -143,9 +143,9 @@ export class OperationsBreadcrumb {
   /**
    * Set the breadcrumb's response data
    * @param {object | undefined} response
-   * @returns {OperationsBreadcrumb}
+   * @returns {OperationBreadcrumb}
    */
-  addResponse = (response: object | undefined): OperationsBreadcrumb => {
+  setResponse = (response: object | undefined): OperationBreadcrumb => {
     if (isEmpty(response)) return this;
 
     this.breadcrumb.data = {
@@ -159,9 +159,9 @@ export class OperationsBreadcrumb {
   /**
    * Set the breadcrumb's error data
    * @param {any | undefined} error
-   * @returns {OperationsBreadcrumb}
+   * @returns {OperationBreadcrumb}
    */
-  addError = (error: any | undefined): OperationsBreadcrumb => {
+  setError = (error: any | undefined): OperationBreadcrumb => {
     if (isEmpty(error)) return this;
 
     this.breadcrumb.data = {
