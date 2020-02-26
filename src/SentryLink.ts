@@ -25,6 +25,7 @@ export interface Options {
   }
 
   filter?: (operation: Operation) => boolean;
+  beforeBreadcrumb?: (breadcrumb: OperationsBreadcrumb) => OperationsBreadcrumb;
 }
 
 const defaultOptions: Options = {
@@ -202,11 +203,18 @@ export class SentryLink extends ApolloLink {
    * @param {OperationsBreadcrumb} breadcrumb
    */
   attachBreadcrumbToSentry = (breadcrumb: OperationsBreadcrumb): void => {
+    // Apply options
     if (this.options.breadcrumb?.enable === false) return;
     if (breadcrumb.filtered) return;
 
     if (breadcrumb.flushed) {
       console.warn('[apollo-link-sentry] SentryLink.attachBreadcrumbToSentry() was called on an already flushed breadcrumb');
+      return;
+    }
+
+    if (typeof this.options.beforeBreadcrumb === 'function') {
+      const after = this.options.beforeBreadcrumb(breadcrumb);
+      Sentry.addBreadcrumb(after.flush());
       return;
     }
 
