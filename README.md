@@ -102,6 +102,13 @@ const defaultOptions = {
    * operations to pass. See PR #9 for more details.
    */
   filter: (operation) => true,
+
+  /**
+   * Provide a callback function which receives an instance of this package's OperationBreadcrumb class
+   * Use it to modify the data that is added to the breadcrumb. Leave undefined if you want all
+   * data to be included. Very useful in combination with options like includeVariables and includeContextKeys.
+   */
+  beforeBreadcrumb: (breadcrumb) => breadcrumb,
 };
 ```
 
