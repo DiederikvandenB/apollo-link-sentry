@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/browser';
 import sentryTestkit from 'sentry-testkit';
 
 import { SentryLink, Operation } from '../src';
-import { OperationsBreadcrumb } from '../src/OperationsBreadcrumb';
+import { OperationBreadcrumb } from '../src/OperationBreadcrumb';
 import { stringifyObject } from '../src/utils';
 import OperationStub from './stubs/Operation';
 import enableAll from './stubs/enableAllOptions';
@@ -47,7 +47,7 @@ describe('SentryLink', () => {
 
   test('should fill a breadcrumb from an operation', () => {
     const link = new SentryLink(enableAll);
-    const breadcrumb = new OperationsBreadcrumb();
+    const breadcrumb = new OperationBreadcrumb();
     const operation = new Operation(OperationStub);
 
     link.fillBreadcrumb(breadcrumb, operation);
@@ -125,7 +125,7 @@ describe('SentryLink', () => {
     console.warn = jest.fn();
 
     const link = new SentryLink(enableAll);
-    const breadcrumb = new OperationsBreadcrumb();
+    const breadcrumb = new OperationBreadcrumb();
     const operation = new Operation(OperationStub);
     link.fillBreadcrumb(breadcrumb, operation);
 
@@ -145,7 +145,7 @@ describe('SentryLink', () => {
     console.warn = mockedWarn;
 
     const link = new SentryLink(enableAll);
-    const breadcrumb = new OperationsBreadcrumb();
+    const breadcrumb = new OperationBreadcrumb();
     const operation = new Operation(OperationStub);
 
     link.fillBreadcrumb(breadcrumb, operation);
@@ -160,7 +160,7 @@ describe('SentryLink', () => {
 
     test('should not attach the query if the option is disabled', () => {
       const link = new SentryLink({ breadcrumb: { includeQuery: false } });
-      const breadcrumb = new OperationsBreadcrumb();
+      const breadcrumb = new OperationBreadcrumb();
       const operation = new Operation(OperationStub);
 
       link.fillBreadcrumb(breadcrumb, operation);
@@ -170,7 +170,7 @@ describe('SentryLink', () => {
 
     test('should not attach the variables if the option is disabled', () => {
       const link = new SentryLink({ breadcrumb: { includeVariables: false } });
-      const breadcrumb = new OperationsBreadcrumb();
+      const breadcrumb = new OperationBreadcrumb();
       const operation = new Operation(OperationStub);
 
       link.fillBreadcrumb(breadcrumb, operation);
@@ -180,7 +180,7 @@ describe('SentryLink', () => {
 
     test('should not attach the apollo cache if the option is disabled', () => {
       const link = new SentryLink({ breadcrumb: { includeCache: false } });
-      const breadcrumb = new OperationsBreadcrumb();
+      const breadcrumb = new OperationBreadcrumb();
       const operation = new Operation(OperationStub);
 
       link.fillBreadcrumb(breadcrumb, operation);
@@ -235,7 +235,7 @@ describe('SentryLink', () => {
 
     test('should not set the transaction if the option is disabled', () => {
       const link = new SentryLink({ setTransaction: false });
-      const breadcrumb = new OperationsBreadcrumb();
+      const breadcrumb = new OperationBreadcrumb();
       const operation = new Operation(OperationStub);
 
       link.fillBreadcrumb(breadcrumb, operation);
@@ -249,7 +249,7 @@ describe('SentryLink', () => {
 
     test('should not set the fingerprint if the option is disabled', () => {
       const link = new SentryLink({ setFingerprint: false });
-      const breadcrumb = new OperationsBreadcrumb();
+      const breadcrumb = new OperationBreadcrumb();
       const operation = new Operation(OperationStub);
 
       link.fillBreadcrumb(breadcrumb, operation);
@@ -264,7 +264,7 @@ describe('SentryLink', () => {
     test('should add context keys to the breadcrumb', () => {
       const keys = ['headers', 'someOtherContext.lorem.ipsum'];
       const link = new SentryLink({ breadcrumb: { includeContextKeys: keys } });
-      const breadcrumb = new OperationsBreadcrumb();
+      const breadcrumb = new OperationBreadcrumb();
       const operation = new Operation(OperationStub);
       const context = operation['getContextKeys'](keys);
 
@@ -301,7 +301,7 @@ describe('SentryLink', () => {
     });
 
     test('should allow altering the breadcrumb with beforeBreadcrumb', (done) => {
-      const beforeBreadcrumb = (breadcrumb: OperationsBreadcrumb) => breadcrumb.setMessage('Test message');
+      const beforeBreadcrumb = (breadcrumb: OperationBreadcrumb) => breadcrumb.setMessage('Test message');
 
       const link = ApolloLink.from([
         new SentryLink({ beforeBreadcrumb }),
