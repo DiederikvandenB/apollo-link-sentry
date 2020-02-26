@@ -1,2 +1,2 @@
+export { Operation } from './Operation';
 export * from './SentryLink';
-export * from './types';

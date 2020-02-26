@@ -1,4 +1,4 @@
-import { Operation } from '../src/Operation';
+import { Operation } from '../src';
 
 import OperationStub from './stubs/Operation';
 
