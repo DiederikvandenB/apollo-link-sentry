@@ -19,6 +19,7 @@ export namespace Breadcrumb {
 }
 
 export class OperationsBreadcrumb {
+  public filtered: boolean;
   public flushed: boolean;
   private readonly breadcrumb: Breadcrumb.Data;
 
@@ -26,6 +27,7 @@ export class OperationsBreadcrumb {
    * Start a new ApolloLinkSentry Breadcrumb
    */
   constructor() {
+    this.filtered = false;
     this.flushed = false;
     this.breadcrumb = {};
 
@@ -168,6 +170,15 @@ export class OperationsBreadcrumb {
     };
 
     return this;
+  };
+
+  /**
+   * The filter option can ensure some operations are not sent to Sentry
+   * @returns {boolean}
+   */
+  filter = (toggle: boolean): boolean => {
+    this.filtered = !toggle;
+    return !toggle;
   };
 
   /**
