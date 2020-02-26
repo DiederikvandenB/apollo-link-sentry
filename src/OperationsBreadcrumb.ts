@@ -1,11 +1,26 @@
 import { Severity } from '@sentry/browser';
+import { Breadcrumb as SentryBreadcrumb } from '@sentry/types/dist/breadcrumb';
 
-import { ApolloLinkSentry } from './types';
 import { isEmpty, stringifyObject } from './utils';
+
+export namespace Breadcrumb {
+  export type Category = 'query' | 'mutation' | 'subscription' | 'response' | 'error';
+
+  export interface Data extends SentryBreadcrumb {
+    data?: {
+      query?: string,
+      variables?: string,
+      cache?: string,
+      response?: string,
+      error?: string,
+      context?: string,
+    }
+  }
+}
 
 export class OperationsBreadcrumb {
   public flushed: boolean;
-  private readonly breadcrumb: ApolloLinkSentry.Breadcrumb.Data;
+  private readonly breadcrumb: Breadcrumb.Data;
 
   /**
    * Start a new ApolloLinkSentry Breadcrumb
@@ -31,10 +46,10 @@ export class OperationsBreadcrumb {
 
   /**
    * Sets the breadcrumb's category, which is prefixed with `graphQL`
-   * @param {ApolloLinkSentry.Breadcrumb.Category} category
+   * @param {Breadcrumb.Category} category
    * @returns {OperationsBreadcrumb}
    */
-  setCategory = (category?: ApolloLinkSentry.Breadcrumb.Category): OperationsBreadcrumb => {
+  setCategory = (category?: Breadcrumb.Category): OperationsBreadcrumb => {
     this.breadcrumb.category = `gql ${category || ''}`.trim();
     return this;
   };
@@ -157,9 +172,9 @@ export class OperationsBreadcrumb {
 
   /**
    * We flush the breadcrumb after it's been sent to Sentry, so we can prevent duplicates
-   * @returns {ApolloLinkSentry.Breadcrumb.Data}
+   * @returns {Breadcrumb.Data}
    */
-  flush = (): ApolloLinkSentry.Breadcrumb.Data => {
+  flush = (): Breadcrumb.Data => {
     this.flushed = true;
     return this.breadcrumb;
   };

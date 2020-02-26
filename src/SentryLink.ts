@@ -1,16 +1,31 @@
+import * as Sentry from '@sentry/browser';
+import { Scope, Severity } from '@sentry/types';
+import deepMerge from 'deepmerge';
+
+import { FetchResult } from 'apollo-link/lib/types';
 import {
   ApolloLink, NextLink, Observable, Operation as ApolloOperation,
 } from 'apollo-link';
-import * as Sentry from '@sentry/browser';
-import deepMerge from 'deepmerge';
-import { FetchResult } from 'apollo-link/lib/types';
-import { Scope, Severity } from '@sentry/types';
 
-import { Operation } from './Operation';
 import { OperationsBreadcrumb } from './OperationsBreadcrumb';
-import { ApolloLinkSentry } from './types';
+import { Operation } from './Operation';
 
-const defaultOptions: ApolloLinkSentry.Options = {
+export interface Options {
+  setTransaction?: boolean;
+  setFingerprint?: boolean;
+
+  breadcrumb?: {
+    enable?: boolean;
+    includeQuery?: boolean;
+    includeCache?: boolean;
+    includeVariables?: boolean;
+    includeResponse?: boolean;
+    includeError?: boolean;
+    includeContextKeys?: string[];
+  }
+}
+
+const defaultOptions: Options = {
   setTransaction: true,
   setFingerprint: true,
 
@@ -26,13 +41,13 @@ const defaultOptions: ApolloLinkSentry.Options = {
 };
 
 export class SentryLink extends ApolloLink {
-  private readonly options: ApolloLinkSentry.Options;
+  private readonly options: Options;
 
   /**
    * Create a new ApolloLinkSentry
-   * @param {ApolloLinkSentry.Options} options
+   * @param {Options} options
    */
-  constructor(options: ApolloLinkSentry.Options = {}) {
+  constructor(options: Options = {}) {
     super();
     this.options = deepMerge(defaultOptions, options);
   }
@@ -40,7 +55,7 @@ export class SentryLink extends ApolloLink {
   /**
    * This is where the GraphQL operation is received
    * A breadcrumb will be created for the operation, and error/response data will be handled
-   * @param {Operation} op
+   * @param {ApolloOperation} op
    * @param {NextLink} forward
    * @returns {Observable<FetchResult> | null}
    */

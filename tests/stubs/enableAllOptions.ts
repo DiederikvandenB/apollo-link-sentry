@@ -1,6 +1,6 @@
-import { ApolloLinkSentry } from '../../src';
+import { Options } from '../../src';
 
-const enableAll: ApolloLinkSentry.Options = {
+const enableAll: Options = {
   setTransaction: true,
   setFingerprint: true,
 

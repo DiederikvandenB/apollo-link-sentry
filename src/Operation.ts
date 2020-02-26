@@ -1,7 +1,6 @@
 import { Operation as ApolloOperation } from 'apollo-link';
 import dotProp from 'dot-prop';
 
-import { ApolloLinkSentry } from './types';
 import { isEmpty } from './utils';
 
 export class Operation {
@@ -10,7 +9,7 @@ export class Operation {
 
   /** ApolloLinkSentry Operation data */
   public name: string;
-  public type: ApolloLinkSentry.Operation.Type;
+  public type: 'query' | 'mutation' | 'subscription' | undefined;
   public cache: object | undefined;
   public variables: object | undefined;
   public query: string | undefined;
@@ -38,9 +37,9 @@ export class Operation {
 
   /**
    * Get the operation type
-   * @returns {ApolloLinkSentry.Operation.Type}
+   * @returns {"query" | "mutation" | "subscription" | undefined}
    */
-  private getType(): ApolloLinkSentry.Operation.Type {
+  private getType(): 'query' | 'mutation' | 'subscription' | undefined {
     const { query } = this.operation;
     const definition = query.definitions[0];
 

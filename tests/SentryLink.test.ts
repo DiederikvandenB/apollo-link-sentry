@@ -3,8 +3,7 @@ import gql from 'graphql-tag';
 import * as Sentry from '@sentry/browser';
 import sentryTestkit from 'sentry-testkit';
 
-import { SentryLink } from '../src';
-import { Operation } from '../src/Operation';
+import { SentryLink, Operation } from '../src';
 import { OperationsBreadcrumb } from '../src/OperationsBreadcrumb';
 import { stringifyObject } from '../src/utils';
 import OperationStub from './stubs/Operation';
