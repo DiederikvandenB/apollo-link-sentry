@@ -277,5 +277,27 @@ describe('SentryLink', () => {
 
       expect(crumb.data?.context).toBe(stringifyObject(context));
     });
+
+    test('should allow filtering out operations', (done) => {
+      const filter = () => false;
+      const link = ApolloLink.from([
+        new SentryLink({ filter }),
+        new ApolloLink(() => new Observable((observer) => {
+          observer.next(<any>{ status: 200, data: { success: true } });
+          observer.complete();
+        })),
+      ]);
+
+      execute(link, { query: TEST_QUERY }).subscribe({
+        complete: () => {
+          Sentry.captureException(new Error('We need to throw something'));
+          const [report] = testkit.reports();
+
+          expect(report.breadcrumbs).toHaveLength(0);
+
+          done();
+        },
+      });
+    });
   });
 });
