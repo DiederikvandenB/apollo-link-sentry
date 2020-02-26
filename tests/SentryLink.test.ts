@@ -299,5 +299,29 @@ describe('SentryLink', () => {
         },
       });
     });
+
+    test('should allow altering the breadcrumb with beforeBreadcrumb', (done) => {
+      const beforeBreadcrumb = (breadcrumb: OperationsBreadcrumb) => breadcrumb.setMessage('Test message');
+
+      const link = ApolloLink.from([
+        new SentryLink({ beforeBreadcrumb }),
+        new ApolloLink(() => new Observable((observer) => {
+          observer.next(<any>{ status: 200, data: { success: true } });
+          observer.complete();
+        })),
+      ]);
+
+      execute(link, { query: TEST_QUERY }).subscribe({
+        complete: () => {
+          Sentry.captureException(new Error('We need to throw something'));
+          const [report] = testkit.reports();
+          const [crumb] = report.breadcrumbs;
+
+          expect(crumb.message).toBe('Test message');
+
+          done();
+        },
+      });
+    });
   });
 });
