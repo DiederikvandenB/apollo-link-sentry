@@ -1,27 +1,36 @@
 import { Severity } from '@sentry/browser';
-import { Breadcrumb as SentryBreadcrumb } from '@sentry/types/dist/breadcrumb';
+import { Breadcrumb as SentryBreadcrumb } from '@sentry/types';
 
-import { isEmpty, stringifyObject } from './utils';
+import { isEmpty, stringifyObject, trimObject } from './utils';
 
 export namespace Breadcrumb {
   export type Category = 'query' | 'mutation' | 'subscription' | 'response' | 'error';
 
   export interface Data extends SentryBreadcrumb {
-    data?: {
-      query?: string,
-      variables?: string,
-      cache?: string,
-      response?: string,
-      error?: string,
-      context?: string,
-    }
+    query?: string,
+    variables?: string,
+    cache?: string,
+    response?: string,
+    error?: string,
+    context?: string,
   }
 }
 
-export class OperationBreadcrumb {
+export class OperationBreadcrumb implements Breadcrumb.Data {
   public filtered: boolean;
   public flushed: boolean;
-  private readonly breadcrumb: Breadcrumb.Data;
+
+  /** Breadcrumb data */
+  public message?: string;
+  public level?: Severity;
+  public category?: string;
+  public type?: string;
+  public query?: string;
+  public cache?: string;
+  public variables?: string;
+  public context?: string;
+  public response?: string;
+  public error?: string;
 
   /**
    * Start a new ApolloLinkSentry Breadcrumb
@@ -29,7 +38,6 @@ export class OperationBreadcrumb {
   constructor() {
     this.filtered = false;
     this.flushed = false;
-    this.breadcrumb = {};
 
     this
       .setLevel(Severity.Log)
@@ -37,12 +45,22 @@ export class OperationBreadcrumb {
   }
 
   /**
+   * Set the breadcrumb's message, normally the graphQL operation's name
+   * @param {string} message
+   * @returns {OperationBreadcrumb}
+   */
+  setMessage = (message?: string): OperationBreadcrumb => {
+    this.message = message;
+    return this;
+  };
+
+  /**
    * Sets the breadcrumb's log level
    * @param {Severity} level
    * @returns {OperationBreadcrumb}
    */
   setLevel = (level: Severity): OperationBreadcrumb => {
-    this.breadcrumb.level = level;
+    this.level = level;
     return this;
   };
 
@@ -52,17 +70,7 @@ export class OperationBreadcrumb {
    * @returns {OperationBreadcrumb}
    */
   setCategory = (category?: Breadcrumb.Category): OperationBreadcrumb => {
-    this.breadcrumb.category = `gql ${category || ''}`.trim();
-    return this;
-  };
-
-  /**
-   * Set the breadcrumb's message, normally the graphQL operation's name
-   * @param {string} message
-   * @returns {OperationBreadcrumb}
-   */
-  setMessage = (message?: string): OperationBreadcrumb => {
-    this.breadcrumb.message = message;
+    this.category = `gql ${category || ''}`.trim();
     return this;
   };
 
@@ -72,7 +80,7 @@ export class OperationBreadcrumb {
    * @returns {OperationBreadcrumb}
    */
   setType = (type: string): OperationBreadcrumb => {
-    this.breadcrumb.type = type;
+    this.type = type;
     return this;
   };
 
@@ -84,10 +92,7 @@ export class OperationBreadcrumb {
   setQuery = (query: string | undefined): OperationBreadcrumb => {
     if (!query) return this;
 
-    this.breadcrumb.data = {
-      ...this.breadcrumb.data,
-      query,
-    };
+    this.query = query;
 
     return this;
   };
@@ -100,10 +105,7 @@ export class OperationBreadcrumb {
   setCache = (cache: object | undefined): OperationBreadcrumb => {
     if (isEmpty(cache)) return this;
 
-    this.breadcrumb.data = {
-      ...this.breadcrumb.data,
-      cache: stringifyObject(cache),
-    };
+    this.cache = stringifyObject(cache);
 
     return this;
   };
@@ -116,10 +118,7 @@ export class OperationBreadcrumb {
   setVariables = (variables: object | undefined): OperationBreadcrumb => {
     if (isEmpty(variables)) return this;
 
-    this.breadcrumb.data = {
-      ...this.breadcrumb.data,
-      variables: stringifyObject(variables),
-    };
+    this.variables = stringifyObject(variables);
 
     return this;
   };
@@ -132,10 +131,7 @@ export class OperationBreadcrumb {
   setContext = (context: object | undefined): OperationBreadcrumb => {
     if (isEmpty(context)) return this;
 
-    this.breadcrumb.data = {
-      ...this.breadcrumb.data,
-      context: stringifyObject(context),
-    };
+    this.context = stringifyObject(context);
 
     return this;
   };
@@ -148,10 +144,7 @@ export class OperationBreadcrumb {
   setResponse = (response: object | undefined): OperationBreadcrumb => {
     if (isEmpty(response)) return this;
 
-    this.breadcrumb.data = {
-      ...this.breadcrumb.data,
-      response: stringifyObject(response),
-    };
+    this.response = stringifyObject(response);
 
     return this;
   };
@@ -164,10 +157,7 @@ export class OperationBreadcrumb {
   setError = (error: any | undefined): OperationBreadcrumb => {
     if (isEmpty(error)) return this;
 
-    this.breadcrumb.data = {
-      ...this.breadcrumb.data,
-      error: stringifyObject(error),
-    };
+    this.error = stringifyObject(error);
 
     return this;
   };
@@ -182,12 +172,39 @@ export class OperationBreadcrumb {
   };
 
   /**
-   * We flush the breadcrumb after it's been sent to Sentry, so we can prevent duplicates
+   * We flush the breadcrumb after it's been sent to Sentry, so we can prevent duplicates.
    * @returns {Breadcrumb.Data}
    */
   flush = (): Breadcrumb.Data => {
     this.flushed = true;
-    return this.breadcrumb;
+
+    const {
+      message, level, category, type,
+      query, cache, variables, context,
+      error, response,
+    } = this;
+
+    const data = trimObject({
+      query,
+      variables,
+      cache,
+      response,
+      error,
+      context,
+    });
+
+    const breadcrumb: Breadcrumb.Data = {
+      message,
+      level,
+      category,
+      type,
+    };
+
+    if (!isEmpty(data)) {
+      breadcrumb.data = data;
+    }
+
+    return trimObject(breadcrumb);
   };
 
   /**
@@ -195,5 +212,5 @@ export class OperationBreadcrumb {
    * @returns {string}
    */
   /* istanbul ignore next */
-  toString = (): string => stringifyObject(this.breadcrumb);
+  toString = (): string => stringifyObject(this);
 }
