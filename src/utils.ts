@@ -13,3 +13,18 @@ export const isEmpty = (target?: object): boolean => (
 export const stringifyObject = (target: any): string => (
   JSON.stringify(target, null, 2)
 );
+
+/**
+ * Omit empty values from an object
+ * @param target
+ */
+export const trimObject = (target: any): object => {
+  if (isEmpty(target)) return {};
+
+  return Object.keys(target)
+    .filter((key: string) => target?.[key])
+    .reduce((a: object, key: string): object => ({
+      ...a,
+      [key]: target[key],
+    }), {});
+};
