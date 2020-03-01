@@ -160,8 +160,6 @@ Furthermore, much of the data you are sending to Sentry can include (sensitive) 
 - We also need to test for different links, i.e. `apollo-link-rest`
 
 ## Roadmap / notes
-- Add the possibility to exclude:
-  - data through a custom beforeBreadcrumb
 - Provide wrapper for Sentry's beforeBreadcrumb to filter out fetch requests
   - Caveat: people using `unfetch`?
 - Write best practice scenario:
@@ -170,4 +168,3 @@ Furthermore, much of the data you are sending to Sentry can include (sensitive) 
   - throw custom error
   - how to use together with `apollo-link-error`?
     - does it report errors twice if you do sentry capture there and in your catch
-- Add breadcrumb filter to remove duplicate fetch requests
