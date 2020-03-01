@@ -52,11 +52,11 @@ describe('SentryLink', () => {
 
     link.fillBreadcrumb(breadcrumb, operation);
 
-    expect(breadcrumb['breadcrumb'].message).toBe(operation.name);
-    expect(breadcrumb['breadcrumb'].category).toBe(`gql ${operation.type}`);
-    expect(breadcrumb['breadcrumb'].data?.query).toBe(operation.query);
-    expect(breadcrumb['breadcrumb'].data?.cache).toBe(stringifyObject(operation.cache));
-    expect(breadcrumb['breadcrumb'].data?.variables).toBe(stringifyObject(operation.variables));
+    expect(breadcrumb.message).toBe(operation.name);
+    expect(breadcrumb.category).toBe(`gql ${operation.type}`);
+    expect(breadcrumb.query).toBe(operation.query);
+    expect(breadcrumb.cache).toBe(stringifyObject(operation.cache));
+    expect(breadcrumb.variables).toBe(stringifyObject(operation.variables));
   });
 
   test('should attach a sentry breadcrumb for an operation', (done) => {
@@ -165,7 +165,7 @@ describe('SentryLink', () => {
 
       link.fillBreadcrumb(breadcrumb, operation);
 
-      expect(breadcrumb['breadcrumb'].data?.query).toBeUndefined();
+      expect(breadcrumb.query).toBeUndefined();
     });
 
     test('should not attach the variables if the option is disabled', () => {
@@ -175,7 +175,7 @@ describe('SentryLink', () => {
 
       link.fillBreadcrumb(breadcrumb, operation);
 
-      expect(breadcrumb['breadcrumb'].data?.variables).toBeUndefined();
+      expect(breadcrumb.variables).toBeUndefined();
     });
 
     test('should not attach the apollo cache if the option is disabled', () => {
@@ -185,7 +185,7 @@ describe('SentryLink', () => {
 
       link.fillBreadcrumb(breadcrumb, operation);
 
-      expect(breadcrumb['breadcrumb'].data?.cache).toBeUndefined();
+      expect(breadcrumb.cache).toBeUndefined();
     });
 
     test('should not attach the response data if the option is disabled', (done) => {

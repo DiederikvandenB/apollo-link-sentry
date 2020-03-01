@@ -7,7 +7,7 @@ jest.mock('../src/Operation');
 
 describe('OperationBreadcrumb', () => {
   it('should set defaults when creating a new breadcrumb', () => {
-    const { category, level } = new OperationBreadcrumb()['breadcrumb'];
+    const { category, level } = new OperationBreadcrumb();
 
     expect(level).toBe(Severity.Log); // The default log level
     expect(category).toBe('gql'); // The default category
@@ -15,28 +15,28 @@ describe('OperationBreadcrumb', () => {
 
   it('should be possible to set the level', () => {
     const breadcrumb = new OperationBreadcrumb();
-    const { level } = breadcrumb.setLevel(Severity.Error)['breadcrumb'];
+    const { level } = breadcrumb.setLevel(Severity.Error);
 
     expect(level).toBe(Severity.Error);
   });
 
   it('should be possible to set the category', () => {
     const breadcrumb = new OperationBreadcrumb();
-    const { category } = breadcrumb.setCategory('query')['breadcrumb'];
+    const { category } = breadcrumb.setCategory('query');
 
     expect(category).toBe('gql query'); // The category is prefixed with 'gql'
   });
 
   it('should be possible to set the type', () => {
     const breadcrumb = new OperationBreadcrumb();
-    const { type } = breadcrumb.setType('error')['breadcrumb'];
+    const { type } = breadcrumb.setType('error');
 
     expect(type).toBe('error');
   });
 
   it('should be possible to set the message', () => {
     const breadcrumb = new OperationBreadcrumb();
-    const { message } = breadcrumb.setMessage('TestQuery')['breadcrumb'];
+    const { message } = breadcrumb.setMessage('TestQuery');
 
     expect(message).toBe('TestQuery');
   });
@@ -51,7 +51,7 @@ describe('OperationBreadcrumb', () => {
     };
 
     const breadcrumb = new OperationBreadcrumb();
-    const { data } = breadcrumb.setCache(cache)['breadcrumb'];
+    const data = breadcrumb.setCache(cache);
 
     expect(data?.cache).toBe(stringifyObject(cache));
   });
@@ -60,7 +60,7 @@ describe('OperationBreadcrumb', () => {
     const variables = { name: 'TestName' };
 
     const breadcrumb = new OperationBreadcrumb();
-    const { data } = breadcrumb.setVariables(variables)['breadcrumb'];
+    const data = breadcrumb.setVariables(variables);
 
     expect(data?.variables).toBe(stringifyObject(variables));
   });
@@ -69,7 +69,7 @@ describe('OperationBreadcrumb', () => {
     const context = { headers: { 'X-Debug': true } };
 
     const breadcrumb = new OperationBreadcrumb();
-    const { data } = breadcrumb.setContext(context)['breadcrumb'];
+    const data = breadcrumb.setContext(context);
 
     expect(data?.context).toBe(stringifyObject(context));
   });
@@ -78,7 +78,7 @@ describe('OperationBreadcrumb', () => {
     const response = { status: 200, data: { success: true } };
 
     const breadcrumb = new OperationBreadcrumb();
-    const { data } = breadcrumb.setResponse(response)['breadcrumb'];
+    const data = breadcrumb.setResponse(response);
 
     expect(data?.response).toBe(stringifyObject(response));
   });
@@ -87,7 +87,7 @@ describe('OperationBreadcrumb', () => {
     const error = { status: 401, data: { error: 'Unauthorized' } };
 
     const breadcrumb = new OperationBreadcrumb();
-    const { data } = breadcrumb.setError(error)['breadcrumb'];
+    const data = breadcrumb.setError(error);
 
     expect(data?.error).toBe(stringifyObject(error));
   });
