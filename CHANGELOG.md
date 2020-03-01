@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v1.1.0...v1.1.1) (2020-03-01)
+
+
+### Bug fixes
+
+* allows reading data from `OperationBreadcrumb` ([#13](https://github.com/DiederikvandenB/apollo-link-sentry/issues/13)) ([253d74b](https://github.com/DiederikvandenB/apollo-link-sentry/commit/253d74b370041a99d3524e5f963dbb122a082268))
+
+
+### Chores
+
+* **deps:** bump @sentry/browser from 5.12.4 to 5.12.5 ([#12](https://github.com/DiederikvandenB/apollo-link-sentry/issues/12)) ([776d21c](https://github.com/DiederikvandenB/apollo-link-sentry/commit/776d21cbfece4a380640f43e7bd32ef5ac988ee5))
+
 ## [1.1.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v1.0.0...v1.1.0) (2020-02-26)
 
 
