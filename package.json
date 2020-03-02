@@ -42,7 +42,6 @@
     "graphql-tag": "^2.10.3",
     "jest": "^25.1.0",
     "jest-spec-reporter": "^1.0.12",
-    "release-it": "^12.6.1",
     "rimraf": "^3.0.2",
     "sentry-testkit": "^3.2.1",
     "standard-version": "^7.1.0",
