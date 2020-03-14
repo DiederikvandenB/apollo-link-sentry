@@ -364,10 +364,15 @@
     "@sentry/types" "5.14.1"
     tslib "^1.9.3"
 
-"@sentry/types@5.14.1", "@sentry/types@^5.12.4":
+"@sentry/types@5.14.1":
   version "5.14.1"
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-5.14.1.tgz#564f9b703c06c2a97e756f60a3c873b977b2bbd2"
   integrity sha512-Eht+qI68BxELKQRnaV6q1PxS9/E+YatUHjG80ov9/azLbIJElQhWUDzyyJCefDD/fEI37VQ2SrsQsVqS9W7ZOQ==
+
+"@sentry/types@^5.14.2":
+  version "5.14.2"
+  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-5.14.2.tgz#43c3723b2f5b31234892fbe6a28b293ad050faac"
+  integrity sha512-NtB/o+/whR/mJJf67Nvdab7E2+/THgAUY114FWFqDLHMaoiIVWy9J/yLKtQWymwuQslh7zpPxjA1AhqTJerVCg==
 
 "@sentry/utils@5.14.1":
   version "5.14.1"
