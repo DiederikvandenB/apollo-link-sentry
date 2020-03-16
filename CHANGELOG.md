@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v1.1.1...v1.2.0) (2020-03-16)
+
+
+### Chores
+
+* **deps:** [security] bump acorn from 6.4.0 to 6.4.1 ([#29](https://github.com/DiederikvandenB/apollo-link-sentry/issues/29)) ([463218c](https://github.com/DiederikvandenB/apollo-link-sentry/commit/463218c26188b3712ca6ed37a6eb2c98cacba68e))
+* drops release-it dependency ([4e69a4e](https://github.com/DiederikvandenB/apollo-link-sentry/commit/4e69a4e1a0a25dfedf1d7ec0a69127d4c1f7119d))
+* **deps:** bump @sentry/browser from 5.12.5 to 5.13.0 ([#14](https://github.com/DiederikvandenB/apollo-link-sentry/issues/14)) ([44fbaf7](https://github.com/DiederikvandenB/apollo-link-sentry/commit/44fbaf715947319f0c04debde7ad9126d6e3b631))
+* **deps:** bump @sentry/browser from 5.13.0 to 5.13.2 ([#20](https://github.com/DiederikvandenB/apollo-link-sentry/issues/20)) ([a776f76](https://github.com/DiederikvandenB/apollo-link-sentry/commit/a776f76bee581a50c56f60ca3490ee51c5418a32))
+* **deps:** bump @sentry/browser from 5.13.2 to 5.14.1 ([#27](https://github.com/DiederikvandenB/apollo-link-sentry/issues/27)) ([f675a5f](https://github.com/DiederikvandenB/apollo-link-sentry/commit/f675a5fe05eb7b0445c94f5e1b66675b8495aa4c))
+* **deps:** bump @sentry/browser from 5.14.1 to 5.14.2 ([#32](https://github.com/DiederikvandenB/apollo-link-sentry/issues/32)) ([f119f67](https://github.com/DiederikvandenB/apollo-link-sentry/commit/f119f672f62ceb12d45d11d1fa5ebd257d14dd21))
+* **deps:** bump @sentry/types from 5.14.1 to 5.14.2 ([#30](https://github.com/DiederikvandenB/apollo-link-sentry/issues/30)) ([2ebfed8](https://github.com/DiederikvandenB/apollo-link-sentry/commit/2ebfed86fa9d43b5775f777fb802d81e8191bebd))
+* **deps-dev:** bump @types/jest from 25.1.3 to 25.1.4 ([#22](https://github.com/DiederikvandenB/apollo-link-sentry/issues/22)) ([e69dd65](https://github.com/DiederikvandenB/apollo-link-sentry/commit/e69dd65c2125e2f0b8ef2e7d20e2917f1b3eb187))
+* **deps-dev:** bump @typescript-eslint/eslint-plugin ([#18](https://github.com/DiederikvandenB/apollo-link-sentry/issues/18)) ([00bccbc](https://github.com/DiederikvandenB/apollo-link-sentry/commit/00bccbcde6992641c1cbc65c737209d525bf5257))
+* **deps-dev:** bump @typescript-eslint/eslint-plugin ([#24](https://github.com/DiederikvandenB/apollo-link-sentry/issues/24)) ([086329c](https://github.com/DiederikvandenB/apollo-link-sentry/commit/086329c7dc67512d6543b42143d57cb618994965))
+* **deps-dev:** bump @typescript-eslint/parser from 2.21.0 to 2.22.0 ([#19](https://github.com/DiederikvandenB/apollo-link-sentry/issues/19)) ([5d6a4b9](https://github.com/DiederikvandenB/apollo-link-sentry/commit/5d6a4b9940436bac99c50340ba8300860c91b96c))
+* **deps-dev:** bump @typescript-eslint/parser from 2.22.0 to 2.23.0 ([#23](https://github.com/DiederikvandenB/apollo-link-sentry/issues/23)) ([4fe15b2](https://github.com/DiederikvandenB/apollo-link-sentry/commit/4fe15b2da7b50a3e2d40ec36a4a17b0e0d2b4fb9))
+* **deps-dev:** bump eslint-config-airbnb-base from 14.0.0 to 14.1.0 ([#31](https://github.com/DiederikvandenB/apollo-link-sentry/issues/31)) ([74d6b84](https://github.com/DiederikvandenB/apollo-link-sentry/commit/74d6b84ad47a6a234e08af2c12d35e7b30f5b320))
+* **deps-dev:** bump tsc-watch from 4.1.0 to 4.2.3 ([#15](https://github.com/DiederikvandenB/apollo-link-sentry/issues/15)) ([abf2a97](https://github.com/DiederikvandenB/apollo-link-sentry/commit/abf2a974a72a3967febc36af0f8c26e322de04b5))
+* **deps-dev:** bump typescript from 3.8.2 to 3.8.3 ([#16](https://github.com/DiederikvandenB/apollo-link-sentry/issues/16)) ([e74be6b](https://github.com/DiederikvandenB/apollo-link-sentry/commit/e74be6bcc57e82ac933af805a6ad4d7c5276cb70))
+
 ### [1.1.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v1.1.0...v1.1.1) (2020-03-01)
 
 
