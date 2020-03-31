@@ -45,7 +45,7 @@
     "rimraf": "^3.0.2",
     "sentry-testkit": "^3.2.1",
     "standard-version": "^7.1.0",
-    "ts-jest": "^25.2.1",
+    "ts-jest": "^25.3.0",
     "tsc-watch": "~4.2.3",
     "typescript": "^3.8.3"
   }
