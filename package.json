@@ -34,7 +34,7 @@
   "devDependencies": {
     "@types/jest": "^25.1.4",
     "@typescript-eslint/parser": "^2.26.0",
-    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-config-airbnb-typescript": "^7.2.0",
