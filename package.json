@@ -2,6 +2,9 @@
   "name": "apollo-link-sentry",
   "version": "1.2.0",
   "license": "MIT",
+  "author": "Diederik van den Burger <diederikvandenburger@tab.capital>",
+  "repository": "https://github.com/DiederikvandenB/apollo-link-sentry.git",
+  "homepage": "https://github.com/DiederikvandenB/apollo-link-sentry",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "files": [
