@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@sentry/browser": "^5.15.4",
-    "@sentry/types": "^5.15.4",
+    "@sentry/types": "^5.15.5",
     "apollo-link": "^1.2.14",
     "deepmerge": "^4.2.2",
     "dot-prop": "^5.2.0",
