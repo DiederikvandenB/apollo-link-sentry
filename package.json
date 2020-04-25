@@ -43,7 +43,7 @@
     "eslint-config-airbnb-typescript": "^7.2.0",
     "eslint-plugin-import": "^2.20.2",
     "graphql-tag": "^2.10.3",
-    "jest": "^25.2.6",
+    "jest": "^25.4.0",
     "jest-spec-reporter": "^1.0.12",
     "rimraf": "^3.0.2",
     "sentry-testkit": "^3.2.1",
