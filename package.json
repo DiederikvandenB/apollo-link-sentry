@@ -27,7 +27,7 @@
     "deploy": "yarn publish --non-interactive"
   },
   "dependencies": {
-    "@sentry/browser": "^5.15.4",
+    "@sentry/browser": "^5.15.5",
     "@sentry/types": "^5.15.4",
     "apollo-link": "^1.2.14",
     "deepmerge": "^4.2.2",
