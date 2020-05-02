@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/browser';
 import { Scope, Severity } from '@sentry/types';
 import deepMerge from 'deepmerge';
 
@@ -7,6 +6,7 @@ import {
   ApolloLink, NextLink, Observable, Operation as ApolloOperation,
 } from 'apollo-link';
 
+import { addBreadcrumb, configureScope } from '@sentry/minimal';
 import { OperationBreadcrumb } from './OperationBreadcrumb';
 import { Operation } from './Operation';
 
@@ -181,7 +181,7 @@ export class SentryLink extends ApolloLink {
    * @param {Operation} operation
    */
   setTransaction = (operation: Operation): void => {
-    Sentry.configureScope((scope: Scope) => {
+    configureScope((scope: Scope) => {
       scope.setTransaction(operation.name);
     });
   };
@@ -190,7 +190,7 @@ export class SentryLink extends ApolloLink {
    * Set the Sentry fingerprint
    */
   setFingerprint = (): void => {
-    Sentry.configureScope((scope: Scope) => {
+    configureScope((scope: Scope) => {
       scope.setFingerprint([
         '{{default}}',
         '{{transaction}}',
@@ -214,10 +214,10 @@ export class SentryLink extends ApolloLink {
 
     if (typeof this.options.beforeBreadcrumb === 'function') {
       const after = this.options.beforeBreadcrumb(breadcrumb);
-      Sentry.addBreadcrumb(after.flush());
+      addBreadcrumb(after.flush());
       return;
     }
 
-    Sentry.addBreadcrumb(breadcrumb.flush());
+    addBreadcrumb(breadcrumb.flush());
   };
 }
