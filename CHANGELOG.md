@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v1.2.1...v1.3.0) (2020-05-02)
+
+
+### Features
+
+* use sentry minimal ([#74](https://github.com/DiederikvandenB/apollo-link-sentry/issues/74)) ([85d976f](https://github.com/DiederikvandenB/apollo-link-sentry/commit/85d976fe48682a7195719b70722f86347f3f40d5))
+
+
+### Chores
+
+* **deps:** bump @sentry/browser from 5.15.4 to 5.15.5 ([#69](https://github.com/DiederikvandenB/apollo-link-sentry/issues/69)) ([c738091](https://github.com/DiederikvandenB/apollo-link-sentry/commit/c738091363badcc964ce9782eb119b9e1dd6b249))
+* **deps:** bump apollo-link from 1.2.13 to 1.2.14 ([#60](https://github.com/DiederikvandenB/apollo-link-sentry/issues/60)) ([c62f973](https://github.com/DiederikvandenB/apollo-link-sentry/commit/c62f97364266f0df967078037d509fdc97e476fe))
+* **deps-dev:** bump @typescript-eslint/parser from 2.26.0 to 2.29.0 ([#67](https://github.com/DiederikvandenB/apollo-link-sentry/issues/67)) ([b60e94b](https://github.com/DiederikvandenB/apollo-link-sentry/commit/b60e94be5e9f68ae030abfe4463c2a41f06f48b2))
+* **deps-dev:** bump eslint-config-airbnb-typescript ([#61](https://github.com/DiederikvandenB/apollo-link-sentry/issues/61)) ([8f09087](https://github.com/DiederikvandenB/apollo-link-sentry/commit/8f09087e383857461d0a746621ec657d5e2217f8))
+* **deps-dev:** bump jest from 25.2.6 to 25.4.0 ([#65](https://github.com/DiederikvandenB/apollo-link-sentry/issues/65)) ([ad4e01e](https://github.com/DiederikvandenB/apollo-link-sentry/commit/ad4e01e90fd780bf77150e45697c1fbca25d9f25))
+* **deps-dev:** bump ts-jest from 25.3.0 to 25.4.0 ([#64](https://github.com/DiederikvandenB/apollo-link-sentry/issues/64)) ([f736b0e](https://github.com/DiederikvandenB/apollo-link-sentry/commit/f736b0e3c9f285b1cce2d538f51fbfd0717757b7))
+
 ### [1.2.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v1.2.0...v1.2.1) (2020-04-02)
 
 
