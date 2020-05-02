@@ -1,5 +1,4 @@
-import { Severity } from '@sentry/browser';
-import { Breadcrumb as SentryBreadcrumb } from '@sentry/types';
+import { Breadcrumb as SentryBreadcrumb, Severity } from '@sentry/types';
 
 import { isEmpty, stringifyObject, trimObject } from './utils';
 
