@@ -52,6 +52,6 @@
     "standard-version": "^8.0.0",
     "ts-jest": "^25.5.1",
     "tsc-watch": "~4.2.5",
-    "typescript": "^3.9.2"
+    "typescript": "^3.9.3"
   }
 }
