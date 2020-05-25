@@ -51,7 +51,7 @@
     "sentry-testkit": "^3.2.1",
     "standard-version": "^8.0.0",
     "ts-jest": "^25.5.1",
-    "tsc-watch": "~4.2.5",
+    "tsc-watch": "~4.2.8",
     "typescript": "^3.9.2"
   }
 }
