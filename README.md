@@ -2,10 +2,11 @@
 Apollo Link middleware to enrich SentryJS events with GraphQL data.
 
 [![npm](https://img.shields.io/npm/v/apollo-link-sentry)](https://www.npmjs.com/package/apollo-link-sentry)
-[![David](https://img.shields.io/david/diederikvandenb/apollo-link-sentry)](https://github.com/diederikvandenb/apollo-link-sentry)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/DiederikvandenB/apollo-link-sentry/Test)](https://github.com/DiederikvandenB/apollo-link-sentry/actions)
 [![Coveralls github branch](https://img.shields.io/coveralls/github/DiederikvandenB/apollo-link-sentry/master)](https://coveralls.io/github/DiederikvandenB/apollo-link-sentry?branch=master)
 [![npm-downloads](https://img.shields.io/npm/dt/apollo-link-sentry)](https://www.npmjs.com/package/apollo-link-sentry)
+[![David](https://img.shields.io/david/diederikvandenb/apollo-link-sentry)](https://github.com/diederikvandenb/apollo-link-sentry)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=DiederikvandenB/apollo-link-sentry)](https://dependabot.com)
 
 ## Installation
 ```
