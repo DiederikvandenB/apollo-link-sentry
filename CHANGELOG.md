@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v1.3.1...v2.0.0) (2020-10-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* move to apollo client v3
+
+### Features
+
+* move to apollo client v3 ([0afc327](https://github.com/DiederikvandenB/apollo-link-sentry/commit/0afc3279888df2ab0ffee8ad1f3cdfdcf7205b29))
+
 ### [1.3.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v1.3.0...v1.3.1) (2020-10-12)
 
 
