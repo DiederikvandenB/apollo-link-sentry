@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v2.0.0...v2.0.1) (2020-10-12)
+
+
+### Chores
+
+* moves most dependencies to peer-dependencies ([94372ef](https://github.com/DiederikvandenB/apollo-link-sentry/commit/94372ef04d08437d07239b95efb82214fab338bf))
+
 ## [2.0.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v1.3.1...v2.0.0) (2020-10-12)
 
 
