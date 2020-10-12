@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { Operation } from 'apollo-link';
+import { Operation } from '@apollo/client/link/core';
 import { Token } from 'graphql';
 
 const operation: Operation = {
@@ -129,7 +129,6 @@ const operation: Operation = {
   }),
 
   setContext: (): any => {},
-  toKey: () => '',
 };
 
 export default operation;
