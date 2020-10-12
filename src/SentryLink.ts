@@ -182,7 +182,7 @@ export class SentryLink extends ApolloLink {
    */
   setTransaction = (operation: Operation): void => {
     configureScope((scope: Scope) => {
-      scope.setTransaction(operation.name);
+      scope.setTransactionName(operation.name);
     });
   };
 
