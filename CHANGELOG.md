@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v1.3.0...v1.3.1) (2020-10-12)
+
+
+### Chores
+
+* update dependencies ([a4f2239](https://github.com/DiederikvandenB/apollo-link-sentry/commit/a4f2239325ec1ce6e2685fed8d7bf3919ea5c57e))
+* update dependencies ([c28ce43](https://github.com/DiederikvandenB/apollo-link-sentry/commit/c28ce433bbb16cfe8adac77a2c62b5fd57c7ce07))
+* update dev dependencies ([18243d4](https://github.com/DiederikvandenB/apollo-link-sentry/commit/18243d41e212f2ac87e90a16b05e30b219b0d4a1))
+* update readme badges ([b45e606](https://github.com/DiederikvandenB/apollo-link-sentry/commit/b45e606baf77ffc740bc4e71f1c2b530f3f3da65))
+* **deps:** bump tslib from 1.11.1 to 2.0.0 ([#91](https://github.com/DiederikvandenB/apollo-link-sentry/issues/91)) ([c31c6b1](https://github.com/DiederikvandenB/apollo-link-sentry/commit/c31c6b1e9e3fb66cd0a3315f3a377665e6a3681c))
+
+
+### Bug fixes
+
+* update setTransaction to setTransactionName ([9bf26db](https://github.com/DiederikvandenB/apollo-link-sentry/commit/9bf26dbd380884a104b807cddea4634207b8d7c0))
+
 ## [1.3.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v1.2.1...v1.3.0) (2020-05-02)
 
 
