@@ -1,4 +1,5 @@
-import { ApolloLink, Observable, execute } from 'apollo-link';
+import { ApolloLink, execute } from '@apollo/client/link/core';
+import Observable from 'zen-observable';
 import gql from 'graphql-tag';
 import * as Sentry from '@sentry/browser';
 import sentryTestkit from 'sentry-testkit';

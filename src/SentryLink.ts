@@ -1,10 +1,12 @@
 import { Scope, Severity } from '@sentry/types';
 import deepMerge from 'deepmerge';
+import Observable from 'zen-observable';
 
-import { FetchResult } from 'apollo-link/lib/types';
+import { FetchResult } from '@apollo/client/link/core/types';
+
 import {
-  ApolloLink, NextLink, Observable, Operation as ApolloOperation,
-} from 'apollo-link';
+  ApolloLink, NextLink, Operation as ApolloOperation,
+} from '@apollo/client/link/core';
 
 import { addBreadcrumb, configureScope } from '@sentry/minimal';
 import { OperationBreadcrumb } from './OperationBreadcrumb';
