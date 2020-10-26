@@ -2,7 +2,7 @@ import { Scope, Severity } from '@sentry/types';
 import deepMerge from 'deepmerge';
 import Observable from 'zen-observable';
 
-import { FetchResult } from '@apollo/client/link/core/types';
+import { FetchResult } from '@apollo/client';
 
 import {
   ApolloLink, NextLink, Operation as ApolloOperation,
