@@ -6,7 +6,7 @@ import { FetchResult } from '@apollo/client';
 
 import {
   ApolloLink, NextLink, Operation as ApolloOperation,
-} from '@apollo/client/link/core';
+} from '@apollo/client';
 
 import { addBreadcrumb, configureScope } from '@sentry/minimal';
 import { OperationBreadcrumb } from './OperationBreadcrumb';
