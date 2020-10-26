@@ -1,4 +1,4 @@
-import { Operation as ApolloOperation } from '@apollo/client/link/core';
+import { Operation as ApolloOperation } from '@apollo/client';
 import dotProp from 'dot-prop';
 
 import { isEmpty } from './utils';
