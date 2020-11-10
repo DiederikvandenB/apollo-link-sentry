@@ -508,15 +508,6 @@
     "@sentry/utils" "5.27.3"
     tslib "^1.9.3"
 
-"@sentry/hub@5.27.2":
-  version "5.27.2"
-  resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-5.27.2.tgz#06923e0b7b5e96cd2cd8b1d44cb83dbd8b8eed26"
-  integrity sha512-KCAWF5oDXd/Pjzbcmfj53F5ZzOX53Rzi23a2mWyUXMdPXoXIiMrIcdC/DqrqKV787LvOJcSFaTychJCH3t15/A==
-  dependencies:
-    "@sentry/types" "5.27.2"
-    "@sentry/utils" "5.27.2"
-    tslib "^1.9.3"
-
 "@sentry/hub@5.27.3":
   version "5.27.3"
   resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-5.27.3.tgz#f509c2fd38f500afef6030504e82510dbd0649d6"
@@ -526,7 +517,7 @@
     "@sentry/utils" "5.27.3"
     tslib "^1.9.3"
 
-"@sentry/minimal@5.27.3":
+"@sentry/minimal@5.27.3", "@sentry/minimal@^5.26.0":
   version "5.27.3"
   resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-5.27.3.tgz#c9263bdd6270bfeae64137177448911dff568e53"
   integrity sha512-ng01cM0rsE1RMjqVTpPLN0ZVkTo0I675usM1krkpQe8ddW6tfQ6EJWpt02/BrpQZRQzTtfWp6/RyB1KFXg6icg==
@@ -535,32 +526,10 @@
     "@sentry/types" "5.27.3"
     tslib "^1.9.3"
 
-"@sentry/minimal@^5.26.0":
-  version "5.27.2"
-  resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-5.27.2.tgz#c9b90d71383891e69f4abecf32fdba9d91d3328a"
-  integrity sha512-n9SssI30rpS1tw6hH0ylxVlONdmZCqiPy60fotxUzql6mCo/nW7tcADsW15fvQlUQ160VaGf3iMj+hpHkRBerw==
-  dependencies:
-    "@sentry/hub" "5.27.2"
-    "@sentry/types" "5.27.2"
-    tslib "^1.9.3"
-
-"@sentry/types@5.27.2":
-  version "5.27.2"
-  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-5.27.2.tgz#606e973cee865e83e75491e33e9b2732a0f79c94"
-  integrity sha512-oszEOlWJuySvGc2HJ2KLTgtYwRFnHWDu8YIZ99UhmO2PcGQ5HlZJpV2oC8n3x0g1YSSlAaThjKbliJEAT7fmPg==
-
 "@sentry/types@5.27.3", "@sentry/types@^5.26.0":
   version "5.27.3"
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-5.27.3.tgz#d377508769bc658d672c287166c7f6c5db45660c"
   integrity sha512-PkWhMArFMxBb1g3HtMEL8Ea9PYae2MU0z9CMIWiqzerFy2ZpKG98IU3pt8ic4JkmKQdwB8hDiZpRPMHhW0WYwQ==
-
-"@sentry/utils@5.27.2":
-  version "5.27.2"
-  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-5.27.2.tgz#9d52a2ad73aaab41c45202c289c4a63127ce4ebb"
-  integrity sha512-ZrdRgcFapi1NACbtvnPLOIXKjBPVTlhGzmXNCVao0uRBBRNJa5i2Mjp/U/Xy/fT0K1MGJQ+F9YZjZPnAMsDNbw==
-  dependencies:
-    "@sentry/types" "5.27.2"
-    tslib "^1.9.3"
 
 "@sentry/utils@5.27.3":
   version "5.27.3"
