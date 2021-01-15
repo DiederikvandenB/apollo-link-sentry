@@ -82,6 +82,7 @@ const operation: Operation = {
           column: 1,
         },
       },
+      toJSON: () => ({ start: 0, end: 0 }),
     },
   },
 
