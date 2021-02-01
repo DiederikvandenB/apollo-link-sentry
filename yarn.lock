@@ -5074,9 +5074,9 @@ send@0.17.1:
     statuses "~1.5.0"
 
 sentry-testkit@^3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/sentry-testkit/-/sentry-testkit-3.2.1.tgz#1b7c7ea62931223c424dc522ba80237a10bb6a9a"
-  integrity sha512-ToLAN2YrcsgzImF4p3voq+TVYAnXDI65zmmN7WJFb1ldSi3xhRwpD0o+cRN0wGudHhN8lItW88TWtlI5tQ1EFA==
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/sentry-testkit/-/sentry-testkit-3.2.4.tgz#ec56c538e0391d3241f3a55c48a5a8342d24f8f8"
+  integrity sha512-iAs+3oIkaZFfOCP1dfCMKOvmAWrIkd1IGcd5pCCDqhFbYa//2KC83r/ANF1fKlSaiyiTmQ2iqvjfnVGzbbE21g==
   dependencies:
     body-parser "^1.19.0"
     express "^4.17.1"
