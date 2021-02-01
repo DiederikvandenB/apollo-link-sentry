@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@apollo/client": "^3.2.3",
-    "@sentry/browser": "^5.26.0",
+    "@sentry/browser": "^6.0.3",
     "@sentry/minimal": "^5.26.0",
     "@sentry/types": "^5.26.0",
     "@types/jest": "^26.0.14",
