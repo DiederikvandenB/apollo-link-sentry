@@ -123,7 +123,43 @@ In case you find that there's a piece of data you're missing, feel free to open 
 ### Be careful what you include
 Please note that Sentry sets some limits to how big events can be. For instance, **events greater than 200KiB are immediately dropped (pre decompression)**. More information on that [here](https://docs.sentry.io/accounts/quotas/#attributes-limits). Be especially careful with the `includeCache` option, as caches can become quite large.
 
-Furthermore, much of the data you are sending to Sentry can include (sensitive) personal information. This might lead you to violating the terms of the GDPR. Use Sentry's `beforeBreadrcrumb` function to filter out all sensitive data.
+Furthermore, much of the data you are sending to Sentry can include (sensitive) personal information. This might lead you to violating the terms of the GDPR. Use Sentry's `beforeBreadcrumb` function to filter out all sensitive data.
+
+## Exclude redundant `fetch` breadcrumbs
+By default, Sentry attaches all fetch events as breadcrumbs. Since this package tracks GraphQL requests as breadcrumbs,
+they would show up duplicated in Sentry.
+
+1. Disable the default integration for fetch requests. Note that this is only recommended if you **only** use GraphQL requests in your application. The default integration can be disabled like this:
+```js
+Sentry.init({
+  ...,
+  defaultIntegrations: [
+    new Sentry.BrowserTracing({ traceFetch: false }),
+  ],
+});
+```
+
+2. Use the `beforeBreadcrumb` option of Sentry to filter out the duplicates.
+The helpers in this package recognize every breadcrumb of category `fetch` where the URL contains `/graphql` as a GraphQL request.
+```js
+import { excludeGraphQLFetch } from 'apollo-link-sentry';
+
+Sentry.init({
+  ...,
+  beforeBreadcrumb: excludeGraphQLFetch,
+})
+```
+
+If you have a custom wrapper, use the higher order function:
+
+```js
+import { withoutGraphQLFetch } from 'apollo-link-sentry';
+
+Sentry.init({
+  ...,
+  beforeBreadcrumb: withoutGraphQLFetch((breadcrumb, hint) => { ... }),
+})
+```
 
 ## FAQ
 - **I don't see any events appearing in my Sentry stream**
@@ -145,26 +181,12 @@ Furthermore, much of the data you are sending to Sentry can include (sensitive) 
     }}
   </Mutation>
   ```
-- **GraphQL operations are also logged as fetch breadcrumbs**
-  - Sentry by default attaches all fetch events as breadcrumbs. This means that there are two ways to ensure GraphQL operations appear but once:
-    1. Disable the default integration for fetch requests. Note that this is only recommended if you **only** use GraphQL requests in your application. The default integration can be disabled like this:
-    ```js
-    Sentry.init({
-      dsn: '',
-      defaultIntegrations: [
-        new Sentry.Integrations.Breadcrumbs({ fetch: false }),
-      ],
-    });
-    ```
-    2. Otherwise, it will be possible to use the `beforeBreadcrumb` option of Sentry to filter out the duplicates. This feature is not yet implemented in this package, but it is on the roadmap (see below). 
 
 ## Caveats
 - This package has not been tested for subscriptions
 - We also need to test for different links, i.e. `apollo-link-rest`
 
 ## Roadmap / notes
-- Provide wrapper for Sentry's beforeBreadcrumb to filter out fetch requests
-  - Caveat: people using `unfetch`?
 - Write best practice scenario:
   - setting `includeError` true
   - catch errors manually
