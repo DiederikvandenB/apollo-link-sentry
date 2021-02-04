@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v2.0.2...v2.1.0) (2021-02-04)
+
+
+### Features
+
+* add helpers to exclude GraphQL fetch breadcrumbs ([#264](https://github.com/DiederikvandenB/apollo-link-sentry/issues/264)) ([a8fa792](https://github.com/DiederikvandenB/apollo-link-sentry/commit/a8fa792c7050c57f4cb552ebd91e6375b7213b8a))
+
+
+### Chores
+
+* **deps-dev:** bump @sentry/browser and @sentry/minimal to v6 ([a223504](https://github.com/DiederikvandenB/apollo-link-sentry/commit/a2235046b73ee15a232289a39d429aec642e8d05))
+
 ### [2.0.2](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v2.0.1...v2.0.2) (2021-01-15)
 
 * Updated dependencies, specifically two minor security updates
