@@ -1,16 +1,20 @@
-import { Scope, Severity } from '@sentry/types';
+import { Scope, Severity, Span } from '@sentry/types';
 import deepMerge from 'deepmerge';
 import Observable from 'zen-observable';
 
 import { FetchResult } from '@apollo/client/link/core/types';
 
 import {
-  ApolloLink, NextLink, Operation as ApolloOperation,
+  ApolloLink,
+  NextLink,
+  Operation as ApolloOperation,
 } from '@apollo/client/link/core';
 
 import { addBreadcrumb, configureScope } from '@sentry/minimal';
+import { getCurrentHub } from '@sentry/browser';
 import { OperationBreadcrumb } from './OperationBreadcrumb';
 import { Operation } from './Operation';
+import { SubscriptionObserver } from 'zen-observable/esm';
 
 export interface Options {
   setTransaction?: boolean;
@@ -24,7 +28,7 @@ export interface Options {
     includeResponse?: boolean;
     includeError?: boolean;
     includeContextKeys?: string[];
-  }
+  };
 
   filter?: (operation: Operation) => boolean;
   beforeBreadcrumb?: (breadcrumb: OperationBreadcrumb) => OperationBreadcrumb;
@@ -50,7 +54,6 @@ export class SentryLink extends ApolloLink {
 
   /**
    * Create a new ApolloLinkSentry
-   * @param {Options} options
    */
   constructor(options: Options = {}) {
     super();
@@ -60,13 +63,21 @@ export class SentryLink extends ApolloLink {
   /**
    * This is where the GraphQL operation is received
    * A breadcrumb will be created for the operation, and error/response data will be handled
-   * @param {ApolloOperation} op
-   * @param {NextLink} forward
-   * @returns {Observable<FetchResult> | null}
    */
-  request = (op: ApolloOperation, forward: NextLink): Observable<FetchResult> | null => {
+  request = (
+    op: ApolloOperation,
+    forward: NextLink
+  ): Observable<FetchResult> | null => {
     // Obtain necessary data from the operation
     const operation = new Operation(op);
+
+    let span: Span | undefined;
+    const transaction = getCurrentHub().getScope()?.getTransaction();
+    if (transaction !== undefined) {
+      span = transaction.startChild({
+        op: operation.name,
+      });
+    }
 
     // Create a new breadcrumb for this specific operation
     const breadcrumb = new OperationBreadcrumb();
@@ -75,9 +86,10 @@ export class SentryLink extends ApolloLink {
     // Start observing the operation for results
     return new Observable<FetchResult>((observer) => {
       const subscription = forward(op).subscribe({
-        next: (result: FetchResult) => this.handleResult(result, breadcrumb, observer),
-        complete: () => this.handleComplete(breadcrumb, observer),
-        error: (error: any) => this.handleError(breadcrumb, error, observer),
+        next: (result: FetchResult) =>
+          this.handleResult(result, breadcrumb, observer),
+        error: (error) => this.handleError(breadcrumb, error, observer),
+        complete: () => this.handleComplete(breadcrumb, observer, span),
       });
 
       // Close the subscription
@@ -90,19 +102,18 @@ export class SentryLink extends ApolloLink {
   /**
    * Fill the breadcrumb with information, respecting the provided options
    * The breadcrumb is not yet attached to Sentry after this method
-   * @param {OperationBreadcrumb} breadcrumb
-   * @param {Operation} operation
    */
-  fillBreadcrumb = (breadcrumb: OperationBreadcrumb, operation: Operation): void => {
+  fillBreadcrumb = (
+    breadcrumb: OperationBreadcrumb,
+    operation: Operation
+  ): void => {
     // Apply the filter option
     if (typeof this.options.filter === 'function') {
       const stop = breadcrumb.filter(this.options.filter(operation));
       if (stop) return;
     }
 
-    breadcrumb
-      .setMessage(operation.name)
-      .setCategory(operation.type);
+    breadcrumb.setMessage(operation.name).setCategory(operation.type);
 
     // TODO: Maybe move this to a different place? It isn't a breadcrumb
     if (this.options.setTransaction) {
@@ -127,18 +138,21 @@ export class SentryLink extends ApolloLink {
     }
 
     if (this.options?.breadcrumb?.includeContextKeys?.length) {
-      breadcrumb.setContext(operation.getContextKeys(this.options.breadcrumb.includeContextKeys));
+      breadcrumb.setContext(
+        operation.getContextKeys(this.options.breadcrumb.includeContextKeys)
+      );
     }
   };
 
   /**
    * Handle the operation's response
    * The breadcrumb is not yet attached to Sentry after this method
-   * @param {FetchResult} result
-   * @param {OperationBreadcrumb} breadcrumb
-   * @param observer
    */
-  handleResult = (result: FetchResult, breadcrumb: OperationBreadcrumb, observer: any): void => {
+  handleResult = (
+    result: FetchResult,
+    breadcrumb: OperationBreadcrumb,
+    observer: SubscriptionObserver<FetchResult>
+  ): void => {
     if (this.options.breadcrumb?.includeResponse) {
       breadcrumb.setResponse(result);
     }
@@ -150,14 +164,13 @@ export class SentryLink extends ApolloLink {
    * Changes the level and type of the breadcrumb to `error`
    * Furthermore, if the includeError option is truthy, the error data will be attached
    * Then, the error will be attached to Sentry
-   * @param {OperationBreadcrumb} breadcrumb
-   * @param error
-   * @param observer
    */
-  handleError = (breadcrumb: OperationBreadcrumb, error: any, observer: any): void => {
-    breadcrumb
-      .setLevel(Severity.Error)
-      .setType('error');
+  handleError = (
+    breadcrumb: OperationBreadcrumb,
+    error: unknown,
+    observer: SubscriptionObserver<FetchResult>
+  ): void => {
+    breadcrumb.setLevel(Severity.Error).setType('error');
 
     if (this.options.breadcrumb?.includeError) {
       breadcrumb.setError(error);
@@ -170,17 +183,20 @@ export class SentryLink extends ApolloLink {
 
   /**
    * Since no error occurred, it is time to attach the breadcrumb to Sentry
-   * @param {OperationBreadcrumb} breadcrumb
-   * @param observer
    */
-  handleComplete = (breadcrumb: OperationBreadcrumb, observer: any): void => {
+  handleComplete = (
+    breadcrumb: OperationBreadcrumb,
+    observer: SubscriptionObserver<FetchResult>,
+    span?: Span
+  ): void => {
     this.attachBreadcrumbToSentry(breadcrumb);
+
+    span?.finish();
     observer.complete();
   };
 
   /**
    * Set the Sentry transaction
-   * @param {Operation} operation
    */
   setTransaction = (operation: Operation): void => {
     configureScope((scope: Scope) => {
@@ -193,16 +209,12 @@ export class SentryLink extends ApolloLink {
    */
   setFingerprint = (): void => {
     configureScope((scope: Scope) => {
-      scope.setFingerprint([
-        '{{default}}',
-        '{{transaction}}',
-      ]);
+      scope.setFingerprint(['{{default}}', '{{transaction}}']);
     });
   };
 
   /**
    * Attach the breadcrumb to the Sentry event
-   * @param {OperationBreadcrumb} breadcrumb
    */
   attachBreadcrumbToSentry = (breadcrumb: OperationBreadcrumb): void => {
     // Apply options
@@ -210,7 +222,9 @@ export class SentryLink extends ApolloLink {
     if (breadcrumb.filtered) return;
 
     if (breadcrumb.flushed) {
-      console.warn('[apollo-link-sentry] SentryLink.attachBreadcrumbToSentry() was called on an already flushed breadcrumb');
+      console.warn(
+        '[apollo-link-sentry] SentryLink.attachBreadcrumbToSentry() was called on an already flushed breadcrumb'
+      );
       return;
     }
 
