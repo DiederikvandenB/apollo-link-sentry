@@ -37,9 +37,9 @@
   },
   "devDependencies": {
     "@apollo/client": "^3.2.3",
-    "@sentry/browser": "^5.26.0",
-    "@sentry/minimal": "^5.26.0",
-    "@sentry/types": "^5.26.0",
+    "@sentry/browser": "^6.0.4",
+    "@sentry/minimal": "^6.0.4",
+    "@sentry/types": "^6.0.4",
     "@types/jest": "^26.0.14",
     "@typescript-eslint/eslint-plugin": "^3.1.0",
     "@typescript-eslint/parser": "^3.1.0",
@@ -55,8 +55,8 @@
     "sentry-testkit": "^3.2.1",
     "standard-version": "^9.0.0",
     "ts-jest": "^26.4.1",
-    "tslib": "^2.0.3",
     "tsc-watch": "~4.2.9",
+    "tslib": "^2.0.3",
     "typescript": "^4.0.3",
     "zen-observable": "^0.8.15"
   }
