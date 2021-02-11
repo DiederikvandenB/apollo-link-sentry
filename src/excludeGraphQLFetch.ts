@@ -14,9 +14,9 @@ export const excludeGraphQLFetch: BeforeBreadcrumbCallback = (breadcrumb) => {
   return breadcrumb;
 };
 
-export const withoutGraphQLFetch = (
-  beforeBreadcrumb: BeforeBreadcrumbCallback
-): BeforeBreadcrumbCallback => {
+export function withoutGraphQLFetch(
+  beforeBreadcrumb: BeforeBreadcrumbCallback,
+): BeforeBreadcrumbCallback {
   return (breadcrumb, hint) => {
     const withoutFetch = excludeGraphQLFetch(breadcrumb, hint);
     if (withoutFetch === null) {
@@ -25,4 +25,4 @@ export const withoutGraphQLFetch = (
 
     return beforeBreadcrumb(withoutFetch, hint);
   };
-};
+}
