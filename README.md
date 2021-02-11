@@ -39,79 +39,103 @@ const client = new ApolloClient({
 ```
 
 ## Options
-```js
-const defaultOptions = {
+```typescript
+export interface FullOptions {
   /**
-   * Set the Sentry `transaction` to the `operationName` of the query / mutation. Note that this
-   * only works if the transaction is not overwritten later in your app.
+   * Determines if the given operation should be handled or discarded.
+   *
+   * If undefined, all operations will be included.
    */
-  setTransaction: true,
-
-  /**
-   * Narrow Sentry's fingerprint by appending the operation's name to Sentry's {{default}} key.
-   * It works in such a way that only the last operation is added, not every operation that's been
-   * through the link. Note that if you override this somewhere else in your app, it is possible
-   * that the value set by `apollo-link-sentry` is overwritten.
-   */
-  setFingerprint: true,
-
-  breadcrumb: {
-    /**
-     * Set to false to disable attaching GraphQL operations as breadcrumbs. If only this breadcrumb
-     * option is toggled, the breadcrumb will only show the operation name and it's type.
-     */
-    enable: true,
-
-    /**
-     * Include the query / mutation string in the breadcrumb.
-     */
-    includeQuery: false,
-
-    /**
-     * Include the entire Apollo cache in the breadcrumb. It is not recommended to enable this
-     * option in production environment, for several reasons, see "Be careful what you include".
-     * This option is specifically useful for debugging purposes, but when applied in combination
-     * with `beforeBreadcrumb` can also be used in production.
-     */
-    includeCache: false,
-
-    /**
-     * Include the operation's variables in the breadcrumb. Again, be careful what you include,
-     * or apply a filter.
-     */
-    includeVariables: false,
-
-    /**
-     * Include the operation's fetch result in the breadcrumb.
-     */
-    includeResponse: false,
-
-    /**
-     * If an error is received, it can be included in the breadcrumb. Regardless of this option,
-     * the breadcrumb's type is set to error to reflect a failed operation in the Sentry UI.
-     */
-    includeError: false,
-
-    /**
-     * Include context keys as extra data in the breadcrumb. Accepts dot notation.
-     * The data is stringified and formatted. Can be used to include headers for instance.
-     */
-    includeContextKeys: [],
-  },
+  shouldHandleOperation: undefined | ((operation: Operation) => boolean);
 
   /**
-   * Provide a callback function which receives an instance of this package's Operation class
-   * Only operations that pass the test are sent to Sentry. Leave undefined if you want all
-   * operations to pass. See PR #9 for more details.
+   * The uri of the GraphQL endpoint.
+   *
+   * Used to add context information, e.g. to breadcrumbs.
    */
-  filter: (operation) => true,
+  uri: undefined | string;
 
   /**
-   * Provide a callback function which receives an instance of this package's OperationBreadcrumb class
-   * Use it to modify the data that is added to the breadcrumb. Leave undefined if you want all
-   * data to be included. Very useful in combination with options like includeVariables and includeContextKeys.
+   * Set the Sentry transaction name to the GraphQL operation name.
+   *
+   * May be overwritten by other parts of your app.
    */
-  beforeBreadcrumb: (breadcrumb) => breadcrumb,
+  setTransaction: true | false;
+
+  /**
+   * Narrow Sentry's fingerprint by appending the GraphQL operation name to the {{default}} key.
+   *
+   * Only the last executed operation will be added, not every operation that's been through the link.
+   * May be overwritten by other parts of your app.
+   */
+  setFingerprint: true | false;
+
+  /**
+   * Attach a breadcrumb for executed GraphQL operations.
+   *
+   * The following information will be included by default:
+   * {
+   *   type: 'http',
+   *   category: `graphql.${operationType}`,
+   *   message: operationName,
+   *   level: errors ? 'error' : 'info',
+   * }
+   */
+  attachBreadcrumbs: AttachBreadcrumbsOptions | false;
+}
+
+export type AttachBreadcrumbsOptions = {
+  /**
+   * Include the full query string?
+   */
+  includeQuery: false | true;
+
+  /**
+   * Include the variable values?
+   *
+   * Be careful not to leak sensitive information or send too much data.
+   */
+  includeVariables: false | true;
+
+  /**
+   * Include the fetched result (data, errors, extensions)?
+   *
+   * Be careful not to leak sensitive information or send too much data.
+   */
+  includeFetchResult: false | true;
+
+  /**
+   * Include the response error?
+   *
+   * Be careful not to leak sensitive information or send too much data.
+   */
+  includeError: false | true;
+
+  /**
+   * Include the contents of the Apollo Client cache?
+   *
+   * This is mostly useful for debugging purposes and not recommended for production environments,
+   * see "Be careful what you include", unless carefully combined with `beforeBreadcrumb`.
+   */
+  includeCache: false | true;
+
+  /**
+   * Include arbitrary data from the `ApolloContext`?
+   *
+   * Accepts a list of keys in dot notation, e.g. `foo.bar`. Can be useful to include extra
+   * information such as headers.
+   */
+  includeContext: false | NonEmptyArray<string>;
+
+  /**
+   * Modify the breadcrumb right before it is sent.
+   *
+   * Can be used to add additional data from the operation or clean up included data.
+   * Very useful in combination with options like `includeVariables` and `includeContextKeys`.
+   */
+  transform:
+    | undefined
+    | ((breadcrumb: GraphQLBreadcrumb, operation: Operation) => Breadcrumb);
 };
 ```
 
