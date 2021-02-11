@@ -1,12 +1,18 @@
 module.exports = {
   root: true,
-  extends: ['airbnb-typescript/base'],
-  parserOptions: {
-    project: 'tsconfig.eslint.json',
-  },
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint', 'import'],
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+  ],
   rules: {
-    'no-console': [1, { allow: ['warn', 'error'] }],
-    'import/prefer-default-export': 0,
-    'lines-between-class-members': 0,
-  }
+    'import/imports-first': 'error',
+    'import/newline-after-import': 'error',
+    'import/order': [
+      'error',
+      { 'newlines-between': 'always', alphabetize: { order: 'asc' } },
+    ],
+    'import/prefer-default-export': 'off',
+  },
 };
