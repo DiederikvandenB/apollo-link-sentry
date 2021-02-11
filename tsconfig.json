@@ -2,7 +2,6 @@
   "include": [
     "./src"
   ],
-
   "compilerOptions":{
     "outDir": "./lib",
     "target": "es5",
@@ -20,6 +19,7 @@
     "noUnusedParameters": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "allowJs": true,
     "forceConsistentCasingInFileNames": true
   }
 }
