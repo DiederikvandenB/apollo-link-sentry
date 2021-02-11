@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v2.1.0...v3.0.0) (2021-02-11)
+
+Check [UPGRADE.md](UPGRADE.md#v2-to-v3) for more information on how to upgrade.
+
+### ⚠ BREAKING CHANGES
+
+* Restructure options and describe upgrade process ([e1db20e](https://github.com/DiederikvandenB/apollo-link-sentry/commit/e1db20ea6aaef73062e5f497055026c3fc514e92))
+* Use native `ApolloOperation` instead of our own `Operation` type ([370b9b5](https://github.com/DiederikvandenB/apollo-link-sentry/commit/370b9b56974d4dc6935e1e0fba97dbb7d4257156))
+* Replace `OperationBreadcrumb` class with plain `GraphQLBreadcrumb` object ([036b746](https://github.com/DiederikvandenB/apollo-link-sentry/commit/036b746e8b0800bfa3243612cccb9c6cc19412d9))
+* Rename `response` key in breadcrumbs to `fetchResult`
+
+### Features
+
+* Change breadcrumb type to `http`
+* Add `operationName` key to breadcrumbs
+* Allow specifying `uri` to add `url` key to breadcrumbs
+
+### Fix
+
+* Handle queries without operation name gracefully
+* Indicate if errors occurred by setting the breadcrumb level
+
+### Chores
+
+* Clarify peer dependencies ([c8b43c3](https://github.com/DiederikvandenB/apollo-link-sentry/commit/c8b43c3237072b124d0c2e2f9ed7f59c80814b58))
+* Update tooling and dev dependencies ([79b6be6](https://github.com/DiederikvandenB/apollo-link-sentry/commit/79b6be6c01c587392751215f859a567fcaf89bd4))
+* Increase type, line and branch coverage
+
 ## [2.1.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v2.0.2...v2.1.0) (2021-02-04)
 
 
