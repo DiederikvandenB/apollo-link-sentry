@@ -1,36 +1,22 @@
 import { ApolloLink, execute } from '@apollo/client/link/core';
-import Observable from 'zen-observable';
-import gql from 'graphql-tag';
 import * as Sentry from '@sentry/browser';
+import { Severity } from '@sentry/browser';
+import { GraphQLError, parse } from 'graphql';
 import sentryTestkit from 'sentry-testkit';
+import Observable from 'zen-observable';
 
-import { SentryLink, Operation } from '../src';
-import { OperationBreadcrumb } from '../src/OperationBreadcrumb';
-import { stringifyObject } from '../src/utils';
-import OperationStub from './stubs/Operation';
-import enableAll from './stubs/enableAllOptions';
+import { GraphQLBreadcrumb, SentryLink, SentryLinkOptions } from '../src';
+import { DEFAULT_FINGERPRINT } from '../src/sentry';
 
 const { testkit, sentryTransport } = sentryTestkit();
 
-const TEST_QUERY = gql`query TestQuery {
-  user {
-    id
-    name
-  }
-}`;
-
-const ERROR_QUERY = gql`query ErrorQuery {
-  user {
-    id
-    name
-  }
-}`;
+const nullLink = new ApolloLink(() => null);
 
 describe('SentryLink', () => {
   beforeAll(() => {
     Sentry.init({
       dsn: 'https://acacaeaccacacacabcaacdacdacadaca@sentry.io/000001',
-      transport: <any>sentryTransport,
+      transport: sentryTransport,
       defaultIntegrations: false,
     });
   });
@@ -38,291 +24,281 @@ describe('SentryLink', () => {
   beforeEach(() => {
     testkit.reset();
 
-    // Clear breadcrumbs, the transaction and the fingerprint
     Sentry.configureScope((scope) => {
       scope.clearBreadcrumbs();
-      scope.setTransaction();
+      scope.setTransactionName();
       scope.setFingerprint([]);
     });
   });
 
-  test('should fill a breadcrumb from an operation', () => {
-    const link = new SentryLink(enableAll);
-    const breadcrumb = new OperationBreadcrumb();
-    const operation = new Operation(OperationStub);
+  it('should attach a sentry breadcrumb for an apolloOperation', (done) => {
+    const link = ApolloLink.from([new SentryLink(), nullLink]);
 
-    link.fillBreadcrumb(breadcrumb, operation);
-
-    expect(breadcrumb.message).toBe(operation.name);
-    expect(breadcrumb.category).toBe(`gql ${operation.type}`);
-    expect(breadcrumb.query).toBe(operation.query);
-    expect(breadcrumb.cache).toBe(stringifyObject(operation.cache));
-    expect(breadcrumb.variables).toBe(stringifyObject(operation.variables));
-  });
-
-  test('should attach a sentry breadcrumb for an operation', (done) => {
-    const link = ApolloLink.from([
-      new SentryLink(enableAll),
-      new ApolloLink(() => new Observable(
-        (observer) => observer.error(new Error('Something went wrong')),
-      )),
-    ]);
-
-    execute(link, { query: TEST_QUERY }).subscribe({
-      error: (exception) => {
-        Sentry.captureException(exception);
+    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+      complete: () => {
+        Sentry.captureException(new Error());
 
         const [report] = testkit.reports();
         expect(report.breadcrumbs).toHaveLength(1);
 
         const [breadcrumb] = report.breadcrumbs;
-        expect(breadcrumb.category).toBe('gql query');
+        expect(breadcrumb.type).toBe('http');
+
+        const data = breadcrumb.data as GraphQLBreadcrumb['data'];
+        expect(data).not.toHaveProperty('query');
+        expect(data).not.toHaveProperty('variables');
+        expect(data).not.toHaveProperty('result');
+        expect(data).not.toHaveProperty('error');
+        expect(data).not.toHaveProperty('cache');
+        expect(data).not.toHaveProperty('context');
 
         done();
       },
     });
   });
 
-  test('should attach a breadcrumb for each operation', (done) => {
-    const successLink = ApolloLink.from([
-      new SentryLink(enableAll),
-      new ApolloLink(() => new Observable((observer) => {
-        observer.next({});
-        observer.complete();
-      })),
+  it('should attach a breadcrumb for each apolloOperation', (done) => {
+    const includeErrorAndResultOptions: SentryLinkOptions = {
+      attachBreadcrumbs: { includeFetchResult: true, includeError: true },
+    };
+
+    const result = { data: { foo: true } };
+    const withResult = ApolloLink.from([
+      new SentryLink(includeErrorAndResultOptions),
+      new ApolloLink(
+        () =>
+          new Observable((observer) => {
+            observer.next(result);
+            observer.complete();
+          }),
+      ),
     ]);
 
-    const errorLink = ApolloLink.from([
-      new SentryLink(enableAll),
-      new ApolloLink(() => new Observable(
-        (observer) => observer.error(new Error('Something went wrong')),
-      )),
+    const error = new Error();
+    const withError = ApolloLink.from([
+      new SentryLink(includeErrorAndResultOptions),
+      new ApolloLink(() => {
+        return new Observable((observer) => observer.error(error));
+      }),
     ]);
 
-    execute(successLink, { query: TEST_QUERY })
-      .subscribe({
-        complete() {
-          execute(errorLink, { query: ERROR_QUERY })
-            .subscribe({
-              error(exception): void {
-                Sentry.captureException(exception);
+    execute(withResult, {
+      query: parse(`query SuccessQuery { foo }`),
+    }).subscribe({
+      complete() {
+        execute(withError, {
+          query: parse(`mutation FailureMutation { bar }`),
+        }).subscribe({
+          error(exception) {
+            Sentry.captureException(exception);
 
-                const [report] = testkit.reports();
-                expect(report.breadcrumbs).toHaveLength(2);
+            const [report] = testkit.reports();
+            expect(report.breadcrumbs).toHaveLength(2);
 
-                const [success, error] = report.breadcrumbs;
-                expect(success.message).toBe('TestQuery');
-                expect(error.message).toBe('ErrorQuery');
-                expect(error.type).toBe('error');
+            const [
+              success,
+              failure,
+            ] = report.breadcrumbs as Array<GraphQLBreadcrumb>;
 
-                done();
-              },
+            expect(success.category).toBe('graphql.query');
+            expect(success.level).toBe(Severity.Info);
+            expect(success.data.operationName).toBe('SuccessQuery');
+            expect(success.data.fetchResult).toStrictEqual(result);
+            expect(success.data).not.toHaveProperty('error');
+
+            expect(failure.category).toBe('graphql.mutation');
+            expect(failure.level).toBe(Severity.Error);
+            expect(failure.data.operationName).toBe('FailureMutation');
+            expect(failure.data).not.toHaveProperty('result');
+            expect(failure.data.error?.message).toEqual(error.message);
+
+            done();
+          },
+        });
+      },
+    });
+  });
+
+  it('should mark results with errors with level error', (done) => {
+    const link = ApolloLink.from([
+      new SentryLink(),
+      new ApolloLink(
+        () =>
+          new Observable((observer) => {
+            observer.next({
+              errors: [new GraphQLError('some message')],
             });
-        },
-      });
+            observer.complete();
+          }),
+      ),
+    ]);
+
+    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+      complete: () => {
+        Sentry.captureException(new Error());
+
+        const [report] = testkit.reports();
+        expect(report.breadcrumbs).toHaveLength(1);
+
+        const [breadcrumb] = report.breadcrumbs;
+        expect(breadcrumb.level).toBe(Severity.Error);
+
+        done();
+      },
+    });
   });
 
-  test('should not allow attaching the same breadcrumb twice', () => {
-    console.warn = jest.fn();
+  it('should not attach the breadcrumb if the option is disabled', (done) => {
+    const link = ApolloLink.from([
+      new SentryLink({ attachBreadcrumbs: false }),
+      nullLink,
+    ]);
 
-    const link = new SentryLink(enableAll);
-    const breadcrumb = new OperationBreadcrumb();
-    const operation = new Operation(OperationStub);
-    link.fillBreadcrumb(breadcrumb, operation);
+    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+      complete: () => {
+        Sentry.captureException(new Error());
 
-    link.attachBreadcrumbToSentry(breadcrumb);
-    expect(breadcrumb.flushed).toBeTruthy();
+        const [report] = testkit.reports();
+        expect(report.breadcrumbs).toHaveLength(0);
 
-    link.attachBreadcrumbToSentry(breadcrumb);
-
-    Sentry.captureException(new Error('Error'));
-
-    const [report] = testkit.reports();
-    expect(report.breadcrumbs).toHaveLength(1);
+        done();
+      },
+    });
   });
 
-  test('should show a warning if the same breadcrumb is attached twice', () => {
-    const mockedWarn = jest.fn();
-    console.warn = mockedWarn;
+  it('should set the transaction name by default', (done) => {
+    const link = ApolloLink.from([new SentryLink(), nullLink]);
 
-    const link = new SentryLink(enableAll);
-    const breadcrumb = new OperationBreadcrumb();
-    const operation = new Operation(OperationStub);
+    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+      complete: () => {
+        Sentry.captureException(new Error());
 
-    link.fillBreadcrumb(breadcrumb, operation);
-    link.attachBreadcrumbToSentry(breadcrumb);
-    link.attachBreadcrumbToSentry(breadcrumb);
+        const [report] = testkit.reports();
+        const { originalReport } = report;
 
-    expect(mockedWarn).toBeCalledTimes(1);
+        expect(originalReport.transaction).toBe('Foo');
+
+        done();
+      },
+    });
   });
 
-  describe('options', () => {
-    test('should not attach the breadcrumb if the option is disabled', () => {});
+  it('should not set the transaction if the option is disabled', (done) => {
+    const link = ApolloLink.from([
+      new SentryLink({ setTransaction: false }),
+      nullLink,
+    ]);
 
-    test('should not attach the query if the option is disabled', () => {
-      const link = new SentryLink({ breadcrumb: { includeQuery: false } });
-      const breadcrumb = new OperationBreadcrumb();
-      const operation = new Operation(OperationStub);
+    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+      complete: () => {
+        Sentry.captureException(new Error());
 
-      link.fillBreadcrumb(breadcrumb, operation);
+        const [report] = testkit.reports();
+        const { originalReport } = report;
 
-      expect(breadcrumb.query).toBeUndefined();
+        expect(originalReport.transaction).toBeUndefined();
+
+        done();
+      },
     });
+  });
 
-    test('should not attach the variables if the option is disabled', () => {
-      const link = new SentryLink({ breadcrumb: { includeVariables: false } });
-      const breadcrumb = new OperationBreadcrumb();
-      const operation = new Operation(OperationStub);
+  it('should set the fingerprint by default', (done) => {
+    const link = ApolloLink.from([new SentryLink(), nullLink]);
 
-      link.fillBreadcrumb(breadcrumb, operation);
+    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+      complete: () => {
+        Sentry.captureException(new Error());
 
-      expect(breadcrumb.variables).toBeUndefined();
+        const [report] = testkit.reports();
+        const { originalReport } = report;
+
+        expect(originalReport.fingerprint).toStrictEqual([
+          DEFAULT_FINGERPRINT,
+          'Foo',
+        ]);
+
+        done();
+      },
     });
+  });
 
-    test('should not attach the apollo cache if the option is disabled', () => {
-      const link = new SentryLink({ breadcrumb: { includeCache: false } });
-      const breadcrumb = new OperationBreadcrumb();
-      const operation = new Operation(OperationStub);
+  it('should not set the fingerprint if the option is disabled', (done) => {
+    const link = ApolloLink.from([
+      new SentryLink({ setFingerprint: false }),
+      nullLink,
+    ]);
 
-      link.fillBreadcrumb(breadcrumb, operation);
+    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+      complete: () => {
+        Sentry.captureException(new Error());
 
-      expect(breadcrumb.cache).toBeUndefined();
+        const [report] = testkit.reports();
+        const { originalReport } = report;
+
+        expect(originalReport.fingerprint).toBeUndefined();
+
+        done();
+      },
     });
+  });
 
-    test('should not attach the response data if the option is disabled', (done) => {
-      const link = ApolloLink.from([
-        new SentryLink({ breadcrumb: { includeResponse: false } }),
-        new ApolloLink(() => new Observable((observer) => {
-          observer.next(<any>{ status: 200, data: { success: true } });
-          observer.complete();
-        })),
-      ]);
+  it('should allow filtering out operations', (done) => {
+    const link = ApolloLink.from([
+      new SentryLink({
+        shouldHandleOperation: (operation) =>
+          operation.operationName === 'Handle',
+      }),
+      nullLink,
+    ]);
 
-      execute(link, { query: TEST_QUERY }).subscribe({
-        complete: () => {
-          Sentry.captureException(new Error('We need to throw something'));
+    execute(link, { query: parse(`query Handle { foo }`) }).subscribe({
+      complete: () => {
+        execute(link, { query: parse(`query Discard { foo }`) }).subscribe({
+          complete: () => {
+            Sentry.captureException(new Error());
 
-          const [report] = testkit.reports();
-          const [breadcrumb] = report.breadcrumbs;
+            const [report] = testkit.reports();
 
-          expect(breadcrumb.data?.response).toBeUndefined();
+            expect(report.breadcrumbs).toHaveLength(1);
+            const [handle] = report.breadcrumbs;
 
-          done();
+            expect(handle.data?.operationName).toBe('Handle');
+
+            done();
+          },
+        });
+      },
+    });
+  });
+
+  it('should allow altering the breadcrumb with beforeBreadcrumb', (done) => {
+    const link = ApolloLink.from([
+      new SentryLink({
+        attachBreadcrumbs: {
+          transform: (breadcrumb, operation) => ({
+            ...breadcrumb,
+            data: {
+              ...breadcrumb.data,
+              foo: operation.operationName,
+            },
+          }),
         },
-      });
-    });
+      }),
+      nullLink,
+    ]);
 
-    test('should not attach the error data if the option is disabled', (done) => {
-      const link = ApolloLink.from([
-        new SentryLink({ breadcrumb: { includeError: false } }),
-        new ApolloLink(() => new Observable(
-          (observer) => observer.error(new Error('Something went wrong')),
-        )),
-      ]);
+    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+      complete: () => {
+        Sentry.captureException(new Error());
 
-      execute(link, { query: TEST_QUERY }).subscribe({
-        error: (exception) => {
-          Sentry.captureException(exception);
+        const [report] = testkit.reports();
+        const [breadcrumb] = report.breadcrumbs;
 
-          const [report] = testkit.reports();
-          const [breadcrumb] = report.breadcrumbs;
+        expect(breadcrumb.data?.foo).toBe('Foo');
 
-          expect(breadcrumb.data?.error).toBeUndefined();
-
-          done();
-        },
-      });
-    });
-
-    test('should not set the transaction if the option is disabled', () => {
-      const link = new SentryLink({ setTransaction: false });
-      const breadcrumb = new OperationBreadcrumb();
-      const operation = new Operation(OperationStub);
-
-      link.fillBreadcrumb(breadcrumb, operation);
-
-      Sentry.captureException(new Error('test error'));
-      const [report] = testkit.reports();
-      const { originalReport } = report;
-
-      expect(originalReport.transaction).toBeUndefined();
-    });
-
-    test('should not set the fingerprint if the option is disabled', () => {
-      const link = new SentryLink({ setFingerprint: false });
-      const breadcrumb = new OperationBreadcrumb();
-      const operation = new Operation(OperationStub);
-
-      link.fillBreadcrumb(breadcrumb, operation);
-
-      Sentry.captureException(new Error('test error'));
-      const [report] = testkit.reports();
-      const { originalReport } = report;
-
-      expect(originalReport.fingerprint).toBeUndefined();
-    });
-
-    test('should add context keys to the breadcrumb', () => {
-      const keys = ['headers', 'someOtherContext.lorem.ipsum'];
-      const link = new SentryLink({ breadcrumb: { includeContextKeys: keys } });
-      const breadcrumb = new OperationBreadcrumb();
-      const operation = new Operation(OperationStub);
-      const context = operation['getContextKeys'](keys);
-
-      link.fillBreadcrumb(breadcrumb, operation);
-      link.attachBreadcrumbToSentry(breadcrumb);
-      Sentry.captureException(new Error('Error'));
-
-      const [report] = testkit.reports();
-      const [crumb] = report.breadcrumbs;
-
-      expect(crumb.data?.context).toBe(stringifyObject(context));
-    });
-
-    test('should allow filtering out operations', (done) => {
-      const filter = () => false;
-      const link = ApolloLink.from([
-        new SentryLink({ filter }),
-        new ApolloLink(() => new Observable((observer) => {
-          observer.next(<any>{ status: 200, data: { success: true } });
-          observer.complete();
-        })),
-      ]);
-
-      execute(link, { query: TEST_QUERY }).subscribe({
-        complete: () => {
-          Sentry.captureException(new Error('We need to throw something'));
-          const [report] = testkit.reports();
-
-          expect(report.breadcrumbs).toHaveLength(0);
-
-          done();
-        },
-      });
-    });
-
-    test('should allow altering the breadcrumb with beforeBreadcrumb', (done) => {
-      const beforeBreadcrumb = (breadcrumb: OperationBreadcrumb) => breadcrumb.setMessage('Test message');
-
-      const link = ApolloLink.from([
-        new SentryLink({ beforeBreadcrumb }),
-        new ApolloLink(() => new Observable((observer) => {
-          observer.next(<any>{ status: 200, data: { success: true } });
-          observer.complete();
-        })),
-      ]);
-
-      execute(link, { query: TEST_QUERY }).subscribe({
-        complete: () => {
-          Sentry.captureException(new Error('We need to throw something'));
-          const [report] = testkit.reports();
-          const [crumb] = report.breadcrumbs;
-
-          expect(crumb.message).toBe('Test message');
-
-          done();
-        },
-      });
+        done();
+      },
     });
   });
 });
