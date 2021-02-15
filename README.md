@@ -13,6 +13,7 @@ Apollo Link middleware to enrich SentryJS events with GraphQL data.
 yarn add apollo-link-sentry
 ```
 
+**Note**: Due to a release issue, v3.0.0 of this package has been unpublished. Please use v3.0.1
 **Note**: starting from v2.0.0 of this package we support `@apollo/client` v3.0.
 
 ## Features
