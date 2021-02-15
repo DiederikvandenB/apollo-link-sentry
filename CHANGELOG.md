@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.0.0...v3.0.1) (2021-02-15)
+
+
+### Chores
+
+* release with correct artifacts ([965483d](https://github.com/DiederikvandenB/apollo-link-sentry/commit/965483d6f9b2d59fd5174d6fda183b90564b40d6))
+
 ## [3.0.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v2.1.0...v3.0.0) (2021-02-11)
 
 Check [UPGRADE.md](UPGRADE.md#v2-to-v3) for more information on how to upgrade.
