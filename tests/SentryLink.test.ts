@@ -1,4 +1,4 @@
-import { ApolloLink, execute } from '@apollo/client/link/core';
+import { ApolloLink, execute, ServerError } from '@apollo/client/core';
 import * as Sentry from '@sentry/browser';
 import { Severity } from '@sentry/browser';
 import { GraphQLError, parse } from 'graphql';
@@ -143,6 +143,55 @@ describe('SentryLink', () => {
 
         const [breadcrumb] = report.breadcrumbs;
         expect(breadcrumb.level).toBe(Severity.Error);
+
+        done();
+      },
+    });
+  });
+
+  it('should allow inclusion of results from server errors', (done) => {
+    const message = 'some message';
+    const fetchResult = { errors: [{ message: 'GraphQL error message' }] };
+
+    const serverError: ServerError = {
+      name: 'bla',
+      message: message,
+      response: new Response(),
+      result: fetchResult,
+      statusCode: 500,
+    };
+
+    const link = ApolloLink.from([
+      new SentryLink({
+        attachBreadcrumbs: {
+          includeError: true,
+          includeFetchResult: true,
+        },
+      }),
+      new ApolloLink(
+        () =>
+          new Observable((observer) => {
+            observer.error(serverError);
+          }),
+      ),
+    ]);
+
+    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+      error: () => {
+        Sentry.captureException(new Error());
+
+        const [report] = testkit.reports();
+        expect(report.breadcrumbs).toHaveLength(1);
+
+        const [breadcrumb] = report.breadcrumbs as Array<GraphQLBreadcrumb>;
+        expect(breadcrumb.data.error).toEqual(
+          stringify({
+            name: serverError.name,
+            message: serverError.message,
+            statusCode: serverError.statusCode,
+          }),
+        );
+        expect(breadcrumb.data.fetchResult).toEqual(stringify(fetchResult));
 
         done();
       },
