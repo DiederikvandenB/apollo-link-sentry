@@ -1,10 +1,11 @@
 import { Operation } from '@apollo/client/core';
 import { addBreadcrumb, configureScope } from '@sentry/minimal';
-import { Scope } from '@sentry/types';
+import { Breadcrumb, Scope } from '@sentry/types';
 
 import { GraphQLBreadcrumb } from './breadcrumb';
 import { extractDefinition } from './operation';
 import { FullOptions } from './options';
+import { stringifyObjectKeys } from './utils';
 
 export function setTransaction(operation: Operation): void {
   const definition = extractDefinition(operation);
@@ -35,13 +36,15 @@ export function attachBreadcrumbToSentry(
   breadcrumb: GraphQLBreadcrumb,
   options: FullOptions,
 ): void {
-  if (
+  const transformed: Breadcrumb =
     options.attachBreadcrumbs &&
     typeof options.attachBreadcrumbs.transform === 'function'
-  ) {
-    addBreadcrumb(options.attachBreadcrumbs.transform(breadcrumb, operation));
-    return;
-  }
+      ? options.attachBreadcrumbs.transform(breadcrumb, operation)
+      : breadcrumb;
 
-  addBreadcrumb(breadcrumb);
+  transformed.data = stringifyObjectKeys(
+    transformed.data as Record<string, unknown>,
+  );
+
+  addBreadcrumb(transformed);
 }

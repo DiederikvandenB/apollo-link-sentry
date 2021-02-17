@@ -7,6 +7,7 @@ import Observable from 'zen-observable';
 
 import { GraphQLBreadcrumb, SentryLink, SentryLinkOptions } from '../src';
 import { DEFAULT_FINGERPRINT } from '../src/sentry';
+import { stringify } from '../src/utils';
 
 const { testkit, sentryTransport } = sentryTestkit();
 
@@ -103,14 +104,14 @@ describe('SentryLink', () => {
             expect(success.category).toBe('graphql.query');
             expect(success.level).toBe(Severity.Info);
             expect(success.data.operationName).toBe('SuccessQuery');
-            expect(success.data.fetchResult).toStrictEqual(result);
+            expect(success.data.fetchResult).toBe(stringify(result));
             expect(success.data).not.toHaveProperty('error');
 
             expect(failure.category).toBe('graphql.mutation');
             expect(failure.level).toBe(Severity.Error);
             expect(failure.data.operationName).toBe('FailureMutation');
             expect(failure.data).not.toHaveProperty('result');
-            expect(failure.data.error?.message).toEqual(error.message);
+            expect(failure.data.error).toBe(stringify(error));
 
             done();
           },
