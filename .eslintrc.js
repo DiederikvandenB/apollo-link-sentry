@@ -14,5 +14,9 @@ module.exports = {
       { 'newlines-between': 'always', alphabetize: { order: 'asc' } },
     ],
     'import/prefer-default-export': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      { ignoreRestSiblings: true },
+    ],
   },
 };
