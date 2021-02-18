@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.2](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.0.1...v3.0.2) (2021-02-18)
+
+
+### Features
+
+* Only include `result` from `ServerError` if `includeFetchResult` is set ([0f0a919](https://github.com/DiederikvandenB/apollo-link-sentry/commit/0f0a919da5d5c214a5bbce8524668e3f2f564534))
+* Stringify objects in breadcrumb data ([bd5ceda](https://github.com/DiederikvandenB/apollo-link-sentry/commit/bd5cedad760920f3c7ef06f6b501cb34cf7a19b4))
+
+
+### Chores
+
+* Update tooling to support new functionality and test cases ([3582fa6](https://github.com/DiederikvandenB/apollo-link-sentry/commit/3582fa6b93cac1dcba861844718e83eb159aa703))
+
 ### [3.0.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.0.0...v3.0.1) (2021-02-15)
 
 
