@@ -53,6 +53,8 @@ export interface FullOptions {
    * The uri of the GraphQL endpoint.
    *
    * Used to add context information, e.g. to breadcrumbs.
+   * 
+   * Defaults to undefined.
    */
   uri: undefined | string;
 
@@ -60,6 +62,8 @@ export interface FullOptions {
    * Set the Sentry transaction name to the GraphQL operation name.
    *
    * May be overwritten by other parts of your app.
+   * 
+   * Defaults to false.
    */
   setTransaction: true | false;
 
@@ -68,6 +72,8 @@ export interface FullOptions {
    *
    * Only the last executed operation will be added, not every operation that's been through the link.
    * May be overwritten by other parts of your app.
+   * 
+   * Defaults to false.
    */
   setFingerprint: true | false;
 
@@ -88,6 +94,8 @@ export interface FullOptions {
 export type AttachBreadcrumbsOptions = {
   /**
    * Include the full query string?
+   * 
+   * Defaults to false.
    */
   includeQuery: false | true;
 
@@ -95,6 +103,8 @@ export type AttachBreadcrumbsOptions = {
    * Include the variable values?
    *
    * Be careful not to leak sensitive information or send too much data.
+   * 
+   * Defaults to false.
    */
   includeVariables: false | true;
 
@@ -102,6 +112,8 @@ export type AttachBreadcrumbsOptions = {
    * Include the fetched result (data, errors, extensions)?
    *
    * Be careful not to leak sensitive information or send too much data.
+   * 
+   * Defaults to false.
    */
   includeFetchResult: false | true;
 
@@ -109,6 +121,8 @@ export type AttachBreadcrumbsOptions = {
    * Include the response error?
    *
    * Be careful not to leak sensitive information or send too much data.
+   * 
+   * Defaults to false.
    */
   includeError: false | true;
 
@@ -117,6 +131,8 @@ export type AttachBreadcrumbsOptions = {
    *
    * This is mostly useful for debugging purposes and not recommended for production environments,
    * see "Be careful what you include", unless carefully combined with `beforeBreadcrumb`.
+   * 
+   * Defaults to false.
    */
   includeCache: false | true;
 
@@ -125,6 +141,8 @@ export type AttachBreadcrumbsOptions = {
    *
    * Accepts a list of keys in dot notation, e.g. `foo.bar`. Can be useful to include extra
    * information such as headers.
+   * 
+   * Defaults to false.
    */
   includeContext: false | NonEmptyArray<string>;
 
@@ -133,6 +151,8 @@ export type AttachBreadcrumbsOptions = {
    *
    * Can be used to add additional data from the operation or clean up included data.
    * Very useful in combination with options like `includeVariables` and `includeContextKeys`.
+   * 
+   * Defaults to undefined.
    */
   transform:
     | undefined
