@@ -1,0 +1,105 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "04:00"
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+  versioning-strategy: widen
+  ignore:
+  - dependency-name: eslint-config-airbnb-base
+    versions:
+    - "> 14.2.0"
+  - dependency-name: eslint-config-airbnb-typescript
+    versions:
+    - "> 7.2.1"
+  - dependency-name: eslint
+    versions:
+    - 7.20.0
+    - 7.21.0
+    - 7.22.0
+    - 7.23.0
+    - 7.24.0
+  - dependency-name: "@typescript-eslint/eslint-plugin"
+    versions:
+    - 4.15.1
+    - 4.15.2
+    - 4.16.1
+    - 4.17.0
+    - 4.18.0
+    - 4.19.0
+    - 4.20.0
+    - 4.21.0
+  - dependency-name: "@apollo/client"
+    versions:
+    - 3.3.10
+    - 3.3.11
+    - 3.3.12
+    - 3.3.13
+    - 3.3.14
+    - 3.3.7
+    - 3.3.8
+  - dependency-name: "@sentry/minimal"
+    versions:
+    - 6.0.1
+    - 6.0.3
+    - 6.0.4
+    - 6.1.0
+    - 6.2.0
+    - 6.2.1
+    - 6.2.2
+    - 6.2.3
+    - 6.2.5
+  - dependency-name: "@sentry/browser"
+    versions:
+    - 6.0.1
+    - 6.1.0
+    - 6.2.0
+    - 6.2.1
+    - 6.2.2
+    - 6.2.3
+    - 6.2.5
+  - dependency-name: "@sentry/types"
+    versions:
+    - 6.0.1
+    - 6.0.3
+    - 6.0.4
+    - 6.1.0
+    - 6.2.0
+    - 6.2.1
+    - 6.2.2
+    - 6.2.3
+    - 6.2.5
+  - dependency-name: ts-jest
+    versions:
+    - 26.5.0
+    - 26.5.1
+    - 26.5.2
+    - 26.5.3
+    - 26.5.4
+  - dependency-name: typescript
+    versions:
+    - 4.1.5
+    - 4.2.2
+    - 4.2.3
+  - dependency-name: eslint-config-prettier
+    versions:
+    - 8.0.0
+    - 8.1.0
+  - dependency-name: standard-version
+    versions:
+    - 9.1.0
+    - 9.1.1
+  - dependency-name: sentry-testkit
+    versions:
+    - 3.2.4
+    - 3.3.0
+  - dependency-name: tslib
+    versions:
+    - 2.1.0
+  - dependency-name: graphql
+    versions:
+    - 15.5.0
