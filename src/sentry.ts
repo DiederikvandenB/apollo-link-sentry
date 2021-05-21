@@ -13,7 +13,7 @@ export function setTransaction(operation: Operation): void {
 
   if (name) {
     configureScope((scope: Scope) => {
-      scope.setTransactionName(name.value);
+      scope.setTransactionName?.(name.value);
     });
   }
 }
