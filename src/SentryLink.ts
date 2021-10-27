@@ -62,6 +62,14 @@ export class SentryLink extends ApolloLink {
               // We must have a breadcrumb if attachBreadcrumbs was set
               (breadcrumb as GraphQLBreadcrumb).data.fetchResult = result;
             }
+            if (
+              this.options.attachBreadcrumbs.includeError &&
+              hasErrors(result) &&
+              result.errors
+            ) {
+              // We must have a breadcrumb if attachBreadcrumbs was set
+              (breadcrumb as GraphQLBreadcrumb).data.error = result.errors[0];
+            }
           }
 
           originalObserver.next(result);
@@ -130,8 +138,11 @@ function isServerError(error: unknown): error is ServerError {
   );
 }
 
+function hasErrors(result: FetchResult): boolean {
+  if (!result || !result.errors) return false;
+  return result.errors.length > 0;
+}
+
 function severityForResult(result: FetchResult): Severity {
-  return result.errors && result.errors.length > 0
-    ? Severity.Error
-    : Severity.Info;
+  return hasErrors(result) ? Severity.Error : Severity.Info;
 }
