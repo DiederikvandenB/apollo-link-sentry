@@ -29,12 +29,6 @@ describe('extractDefinition', () => {
         query: parse(`
           fragment CoreCommentFields on Comment {
             id
-            postedBy {
-              username
-              displayName
-            }
-            createdAt
-            content
           }
           query Comments {
             ...CoreCommentFields
