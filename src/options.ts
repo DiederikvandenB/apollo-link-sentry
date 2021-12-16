@@ -28,7 +28,7 @@ export interface FullOptions {
    *
    * May be overwritten by other parts of your app.
    * 
-   * Defaults to false.
+   * Defaults to true.
    */
   setTransaction: true | false;
 
@@ -38,7 +38,7 @@ export interface FullOptions {
    * Only the last executed operation will be added, not every operation that's been through the link.
    * May be overwritten by other parts of your app.
    * 
-   * Defaults to false.
+   * Defaults to true.
    */
   setFingerprint: true | false;
 
