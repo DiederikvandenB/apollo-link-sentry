@@ -1,4 +1,9 @@
-import { ApolloLink, execute, ServerError } from '@apollo/client/core';
+import {
+  ApolloError,
+  ApolloLink,
+  execute,
+  ServerError,
+} from '@apollo/client/core';
 import * as Sentry from '@sentry/browser';
 import { Severity } from '@sentry/browser';
 import { GraphQLError, parse } from 'graphql';
@@ -114,6 +119,52 @@ describe('SentryLink', () => {
             done();
           },
         });
+      },
+    });
+  });
+
+  it('should attach a breadcrumb with partial errors', (done) => {
+    const errors = [
+      new GraphQLError('partial failure'),
+      new GraphQLError('another failure'),
+    ];
+    const result = {
+      data: { foo: true },
+      errors: errors,
+    };
+    const withPartialErrors = ApolloLink.from([
+      new SentryLink({
+        attachBreadcrumbs: { includeFetchResult: true, includeError: true },
+      }),
+      new ApolloLink(
+        () =>
+          new Observable((observer) => {
+            observer.next(result);
+            observer.complete();
+          }),
+      ),
+    ]);
+
+    execute(withPartialErrors, {
+      query: parse(`query PartialErrors { foo }`),
+    }).subscribe({
+      complete() {
+        Sentry.captureException(new Error());
+
+        const [report] = testkit.reports();
+        expect(report.breadcrumbs).toHaveLength(1);
+
+        const [breadcrumb] = report.breadcrumbs as Array<GraphQLBreadcrumb>;
+
+        expect(breadcrumb.category).toBe('graphql.query');
+        expect(breadcrumb.level).toBe(Severity.Error);
+        expect(breadcrumb.data.operationName).toBe('PartialErrors');
+        expect(breadcrumb.data.fetchResult).toBe(stringify(result));
+        expect(breadcrumb.data.error).toBe(
+          stringify(new ApolloError({ graphQLErrors: errors })),
+        );
+
+        done();
       },
     });
   });

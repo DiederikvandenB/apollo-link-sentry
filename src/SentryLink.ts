@@ -1,4 +1,5 @@
 import {
+  ApolloError,
   ApolloLink,
   FetchResult,
   NextLink,
@@ -61,6 +62,17 @@ export class SentryLink extends ApolloLink {
             if (this.options.attachBreadcrumbs.includeFetchResult) {
               // We must have a breadcrumb if attachBreadcrumbs was set
               (breadcrumb as GraphQLBreadcrumb).data.fetchResult = result;
+            }
+
+            if (
+              this.options.attachBreadcrumbs.includeError &&
+              result.errors &&
+              result.errors.length > 1
+            ) {
+              // We must have a breadcrumb if attachBreadcrumbs was set
+              (breadcrumb as GraphQLBreadcrumb).data.error = new ApolloError({
+                graphQLErrors: result.errors,
+              });
             }
           }
 
