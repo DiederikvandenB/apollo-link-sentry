@@ -96,10 +96,8 @@ describe('SentryLink', () => {
             const [report] = testkit.reports();
             expect(report.breadcrumbs).toHaveLength(2);
 
-            const [
-              success,
-              failure,
-            ] = report.breadcrumbs as Array<GraphQLBreadcrumb>;
+            const [success, failure] =
+              report.breadcrumbs as Array<GraphQLBreadcrumb>;
 
             expect(success.category).toBe('graphql.query');
             expect(success.level).toBe(Severity.Info);
