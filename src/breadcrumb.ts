@@ -26,7 +26,8 @@ export function makeBreadcrumb(
   options: FullOptions,
 ): GraphQLBreadcrumb {
   // We validated this is set before calling this function
-  const attachBreadcrumbs = options.attachBreadcrumbs as AttachBreadcrumbsOptions;
+  const attachBreadcrumbs =
+    options.attachBreadcrumbs as AttachBreadcrumbsOptions;
 
   const definition = extractDefinition(operation);
 

@@ -1,14 +1,15 @@
 # Apollo Link Sentry
-Apollo Link middleware to enrich SentryJS events with GraphQL data.
 
-[![npm](https://img.shields.io/npm/v/apollo-link-sentry)](https://www.npmjs.com/package/apollo-link-sentry)
+Apollo Link to enrich Sentry events with GraphQL data
+
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/DiederikvandenB/apollo-link-sentry/Test)](https://github.com/DiederikvandenB/apollo-link-sentry/actions)
-[![Coveralls github branch](https://img.shields.io/coveralls/github/DiederikvandenB/apollo-link-sentry/master)](https://coveralls.io/github/DiederikvandenB/apollo-link-sentry?branch=master)
+[![Code Coverage](https://img.shields.io/coveralls/github/DiederikvandenB/apollo-link-sentry/master)](https://coveralls.io/github/DiederikvandenB/apollo-link-sentry?branch=master)
+
+[![npm-version](https://img.shields.io/npm/v/apollo-link-sentry)](https://www.npmjs.com/package/apollo-link-sentry)
 [![npm-downloads](https://img.shields.io/npm/dt/apollo-link-sentry)](https://www.npmjs.com/package/apollo-link-sentry)
-[![David](https://img.shields.io/david/diederikvandenb/apollo-link-sentry)](https://github.com/diederikvandenb/apollo-link-sentry)
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=DiederikvandenB/apollo-link-sentry)](https://dependabot.com)
 
 ## Installation
+
 ```
 yarn add apollo-link-sentry
 ```
@@ -17,6 +18,7 @@ yarn add apollo-link-sentry
 **Note**: starting from v2.0.0 of this package we support `@apollo/client` v3.0.
 
 ## Features
+
 Turn this:
 
 <p align="center"><img src="https://raw.githubusercontent.com/DiederikvandenB/apollo-link-sentry/master/screenshots/before.png" alt="Before" width="auto" align="center" /></p>
@@ -26,7 +28,9 @@ Into this:
 <p align="center"><img src="https://raw.githubusercontent.com/DiederikvandenB/apollo-link-sentry/master/screenshots/after.png" alt="After" width="auto" /></p>
 
 ## Basic setup
+
 Initialize Sentry as you would normally. Then, add `apollo-link-sentry` to your Apollo Client's `link` array:
+
 ```js
 import { SentryLink } from 'apollo-link-sentry';
 
@@ -40,6 +44,7 @@ const client = new ApolloClient({
 ```
 
 ## Options
+
 ```typescript
 export interface FullOptions {
   /**
@@ -161,20 +166,35 @@ export type AttachBreadcrumbsOptions = {
 ```
 
 ### Compatibility with other Apollo Links
-`apollo-link-sentry` aims to be friendly with other `apollo-link` packages, in the sense that we would like for you to be able to attach as much data as you want. For example, if you would like to add the HTTP headers you set with `apollo-link-context`, you can do that by setting `includeContextKeys: ['headers']`.
+
+`apollo-link-sentry` aims to be friendly with other `apollo-link` packages,
+in the sense that we would like for you to be able to attach as much data as you want.
+For example, if you would like to add the HTTP headers you set with `apollo-link-context`,
+you can do that by setting `includeContextKeys: ['headers']`.
 
 In case you find that there's a piece of data you're missing, feel free to open an issue.
 
 ### Be careful what you include
-Please note that Sentry sets some limits to how big events can be. For instance, **events greater than 200KiB are immediately dropped (pre decompression)**. More information on that [here](https://docs.sentry.io/accounts/quotas/#attributes-limits). Be especially careful with the `includeCache` option, as caches can become quite large.
 
-Furthermore, much of the data you are sending to Sentry can include (sensitive) personal information. This might lead you to violating the terms of the GDPR. Use Sentry's `beforeBreadcrumb` function to filter out all sensitive data.
+Please note that Sentry sets some limits to how big events can be.
+For instance, **events greater than 200KiB are immediately dropped (pre decompression)**.
+More information on that [here](https://docs.sentry.io/accounts/quotas/#attributes-limits).
+Be especially careful with the `includeCache` option, as caches can become quite large.
+
+Furthermore, much of the data you are sending to Sentry can include (sensitive) personal information.
+This might lead you to violating the terms of the GDPR.
+Use Sentry's `beforeBreadcrumb` function to filter out all sensitive data.
 
 ## Exclude redundant `fetch` breadcrumbs
-By default, Sentry attaches all fetch events as breadcrumbs. Since this package tracks GraphQL requests as breadcrumbs,
+
+By default, Sentry attaches all fetch events as breadcrumbs.
+Since this package tracks GraphQL requests as breadcrumbs,
 they would show up duplicated in Sentry.
 
-1. Disable the default integration for fetch requests. Note that this is only recommended if you **only** use GraphQL requests in your application. The default integration can be disabled like this:
+1. Disable the default integration for fetch requests.
+   Note that this is only recommended if you **only** use GraphQL requests in your application.
+   The default integration can be disabled like this:
+
 ```js
 Sentry.init({
   ...,
@@ -185,7 +205,9 @@ Sentry.init({
 ```
 
 2. Use the `beforeBreadcrumb` option of Sentry to filter out the duplicates.
-The helpers in this package recognize every breadcrumb of category `fetch` where the URL contains `/graphql` as a GraphQL request.
+   The helpers in this package recognize every breadcrumb of category `fetch`
+   where the URL contains `/graphql` as a GraphQL request.
+
 ```js
 import { excludeGraphQLFetch } from 'apollo-link-sentry';
 
@@ -207,31 +229,41 @@ Sentry.init({
 ```
 
 ## FAQ
+
 - **I don't see any events appearing in my Sentry stream**
+
   - Note that this package (currently) only adds breadcrumbs. This means that you are still responsible for reporting errors to Sentry. You can do this by calling `Sentry.captureException()`. See this example:
+
   ```jsx
   <Mutation mutation={ERROR_MUTATION}>
     {(mutate, { data, error, loading }) => {
       if (loading) return <div>loading</div>;
       if (error) return <div>{error.toString()}</div>;
-  
-      const onClick = () => mutate().catch((error) => {
-        Sentry.captureException(error);
-      });
-  
-      return <div>
-        <button type="button" onClick={() => onClick()}>Mutate</button>
-        {JSON.stringify(data)}
-      </div>
+
+      const onClick = () =>
+        mutate().catch((error) => {
+          Sentry.captureException(error);
+        });
+
+      return (
+        <div>
+          <button type="button" onClick={() => onClick()}>
+            Mutate
+          </button>
+          {JSON.stringify(data)}
+        </div>
+      );
     }}
   </Mutation>
   ```
 
 ## Caveats
+
 - This package has not been tested for subscriptions
 - We also need to test for different links, i.e. `apollo-link-rest`
 
 ## Roadmap / notes
+
 - Write best practice scenario:
   - setting `includeError` true
   - catch errors manually
