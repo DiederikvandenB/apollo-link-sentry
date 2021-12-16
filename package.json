@@ -24,6 +24,7 @@
     "test:coverage": "jest --coverage --watchAll=false",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
+    "prettify": "prettier --write README.md UPGRADE.md LICENSE.md",
     "prerelease": "yarn test && yarn build",
     "release": "standard-version",
     "deploy": "yarn publish --non-interactive"
@@ -54,7 +55,7 @@
     "isomorphic-fetch": "^3.0.0",
     "jest": "^26.5.3",
     "jest-spec-reporter": "^1.0.14",
-    "prettier": "^2.2.1",
+    "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
     "sentry-testkit": "^3.2.1",
     "standard-version": "^9.0.0",
