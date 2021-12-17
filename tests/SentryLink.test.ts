@@ -123,6 +123,49 @@ describe('SentryLink', () => {
     });
   });
 
+  it('should attach a breadcrumb with an error and null data', (done) => {
+    const errors = [new GraphQLError('failure')];
+    const result = {
+      data: { foo: null },
+      errors: errors,
+    };
+    const withPartialErrors = ApolloLink.from([
+      new SentryLink({
+        attachBreadcrumbs: { includeError: true },
+      }),
+      new ApolloLink(
+        () =>
+          new Observable((observer) => {
+            observer.next(result);
+            observer.complete();
+          }),
+      ),
+    ]);
+
+    execute(withPartialErrors, {
+      query: parse(`query PartialErrors { foo }`),
+    }).subscribe({
+      complete() {
+        Sentry.captureException(new Error());
+
+        const [report] = testkit.reports();
+        expect(report.breadcrumbs).toHaveLength(1);
+
+        const [breadcrumb] = report.breadcrumbs as Array<GraphQLBreadcrumb>;
+
+        expect(breadcrumb.category).toBe('graphql.query');
+        expect(breadcrumb.level).toBe(Severity.Error);
+        expect(breadcrumb.data.operationName).toBe('PartialErrors');
+        expect(breadcrumb.data.fetchResult).not.toBeDefined();
+        expect(breadcrumb.data.error).toBe(
+          stringify(new ApolloError({ graphQLErrors: errors })),
+        );
+
+        done();
+      },
+    });
+  });
+
   it('should attach a breadcrumb with partial errors', (done) => {
     const errors = [
       new GraphQLError('partial failure'),
