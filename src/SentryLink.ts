@@ -31,7 +31,7 @@ export class SentryLink extends ApolloLink {
   ): Observable<FetchResult> | null {
     const options = this.options;
 
-    if (!options.shouldHandleOperation?.(operation) ?? true) {
+    if (!(options.shouldHandleOperation?.(operation) ?? true)) {
       return forward(operation);
     }
 
