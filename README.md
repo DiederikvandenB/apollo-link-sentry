@@ -230,43 +230,30 @@ Sentry.init({
 
 ## FAQ
 
-- **I don't see any events appearing in my Sentry stream**
+### I don't see any events appearing in my Sentry stream
 
-  - Note that this package (currently) only adds breadcrumbs. This means that you are still responsible for reporting errors to Sentry. You can do this by calling `Sentry.captureException()`. See this example:
+This package only adds breadcrumbs, you are still responsible for reporting errors to Sentry.
+You can do this by calling `Sentry.captureException()`:
 
-  ```jsx
-  <Mutation mutation={ERROR_MUTATION}>
-    {(mutate, { data, error, loading }) => {
-      if (loading) return <div>loading</div>;
-      if (error) return <div>{error.toString()}</div>;
+```jsx
+<Mutation mutation={MUTATION_THAT_MIGHT_FAIL}>
+  {(mutate, { data, error, loading }) => {
+    if (loading) return <div>loading</div>;
+    if (error) return <div>{error.toString()}</div>;
 
-      const onClick = () =>
-        mutate().catch((error) => {
-          Sentry.captureException(error);
-        });
+    const onClick = () =>
+      mutate().catch((error) => {
+        Sentry.captureException(error);
+      });
 
-      return (
-        <div>
-          <button type="button" onClick={() => onClick()}>
-            Mutate
-          </button>
-          {JSON.stringify(data)}
-        </div>
-      );
-    }}
-  </Mutation>
-  ```
-
-## Caveats
-
-- This package has not been tested for subscriptions
-- We also need to test for different links, i.e. `apollo-link-rest`
-
-## Roadmap / notes
-
-- Write best practice scenario:
-  - setting `includeError` true
-  - catch errors manually
-  - throw custom error
-  - how to use together with `apollo-link-error`?
-    - does it report errors twice if you do sentry capture there and in your catch
+    return (
+      <div>
+        <button type="button" onClick={() => onClick()}>
+          Mutate
+        </button>
+        {JSON.stringify(data)}
+      </div>
+    );
+  }}
+</Mutation>
+```
