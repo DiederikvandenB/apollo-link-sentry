@@ -69,7 +69,7 @@ export class SentryLink extends ApolloLink {
               result.errors &&
               result.errors.length > 0
             ) {
-              // Include any errors if the option is set
+              // We must have a breadcrumb if attachBreadcrumbs was set
               (breadcrumb as GraphQLBreadcrumb).data.error = new ApolloError({
                 graphQLErrors: result.errors,
               });
