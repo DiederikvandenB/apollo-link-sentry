@@ -1,3 +1,10 @@
+## [3.1.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.1.0...v3.1.1) (2022-02-27)
+
+
+### Bug Fixes
+
+* import only from @sentry/browser ([23886b1](https://github.com/DiederikvandenB/apollo-link-sentry/commit/23886b1e26b211ecdffebaa24e051e3eeb0e7939))
+
 # [3.1.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.0.3...v3.1.0) (2022-02-27)
 
 
