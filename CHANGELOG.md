@@ -1,3 +1,17 @@
+## [3.0.3](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.0.2...v3.0.3) (2022-02-27)
+
+
+### Bug Fixes
+
+* display correct name for operations with fragments ([#411](https://github.com/DiederikvandenB/apollo-link-sentry/issues/411)) ([6b759b9](https://github.com/DiederikvandenB/apollo-link-sentry/commit/6b759b9d61e24776592d09df89efbec72105572e))
+* include errors in breadcrumbs starting with the first ([0d272ce](https://github.com/DiederikvandenB/apollo-link-sentry/commit/0d272cef0e729bc1ff3317d361c515d0ab78f028))
+* include partial GraphQL errors in breadcrumbs ([#410](https://github.com/DiederikvandenB/apollo-link-sentry/issues/410)) ([a3d929d](https://github.com/DiederikvandenB/apollo-link-sentry/commit/a3d929dc19dae5b8b20f3a90177fe496b76bfd8f))
+
+
+### Performance Improvements
+
+* avoid repeated property accesses in SentryLink.ts ([#422](https://github.com/DiederikvandenB/apollo-link-sentry/issues/422)) ([b32e4f5](https://github.com/DiederikvandenB/apollo-link-sentry/commit/b32e4f5f143392f174c35881014523c8210d7204))
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
