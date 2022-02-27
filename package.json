@@ -35,7 +35,7 @@
   "peerDependencies": {
     "@apollo/client": "^3.2.3",
     "@sentry/browser": "^6.0.4",
-    "graphql": "^15.4.0",
+    "graphql": "15 - 16",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
