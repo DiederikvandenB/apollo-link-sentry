@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.0.3...v3.1.0) (2022-02-27)
+
+
+### Features
+
+* support graphql 16 ([#424](https://github.com/DiederikvandenB/apollo-link-sentry/issues/424)) ([1523e5f](https://github.com/DiederikvandenB/apollo-link-sentry/commit/1523e5f4862bf2ce27535e23ed4ee1af9c4c590c))
+
 ## [3.0.3](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.0.2...v3.0.3) (2022-02-27)
 
 
