@@ -4,6 +4,7 @@ Apollo Link to enrich Sentry events with GraphQL data
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/DiederikvandenB/apollo-link-sentry/Test)](https://github.com/DiederikvandenB/apollo-link-sentry/actions)
 [![Code Coverage](https://img.shields.io/coveralls/github/DiederikvandenB/apollo-link-sentry/master)](https://coveralls.io/github/DiederikvandenB/apollo-link-sentry?branch=master)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 [![npm-version](https://img.shields.io/npm/v/apollo-link-sentry)](https://www.npmjs.com/package/apollo-link-sentry)
 [![npm-downloads](https://img.shields.io/npm/dt/apollo-link-sentry)](https://www.npmjs.com/package/apollo-link-sentry)
@@ -21,11 +22,15 @@ yarn add apollo-link-sentry
 
 Turn this:
 
-<p align="center"><img src="https://raw.githubusercontent.com/DiederikvandenB/apollo-link-sentry/master/screenshots/before.png" alt="Before" width="auto" align="center" /></p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/DiederikvandenB/apollo-link-sentry/master/screenshots/before.png" alt="Before" width="auto" />
+</p>
 
 Into this:
 
-<p align="center"><img src="https://raw.githubusercontent.com/DiederikvandenB/apollo-link-sentry/master/screenshots/after.png" alt="After" width="auto" /></p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/DiederikvandenB/apollo-link-sentry/master/screenshots/after.png" alt="After" width="auto" />
+</p>
 
 ## Basic setup
 
@@ -58,7 +63,7 @@ export interface FullOptions {
    * The uri of the GraphQL endpoint.
    *
    * Used to add context information, e.g. to breadcrumbs.
-   * 
+   *
    * Defaults to undefined.
    */
   uri: undefined | string;
@@ -67,7 +72,7 @@ export interface FullOptions {
    * Set the Sentry transaction name to the GraphQL operation name.
    *
    * May be overwritten by other parts of your app.
-   * 
+   *
    * Defaults to true.
    */
   setTransaction: true | false;
@@ -77,7 +82,7 @@ export interface FullOptions {
    *
    * Only the last executed operation will be added, not every operation that's been through the link.
    * May be overwritten by other parts of your app.
-   * 
+   *
    * Defaults to true.
    */
   setFingerprint: true | false;
@@ -99,7 +104,7 @@ export interface FullOptions {
 export type AttachBreadcrumbsOptions = {
   /**
    * Include the full query string?
-   * 
+   *
    * Defaults to false.
    */
   includeQuery: false | true;
@@ -108,7 +113,7 @@ export type AttachBreadcrumbsOptions = {
    * Include the variable values?
    *
    * Be careful not to leak sensitive information or send too much data.
-   * 
+   *
    * Defaults to false.
    */
   includeVariables: false | true;
@@ -117,7 +122,7 @@ export type AttachBreadcrumbsOptions = {
    * Include the fetched result (data, errors, extensions)?
    *
    * Be careful not to leak sensitive information or send too much data.
-   * 
+   *
    * Defaults to false.
    */
   includeFetchResult: false | true;
@@ -126,7 +131,7 @@ export type AttachBreadcrumbsOptions = {
    * Include the response error?
    *
    * Be careful not to leak sensitive information or send too much data.
-   * 
+   *
    * Defaults to false.
    */
   includeError: false | true;
@@ -136,7 +141,7 @@ export type AttachBreadcrumbsOptions = {
    *
    * This is mostly useful for debugging purposes and not recommended for production environments,
    * see "Be careful what you include", unless carefully combined with `beforeBreadcrumb`.
-   * 
+   *
    * Defaults to false.
    */
   includeCache: false | true;
@@ -146,7 +151,7 @@ export type AttachBreadcrumbsOptions = {
    *
    * Accepts a list of keys in dot notation, e.g. `foo.bar`. Can be useful to include extra
    * information such as headers.
-   * 
+   *
    * Defaults to false.
    */
   includeContext: false | NonEmptyArray<string>;
@@ -156,7 +161,7 @@ export type AttachBreadcrumbsOptions = {
    *
    * Can be used to add additional data from the operation or clean up included data.
    * Very useful in combination with options like `includeVariables` and `includeContextKeys`.
-   * 
+   *
    * Defaults to undefined.
    */
   transform:
