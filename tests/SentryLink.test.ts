@@ -1,6 +1,6 @@
 import { ApolloLink, execute, ServerError } from '@apollo/client/core';
 import * as Sentry from '@sentry/browser';
-import { Severity } from '@sentry/browser';
+import { Severity } from '@sentry/types';
 import { GraphQLError, parse } from 'graphql';
 import sentryTestkit from 'sentry-testkit';
 import Observable from 'zen-observable';
