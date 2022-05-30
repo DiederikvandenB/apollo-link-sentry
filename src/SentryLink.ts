@@ -6,7 +6,7 @@ import {
   Operation,
   ServerError,
 } from '@apollo/client/core';
-import { Severity } from '@sentry/browser';
+import { SeverityLevel } from '@sentry/types';
 import Observable from 'zen-observable';
 
 import { GraphQLBreadcrumb, makeBreadcrumb } from './breadcrumb';
@@ -143,8 +143,8 @@ function isServerError(error: unknown): error is ServerError {
   );
 }
 
-function severityForResult(result: FetchResult): Severity {
+function severityForResult(result: FetchResult): SeverityLevel {
   return result.errors && result.errors.length > 0
-    ? Severity.Error
-    : Severity.Info;
+    ? SeverityLevel.Error
+    : SeverityLevel.Info;
 }
