@@ -105,7 +105,7 @@ describe('SentryLink', () => {
               report.breadcrumbs as Array<GraphQLBreadcrumb>;
 
             expect(success.category).toBe('graphql.query');
-            expect(success.level).toBe(Severity.Info);
+            expect(success.level).toBe(SeverityLevel.Info);
             expect(success.data.operationName).toBe('SuccessQuery');
             expect(success.data.fetchResult).toBe(stringify(result));
             expect(success.data).not.toHaveProperty('error');
