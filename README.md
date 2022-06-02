@@ -160,7 +160,7 @@ export type AttachBreadcrumbsOptions = {
    * Modify the breadcrumb right before it is sent.
    *
    * Can be used to add additional data from the operation or clean up included data.
-   * Very useful in combination with options like `includeVariables` and `includeContextKeys`.
+   * Very useful in combination with options like `includeVariables` and `includeContext`.
    *
    * Defaults to undefined.
    */
