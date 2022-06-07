@@ -9,17 +9,13 @@
     "lib": ["es6", "esnext", "dom"],
     "types": ["jest"],
     "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
     "removeComments": true,
     "importHelpers": true,
     "strict": true,
-    "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "allowJs": true,
     "forceConsistentCasingInFileNames": true
   }
 }
