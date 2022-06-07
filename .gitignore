@@ -1,4 +1,4 @@
 # Directories
 lib
 node_modules
-tests/coverage
+coverage

@@ -1,4 +1,4 @@
-// https://jestjs.io/docs/en/configuration.html
+// https://jestjs.io/docs/configuration
 
 module.exports = {
   // Automatically clear mock calls and instances between every test
@@ -9,9 +9,6 @@ module.exports = {
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
   collectCoverageFrom: ['src/**/*'],
-
-  // The directory where Jest should output its coverage files
-  coverageDirectory: 'tests/coverage',
 
   // Make calling deprecated APIs throw helpful error messages
   errorOnDeprecated: true,
