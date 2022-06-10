@@ -5,7 +5,7 @@ import {
   ServerError,
 } from '@apollo/client/core';
 import * as Sentry from '@sentry/browser';
-import { Severity } from '@sentry/types';
+import { SeverityLevel } from '@sentry/types';
 import { GraphQLError, parse } from 'graphql';
 import sentryTestkit from 'sentry-testkit';
 import Observable from 'zen-observable';
@@ -105,13 +105,13 @@ describe('SentryLink', () => {
               report.breadcrumbs as Array<GraphQLBreadcrumb>;
 
             expect(success.category).toBe('graphql.query');
-            expect(success.level).toBe(SeverityLevel.Info);
+            expect(success.level).toBe('info' as SeverityLevel);
             expect(success.data.operationName).toBe('SuccessQuery');
             expect(success.data.fetchResult).toBe(stringify(result));
             expect(success.data).not.toHaveProperty('error');
 
             expect(failure.category).toBe('graphql.mutation');
-            expect(failure.level).toBe(Severity.Error);
+            expect(failure.level).toBe('error' as SeverityLevel);
             expect(failure.data.operationName).toBe('FailureMutation');
             expect(failure.data).not.toHaveProperty('result');
             expect(failure.data.error).toBe(stringify(error));
@@ -154,7 +154,7 @@ describe('SentryLink', () => {
         const [breadcrumb] = report.breadcrumbs as Array<GraphQLBreadcrumb>;
 
         expect(breadcrumb.category).toBe('graphql.query');
-        expect(breadcrumb.level).toBe(Severity.Error);
+        expect(breadcrumb.level).toBe('error' as SeverityLevel);
         expect(breadcrumb.data.operationName).toBe('PartialErrors');
         expect(breadcrumb.data.fetchResult).not.toBeDefined();
         expect(breadcrumb.data.error).toBe(
@@ -200,7 +200,7 @@ describe('SentryLink', () => {
         const [breadcrumb] = report.breadcrumbs as Array<GraphQLBreadcrumb>;
 
         expect(breadcrumb.category).toBe('graphql.query');
-        expect(breadcrumb.level).toBe(Severity.Error);
+        expect(breadcrumb.level).toBe('error' as SeverityLevel);
         expect(breadcrumb.data.operationName).toBe('PartialErrors');
         expect(breadcrumb.data.fetchResult).toBe(stringify(result));
         expect(breadcrumb.data.error).toBe(
@@ -234,7 +234,7 @@ describe('SentryLink', () => {
         expect(report.breadcrumbs).toHaveLength(1);
 
         const [breadcrumb] = report.breadcrumbs;
-        expect(breadcrumb.level).toBe(Severity.Error);
+        expect(breadcrumb.level).toBe('error' as SeverityLevel);
 
         done();
       },

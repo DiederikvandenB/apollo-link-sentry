@@ -94,7 +94,7 @@ export class SentryLink extends ApolloLink {
         error: (error) => {
           if (attachBreadcrumbs) {
             // We must have a breadcrumb if attachBreadcrumbs was set
-            (breadcrumb as GraphQLBreadcrumb).level = Severity.Error;
+            (breadcrumb as GraphQLBreadcrumb).level = 'error' as SeverityLevel;
 
             let scrubbedError;
             if (isServerError(error)) {
@@ -144,7 +144,5 @@ function isServerError(error: unknown): error is ServerError {
 }
 
 function severityForResult(result: FetchResult): SeverityLevel {
-  return result.errors && result.errors.length > 0
-    ? SeverityLevel.Error
-    : SeverityLevel.Info;
+  return result.errors && result.errors.length > 0 ? 'error' : 'info';
 }
