@@ -6,7 +6,7 @@ import {
   Operation,
   ServerError,
 } from '@apollo/client/core';
-import { SeverityLevel } from '@sentry/types';
+import type { SeverityLevel } from '@sentry/types';
 import Observable from 'zen-observable';
 
 import { GraphQLBreadcrumb, makeBreadcrumb } from './breadcrumb';
