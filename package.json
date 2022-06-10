@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-sentry",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "license": "MIT",
   "author": "Diederik van den Burger <diederikvandenburger@tab.capital>",
   "repository": "https://github.com/DiederikvandenB/apollo-link-sentry.git",
@@ -36,6 +36,7 @@
     "@apollo/client": "^3.2.3",
     "@sentry/browser": "^7.0.0",
     "graphql": "15 - 16",
+    "tslib": "^2.0.3",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
@@ -57,7 +58,7 @@
     "jest-spec-reporter": "^1.0.17",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
-    "semantic-release": "^18.0.1",
+    "semantic-release": "^19.0.3",
     "sentry-testkit": "^3.3.7",
     "ts-jest": "^27.1.1",
     "tsc-watch": "^4.5.0",

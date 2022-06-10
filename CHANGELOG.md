@@ -1,3 +1,10 @@
+## [3.1.2](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.1.1...v3.1.2) (2022-06-07)
+
+
+### Bug Fixes
+
+* remove source and declaration maps from build output ([db5f8a0](https://github.com/DiederikvandenB/apollo-link-sentry/commit/db5f8a0a4e0d551b47398e79e1616cd5e2d0134d))
+
 ## [3.1.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.1.0...v3.1.1) (2022-02-27)
 
 
