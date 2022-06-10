@@ -58,7 +58,7 @@
     "jest-spec-reporter": "^1.0.17",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
-    "semantic-release": "^18.0.1",
+    "semantic-release": "^19.0.3",
     "sentry-testkit": "^3.3.7",
     "ts-jest": "^27.1.1",
     "tsc-watch": "^4.5.0",
