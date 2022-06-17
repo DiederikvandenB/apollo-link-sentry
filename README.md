@@ -196,42 +196,45 @@ By default, Sentry attaches all fetch events as breadcrumbs.
 Since this package tracks GraphQL requests as breadcrumbs,
 they would show up duplicated in Sentry.
 
-1. Disable the default integration for fetch requests.
+You can use either one of the following options to exclude
+redundant `fetch` breadcrumbs:
+
+1. Disable the default integration for fetch requests entirely.
    Note that this is only recommended if you **only** use GraphQL requests in your application.
    The default integration can be disabled like this:
 
-```js
-Sentry.init({
-  ...,
-  defaultIntegrations: [
-    new Sentry.BrowserTracing({ traceFetch: false }),
-  ],
-});
-```
+   ```js
+   Sentry.init({
+     ...,
+     defaultIntegrations: [
+       new Sentry.BrowserTracing({ traceFetch: false }),
+     ],
+   });
+   ```
 
 2. Use the `beforeBreadcrumb` option of Sentry to filter out the duplicates.
    The helpers in this package recognize every breadcrumb of category `fetch`
    where the URL contains `/graphql` as a GraphQL request.
 
-```js
-import { excludeGraphQLFetch } from 'apollo-link-sentry';
+   ```js
+   import { excludeGraphQLFetch } from 'apollo-link-sentry';
 
-Sentry.init({
-  ...,
-  beforeBreadcrumb: excludeGraphQLFetch,
-})
-```
+   Sentry.init({
+     ...,
+     beforeBreadcrumb: excludeGraphQLFetch,
+   })
+   ```
 
-If you have a custom wrapper, use the higher order function:
+   If you have a custom wrapper, use the higher order function:
 
-```js
-import { withoutGraphQLFetch } from 'apollo-link-sentry';
+   ```js
+   import { withoutGraphQLFetch } from 'apollo-link-sentry';
 
-Sentry.init({
-  ...,
-  beforeBreadcrumb: withoutGraphQLFetch((breadcrumb, hint) => { ... }),
-})
-```
+   Sentry.init({
+     ...,
+     beforeBreadcrumb: withoutGraphQLFetch((breadcrumb, hint) => { ... }),
+   })
+   ```
 
 ## FAQ
 
