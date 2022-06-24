@@ -1,3 +1,10 @@
+## [3.1.3](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.1.2...v3.1.3) (2022-06-24)
+
+
+### Bug Fixes
+
+* move tslib and zen-observable to dependencies ([#439](https://github.com/DiederikvandenB/apollo-link-sentry/issues/439)) ([4a622b7](https://github.com/DiederikvandenB/apollo-link-sentry/commit/4a622b70e9fbc325a2f9c54eb883aa98916e682f))
+
 ## [3.1.2](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.1.1...v3.1.2) (2022-06-07)
 
 
