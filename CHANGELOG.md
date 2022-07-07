@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.1.3...v3.2.0) (2022-07-07)
+
+
+### Features
+
+* use `SeverityLevel` over `Severity` enum ([#431](https://github.com/DiederikvandenB/apollo-link-sentry/issues/431)) ([e758576](https://github.com/DiederikvandenB/apollo-link-sentry/commit/e7585766c4813ef285cf1a1b15324f9ee9746cd3))
+
 ## [3.1.3](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.1.2...v3.1.3) (2022-06-24)
 
 
