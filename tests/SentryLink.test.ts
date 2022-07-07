@@ -21,7 +21,8 @@ describe('SentryLink', () => {
   beforeAll(() => {
     Sentry.init({
       dsn: 'https://acacaeaccacacacabcaacdacdacadaca@sentry.io/000001',
-      transport: sentryTransport,
+      // Temporary until the type definition for new sentryTransport is updated
+      transport: () => new sentryTransport(),
       defaultIntegrations: false,
     });
   });
