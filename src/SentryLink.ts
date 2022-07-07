@@ -6,7 +6,7 @@ import {
   Operation,
   ServerError,
 } from '@apollo/client/core';
-import { Severity } from '@sentry/browser';
+import type { SeverityLevel } from '@sentry/types';
 import Observable from 'zen-observable';
 
 import { GraphQLBreadcrumb, makeBreadcrumb } from './breadcrumb';
@@ -94,7 +94,7 @@ export class SentryLink extends ApolloLink {
         error: (error) => {
           if (attachBreadcrumbs) {
             // We must have a breadcrumb if attachBreadcrumbs was set
-            (breadcrumb as GraphQLBreadcrumb).level = Severity.Error;
+            (breadcrumb as GraphQLBreadcrumb).level = 'error';
 
             let scrubbedError;
             if (isServerError(error)) {
@@ -143,8 +143,6 @@ function isServerError(error: unknown): error is ServerError {
   );
 }
 
-function severityForResult(result: FetchResult): Severity {
-  return result.errors && result.errors.length > 0
-    ? Severity.Error
-    : Severity.Info;
+function severityForResult(result: FetchResult): SeverityLevel {
+  return result.errors && result.errors.length > 0 ? 'error' : 'info';
 }
