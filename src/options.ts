@@ -112,9 +112,10 @@ export type AttachBreadcrumbsOptions = {
   includeContext: false | NonEmptyArray<string>;
 
   /**
-   * Modify the breadcrumb right before it is sent.
+   * Allows to return a modified copy of the breadcrumb right before it is sent.
    *
    * Can be used to add additional data from the operation or clean up included data.
+   * Do not mutate the data within the breadcrumb object, as it references the original.
    * Very useful in combination with options like `includeVariables` and `includeContext`.
    *
    * Defaults to undefined.
