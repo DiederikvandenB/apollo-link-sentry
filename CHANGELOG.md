@@ -1,3 +1,10 @@
+## [3.2.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.2.0...v3.2.1) (2022-11-18)
+
+
+### Bug Fixes
+
+* warn about mutating data in option transform ([#443](https://github.com/DiederikvandenB/apollo-link-sentry/issues/443)) ([3c9522d](https://github.com/DiederikvandenB/apollo-link-sentry/commit/3c9522d36786cc1af4dad0e68ff1fecf7ce419cf))
+
 # [3.2.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.1.3...v3.2.0) (2022-07-07)
 
 
