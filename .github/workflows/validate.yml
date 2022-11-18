@@ -1,4 +1,4 @@
-name: "Validate"
+name: Validate
 on: pull_request
 
 jobs:
@@ -9,7 +9,7 @@ jobs:
 
     - uses: actions/setup-node@v3
       with:
-        node-version: 14
+        node-version: 18
 
     - run: yarn install
 
@@ -26,7 +26,7 @@ jobs:
 
     - uses: actions/setup-node@v3
       with:
-        node-version: 14
+        node-version: 18
 
     - run: yarn install
 
@@ -39,7 +39,7 @@ jobs:
 
     - uses: actions/setup-node@v3
       with:
-        node-version: 14
+        node-version: 18
 
     - run: yarn install
 
