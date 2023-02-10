@@ -32,7 +32,7 @@
     "deepmerge": "^4.2.2",
     "dot-prop": "^6.0.0",
     "tslib": "^2.0.3",
-    "zen-observable": "^0.8.15"
+    "zen-observable-ts": "^1.2.5"
   },
   "peerDependencies": {
     "@apollo/client": "^3.2.3",
@@ -45,7 +45,6 @@
     "@semantic-release/git": "^10.0.1",
     "@sentry/browser": "^7.0.0",
     "@types/jest": "^27.0.3",
-    "@types/zen-observable": "^0.8.3",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
     "eslint": "^8.4.1",
