@@ -7,7 +7,7 @@ import {
 import * as Sentry from '@sentry/browser';
 import { GraphQLError, parse } from 'graphql';
 import sentryTestkit from 'sentry-testkit';
-import Observable from 'zen-observable';
+import { Observable } from 'zen-observable-ts';
 
 import { GraphQLBreadcrumb, SentryLink, SentryLinkOptions } from '../src';
 import { DEFAULT_FINGERPRINT } from '../src/sentry';
