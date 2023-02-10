@@ -1,3 +1,10 @@
+## [3.2.2](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.2.1...v3.2.2) (2023-02-10)
+
+
+### Bug Fixes
+
+* use zen-observable-ts over zen-observable ([a0acb0b](https://github.com/DiederikvandenB/apollo-link-sentry/commit/a0acb0bb21f1cb1a68e7ffdca870222df93e6c9c))
+
 ## [3.2.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.2.0...v3.2.1) (2022-11-18)
 
 
