@@ -1,3 +1,10 @@
+## [3.2.3](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.2.2...v3.2.3) (2023-03-09)
+
+
+### Bug Fixes
+
+* suggest `@sentry/browser:^7.41.0` as peer dependency ([8868643](https://github.com/DiederikvandenB/apollo-link-sentry/commit/886864387b5e9c80e222d24876e8f7f294269281))
+
 ## [3.2.2](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.2.1...v3.2.2) (2023-02-10)
 
 
