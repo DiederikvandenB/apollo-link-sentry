@@ -5,11 +5,15 @@
   "author": "Diederik van den Burger <diederikvandenburger@tab.capital>",
   "repository": "https://github.com/DiederikvandenB/apollo-link-sentry.git",
   "homepage": "https://github.com/DiederikvandenB/apollo-link-sentry",
-  "main": "lib/index.js",
-  "typings": "lib/index.d.ts",
+  "main": "lib-cjs/index.js",
+  "module": "lib-esm/index.js",
+  "browser": "lib-esm/index.js",
+  "typings": "lib-esm/index.d.ts",
   "files": [
-    "lib/**/*"
+    "lib-esm/**/*",
+    "lib-cjs/**/*"
   ],
+  "sideEffects": false,
   "keywords": [
     "apollo",
     "graphql",
@@ -18,8 +22,8 @@
   ],
   "scripts": {
     "watch": "tsc-watch --project=tsconfig.json",
-    "prebuild": "rimraf lib",
-    "build": "tsc",
+    "prebuild": "rimraf lib-cjs lib-esm",
+    "build": "tsc --target esnext --outDir lib-esm && tsc --target es5 --outDir lib-cjs",
     "test": "jest",
     "test:coverage": "jest --coverage --watchAll=false",
     "lint": "eslint .",
