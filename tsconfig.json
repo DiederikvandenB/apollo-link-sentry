@@ -3,9 +3,7 @@
     "./src"
   ],
   "compilerOptions":{
-    "outDir": "./lib",
     "target": "es5",
-    "module": "commonjs",
     "lib": ["es6", "esnext", "dom"],
     "types": ["jest"],
     "declaration": true,
