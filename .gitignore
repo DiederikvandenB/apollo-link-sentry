@@ -1,4 +1,5 @@
 # Directories
-lib
+lib-esm
+lib-cjs
 node_modules
 coverage
