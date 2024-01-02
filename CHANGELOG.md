@@ -1,3 +1,10 @@
+# [3.3.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.2.3...v3.3.0) (2024-01-02)
+
+
+### Features
+
+* Add esmodules build ([ac00367](https://github.com/DiederikvandenB/apollo-link-sentry/commit/ac00367c99956555e35c1f10c682b538512d3bfe))
+
 ## [3.2.3](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.2.2...v3.2.3) (2023-03-09)
 
 
