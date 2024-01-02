@@ -1,6 +1,6 @@
 # Apollo Link Sentry
 
-Apollo Link to enrich Sentry events with GraphQL data
+[Apollo Link](https://www.apollographql.com/docs/react/api/link/introduction) to enrich [Sentry](https://sentry.io) events with [GraphQL](https://graphql.org) data
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/DiederikvandenB/apollo-link-sentry/Test)](https://github.com/DiederikvandenB/apollo-link-sentry/actions)
 [![Code Coverage](https://img.shields.io/coveralls/github/DiederikvandenB/apollo-link-sentry/master)](https://coveralls.io/github/DiederikvandenB/apollo-link-sentry?branch=master)
