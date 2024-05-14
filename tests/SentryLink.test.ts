@@ -29,11 +29,11 @@ describe('SentryLink', () => {
   beforeEach(() => {
     testkit.reset();
 
-    Sentry.configureScope((scope) => {
-      scope.clearBreadcrumbs();
-      scope.setTransactionName();
-      scope.setFingerprint([]);
-    });
+    const scope = Sentry.getCurrentScope();
+
+    scope.clearBreadcrumbs();
+    scope.setTransactionName();
+    scope.setFingerprint([]);
   });
 
   it('should attach a sentry breadcrumb for an apolloOperation', (done) => {
