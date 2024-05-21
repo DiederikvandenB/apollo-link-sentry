@@ -1,10 +1,5 @@
 import { Operation } from '@apollo/client/core';
-import {
-  addBreadcrumb,
-  configureScope,
-  Breadcrumb,
-  Scope,
-} from '@sentry/browser';
+import { Breadcrumb, addBreadcrumb, getCurrentScope } from '@sentry/browser';
 
 import { GraphQLBreadcrumb } from './breadcrumb';
 import { extractDefinition } from './operation';
@@ -16,9 +11,7 @@ export function setTransaction(operation: Operation): void {
   const name = definition.name;
 
   if (name) {
-    configureScope((scope: Scope) => {
-      scope.setTransactionName(name.value);
-    });
+    getCurrentScope().setTransactionName(name.value);
   }
 }
 
@@ -29,9 +22,7 @@ export function setFingerprint(operation: Operation): void {
   const name = definition.name;
 
   if (name) {
-    configureScope((scope: Scope) => {
-      scope.setFingerprint([DEFAULT_FINGERPRINT, name.value]);
-    });
+    getCurrentScope().setFingerprint([DEFAULT_FINGERPRINT, name.value]);
   }
 }
 
