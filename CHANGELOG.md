@@ -1,3 +1,15 @@
+# [4.0.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.3.0...v4.0.0) (2024-05-21)
+
+
+### Features
+
+* upgrade to `@sentry/browser` 8 ([08c48a4](https://github.com/DiederikvandenB/apollo-link-sentry/commit/08c48a48bf1fb879682ebc692a8b575e298ec7c4))
+
+
+### BREAKING CHANGES
+
+* require ``@sentry/browser` 8
+
 # [3.3.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.2.3...v3.3.0) (2024-01-02)
 
 
