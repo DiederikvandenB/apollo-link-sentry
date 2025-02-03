@@ -5,13 +5,12 @@
   "author": "Diederik van den Burger <diederikvandenburger@tab.capital>",
   "repository": "https://github.com/DiederikvandenB/apollo-link-sentry.git",
   "homepage": "https://github.com/DiederikvandenB/apollo-link-sentry",
-  "main": "lib-cjs/index.js",
-  "module": "lib-esm/index.js",
-  "browser": "lib-esm/index.js",
-  "typings": "lib-esm/index.d.ts",
+  "main": "build/cjs/index.js",
+  "module": "build/esm/index.js",
+  "browser": "build/esm/index.js",
+  "typings": "build/esm/index.d.ts",
   "files": [
-    "lib-esm/**/*",
-    "lib-cjs/**/*"
+    "build/**/*"
   ],
   "sideEffects": false,
   "keywords": [
@@ -23,7 +22,7 @@
   "scripts": {
     "watch": "tsc-watch --project=tsconfig.json",
     "prebuild": "rimraf lib-cjs lib-esm",
-    "build": "tsc --target esnext --outDir lib-esm && tsc --target es5 --outDir lib-cjs",
+    "build": "tsc --target esnext --outDir build/esm && tsc --target es5 --outDir build/cjs",
     "test": "jest",
     "test:coverage": "jest --coverage --watchAll=false",
     "lint": "eslint .",
@@ -66,7 +65,7 @@
     "sentry-testkit": "^5.0.5",
     "ts-jest": "^27.1.1",
     "tsc-watch": "^4.5.0",
-    "typescript": "^4.5.4"
+    "typescript": "^5.0.0"
   },
   "volta": {
     "node": "18.15.0"
