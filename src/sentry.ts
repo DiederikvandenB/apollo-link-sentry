@@ -1,5 +1,5 @@
 import { Operation } from '@apollo/client/core';
-import { Breadcrumb, addBreadcrumb, getCurrentScope } from '@sentry/browser';
+import { Breadcrumb, addBreadcrumb, getCurrentScope } from '@sentry/core';
 
 import { GraphQLBreadcrumb } from './breadcrumb';
 import { extractDefinition } from './operation';

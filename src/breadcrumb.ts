@@ -1,5 +1,5 @@
 import { FetchResult, Operation } from '@apollo/client/core';
-import { Breadcrumb as SentryBreadcrumb } from '@sentry/browser';
+import { Breadcrumb as SentryBreadcrumb } from '@sentry/core';
 import dotProp from 'dot-prop';
 import { print } from 'graphql';
 
@@ -11,7 +11,7 @@ export interface BreadcrumbData {
   query?: string;
   variables?: Record<string, unknown>;
   operationName?: string;
-  fetchResult?: FetchResult;
+  fetchResult?: FetchResult | string;
   error?: Error;
   cache?: Record<string, unknown>;
   context?: Record<string, unknown>;
