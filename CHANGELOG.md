@@ -1,3 +1,10 @@
+# [4.1.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.0.0...v4.1.0) (2025-02-04)
+
+
+### Features
+
+* depend on `@sentry/core` instead of `@sentry/browser` ([#480](https://github.com/DiederikvandenB/apollo-link-sentry/issues/480)) ([278a514](https://github.com/DiederikvandenB/apollo-link-sentry/commit/278a51469a238d2d5e1250c520b719a00b0e12fa))
+
 # [4.0.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.3.0...v4.0.0) (2024-05-21)
 
 
