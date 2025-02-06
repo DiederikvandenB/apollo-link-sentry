@@ -75,12 +75,7 @@ export class SentryLink extends ApolloLink {
                 graphQLErrors: result.errors,
               });
             }
-          }
 
-          originalObserver.next(result);
-        },
-        complete: () => {
-          if (attachBreadcrumbs) {
             attachBreadcrumbToSentry(
               operation,
               // We must have a breadcrumb if attachBreadcrumbs was set
@@ -89,6 +84,9 @@ export class SentryLink extends ApolloLink {
             );
           }
 
+          originalObserver.next(result);
+        },
+        complete: () => {
           originalObserver.complete();
         },
         error: (error) => {
