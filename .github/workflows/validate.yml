@@ -4,12 +4,22 @@ on: pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        sentry-version:
+          - ^8.33
+          - ^9
+
     steps:
     - uses: actions/checkout@v4
 
     - uses: actions/setup-node@v4
 
     - run: corepack enable
+
+    - run: yarn add @sentry/core@${{ matrix.sentry-version }}
 
     - run: yarn install
 
