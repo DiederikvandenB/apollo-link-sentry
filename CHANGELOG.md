@@ -1,3 +1,10 @@
+# [4.2.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.1.0...v4.2.0) (2025-03-24)
+
+
+### Features
+
+* allow @sentry/core 9 ([c97c51c](https://github.com/DiederikvandenB/apollo-link-sentry/commit/c97c51c3b656d43ee5070443429dc468c1e63be5))
+
 # [4.1.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.0.0...v4.1.0) (2025-02-04)
 
 
