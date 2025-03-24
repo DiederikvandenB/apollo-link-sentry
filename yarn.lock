@@ -15,9 +15,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^3.5.6":
-  version: 3.12.8
-  resolution: "@apollo/client@npm:3.12.8"
+"@apollo/client@npm:^3.2.3":
+  version: 3.13.5
+  resolution: "@apollo/client@npm:3.13.5"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.1.1"
     "@wry/caches": "npm:^1.0.0"
@@ -34,7 +34,7 @@ __metadata:
     zen-observable-ts: "npm:^1.2.5"
   peerDependencies:
     graphql: ^15.0.0 || ^16.0.0
-    graphql-ws: ^5.5.5
+    graphql-ws: ^5.5.5 || ^6.0.3
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
     subscriptions-transport-ws: ^0.9.0 || ^0.11.0
@@ -47,7 +47,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 10c0/3af203769fa82892dd5d4870eea2d8d2845b4197118a274779f483df154410601c45bd008afb017f03ef446902ce4ea9c32454e3525abe782286a65979a1f7d0
+  checksum: 10c0/5a6b9a004fbf7ef049258782e5dd4280e4d4944f73a71beac2b719d19d87a5bda2be7e28cc4b2a95da385e2577397ef3e640d8b07abe2553b5271ad11c104263
   languageName: node
   linkType: hard
 
@@ -1984,7 +1984,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "apollo-link-sentry@workspace:."
   dependencies:
-    "@apollo/client": "npm:^3.5.6"
+    "@apollo/client": "npm:^3.2.3"
     "@semantic-release/changelog": "npm:^6.0.2"
     "@semantic-release/git": "npm:^10.0.1"
     "@sentry/browser": "npm:^8.33 || ^9"
@@ -2014,7 +2014,7 @@ __metadata:
   peerDependencies:
     "@apollo/client": ^3.2.3
     "@sentry/core": ^8.33 || ^9
-    graphql: 15 - 16
+    graphql: ^15 || ^16
   languageName: unknown
   linkType: soft
 
