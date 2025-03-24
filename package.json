@@ -34,30 +34,30 @@
   },
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "dot-prop": "^6.0.0",
+    "dot-prop": "^6",
     "tslib": "^2.0.3",
     "zen-observable-ts": "^1.2.5"
   },
   "peerDependencies": {
     "@apollo/client": "^3.2.3",
-    "@sentry/core": "^8.33.0",
+    "@sentry/core": "^8.33 || ^9",
     "graphql": "15 - 16"
   },
   "devDependencies": {
     "@apollo/client": "^3.5.6",
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/git": "^10.0.1",
-    "@sentry/browser": "^8.33.0",
-    "@sentry/core": "^8.33.0",
+    "@sentry/browser": "^8.33 || ^9",
+    "@sentry/core": "^8.33 || ^9",
     "@types/jest": "^27.0.3",
-    "@typescript-eslint/eslint-plugin": "^5.7.0",
-    "@typescript-eslint/parser": "^5.7.0",
+    "@typescript-eslint/eslint-plugin": "^5.7",
+    "@typescript-eslint/parser": "^5.7",
     "eslint": "^8.4.1",
-    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-prettier": "^8.3",
     "eslint-plugin-import": "^2.25.3",
-    "eslint-plugin-prettier": "^4.0.0",
-    "graphql": "^15.8.0",
-    "isomorphic-fetch": "^3.0.0",
+    "eslint-plugin-prettier": "^4",
+    "graphql": "^15.8",
+    "isomorphic-fetch": "^3",
     "jest": "^27.4.5",
     "jest-spec-reporter": "^1.0.17",
     "prettier": "^2.5.1",
@@ -65,8 +65,8 @@
     "semantic-release": "^20.1.1",
     "sentry-testkit": "^5.0.5",
     "ts-jest": "^27.1.1",
-    "tsc-watch": "^4.5.0",
-    "typescript": "^5.0.0"
+    "tsc-watch": "^4.5",
+    "typescript": "^5"
   },
   "volta": {
     "node": "18.15.0"
