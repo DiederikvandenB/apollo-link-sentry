@@ -1,3 +1,10 @@
+# [4.3.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.2.0...v4.3.0) (2025-05-09)
+
+
+### Features
+
+* Simplify SentryLink to just forward the operation if `attachBreadcrumb` is not set ([#483](https://github.com/DiederikvandenB/apollo-link-sentry/issues/483)) ([dedb6ee](https://github.com/DiederikvandenB/apollo-link-sentry/commit/dedb6ee3cc1bb2e3f4b761216c595511c0758702))
+
 # [4.2.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.1.0...v4.2.0) (2025-03-24)
 
 
