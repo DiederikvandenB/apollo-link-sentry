@@ -40,15 +40,15 @@
   },
   "peerDependencies": {
     "@apollo/client": "^3.2.3",
-    "@sentry/core": "^8.33 || ^9",
+    "@sentry/core": "^8.33 || ^9 || ^10",
     "graphql": "^15 || ^16"
   },
   "devDependencies": {
     "@apollo/client": "^3.2.3",
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/git": "^10.0.1",
-    "@sentry/browser": "^8.33 || ^9",
-    "@sentry/core": "^8.33 || ^9",
+    "@sentry/browser": "^8.33 || ^9 || ^10",
+    "@sentry/core": "^8.33 || ^9 || ^10",
     "@types/jest": "^27.0.3",
     "@typescript-eslint/eslint-plugin": "^5.7",
     "@typescript-eslint/parser": "^5.7",
@@ -56,7 +56,7 @@
     "eslint-config-prettier": "^8.3",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-prettier": "^4",
-    "graphql": "^15.8",
+    "graphql": "^15 || ^16",
     "isomorphic-fetch": "^3",
     "jest": "^27.4.5",
     "jest-spec-reporter": "^1.0.17",
@@ -71,5 +71,5 @@
   "volta": {
     "node": "18.15.0"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "yarn@4.9.2"
 }
