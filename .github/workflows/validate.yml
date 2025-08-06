@@ -11,6 +11,7 @@ jobs:
         sentry-version:
           - ^8.33
           - ^9
+          - ^10
 
     steps:
     - uses: actions/checkout@v4

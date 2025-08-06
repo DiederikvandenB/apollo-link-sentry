@@ -1395,10 +1395,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/core@npm:9.9.0, @sentry/core@npm:^8.33 || ^9":
+"@sentry/core@npm:9.9.0":
   version: 9.9.0
   resolution: "@sentry/core@npm:9.9.0"
   checksum: 10c0/eb1b0be0e8f4328a91af8314804112d10680f84cfc60772023ff0d41e4cbfffa96ebd9dfb3b643342b8ab2b9196c8c8491234bdd9f0b2baebc243a1251bda9f8
+  languageName: node
+  linkType: hard
+
+"@sentry/core@npm:^8.33 || ^9 || ^10":
+  version: 10.1.0
+  resolution: "@sentry/core@npm:10.1.0"
+  checksum: 10c0/01cd36a439cb5a2ce52eebfcdb88ba0ded54134685be88e019dd2b72aa1590808294de0b65731f45ee69025257dce85d2bf4666a123c0e6d85e3ac30d227bd28
   languageName: node
   linkType: hard
 
@@ -1988,7 +1995,7 @@ __metadata:
     "@semantic-release/changelog": "npm:^6.0.2"
     "@semantic-release/git": "npm:^10.0.1"
     "@sentry/browser": "npm:^8.33 || ^9"
-    "@sentry/core": "npm:^8.33 || ^9"
+    "@sentry/core": "npm:^8.33 || ^9 || ^10"
     "@types/jest": "npm:^27.0.3"
     "@typescript-eslint/eslint-plugin": "npm:^5.7"
     "@typescript-eslint/parser": "npm:^5.7"
@@ -1998,7 +2005,7 @@ __metadata:
     eslint-config-prettier: "npm:^8.3"
     eslint-plugin-import: "npm:^2.25.3"
     eslint-plugin-prettier: "npm:^4"
-    graphql: "npm:^15.8"
+    graphql: "npm:^15 || ^16"
     isomorphic-fetch: "npm:^3"
     jest: "npm:^27.4.5"
     jest-spec-reporter: "npm:^1.0.17"
@@ -2013,7 +2020,7 @@ __metadata:
     zen-observable-ts: "npm:^1.2.5"
   peerDependencies:
     "@apollo/client": ^3.2.3
-    "@sentry/core": ^8.33 || ^9
+    "@sentry/core": ^8.33 || ^9 || ^10
     graphql: ^15 || ^16
   languageName: unknown
   linkType: soft
@@ -4532,10 +4539,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^15.8":
-  version: 15.10.1
-  resolution: "graphql@npm:15.10.1"
-  checksum: 10c0/8bbf6c1acda84dcff532f2ec492ffb2859d2ffd0c8e0143447c727388c5c3d7cab338143ecbdf61acc1f04227f2e0a8180f26ce9ea280b63a65079c58f6cfa25
+"graphql@npm:^15 || ^16":
+  version: 16.11.0
+  resolution: "graphql@npm:16.11.0"
+  checksum: 10c0/124da7860a2292e9acf2fed0c71fc0f6a9b9ca865d390d112bdd563c1f474357141501c12891f4164fe984315764736ad67f705219c62f7580681d431a85db88
   languageName: node
   linkType: hard
 
