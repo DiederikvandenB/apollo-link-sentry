@@ -1,9 +1,7 @@
 {
-  "include": [
-    "./src"
-  ],
-  "compilerOptions":{
-    "target": "es5",
+  "include": ["./src"],
+  "compilerOptions": {
+    "target": "ES2022",
     "lib": ["es6", "esnext", "dom"],
     "types": ["jest"],
     "declaration": true,

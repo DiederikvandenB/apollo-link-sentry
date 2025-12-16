@@ -21,6 +21,9 @@ module.exports = {
 
   // A map from regular expressions to paths to transformers
   transform: {
+    '.(js|jsx)': 'babel-jest',
     '.(ts|tsx)': 'ts-jest',
   },
+
+  transformIgnorePatterns: ['/node_modules/(?!@apollo/client)'],
 };
