@@ -1,15 +1,21 @@
-import { Operation } from '@apollo/client/core';
-import { parse } from 'graphql';
+import { ApolloLink } from '@apollo/client/core';
+import { OperationTypeNode, parse } from 'graphql';
 
 import { extractDefinition } from '../src/operation';
 
-export function makeOperation(overwrites: Partial<Operation> = {}): Operation {
+import { createApolloClient } from './utils';
+
+export function makeOperation(
+  overwrites: Partial<ApolloLink.Operation> = {},
+): ApolloLink.Operation {
   return {
     query: parse(`query Foo { foo }`),
     operationName: 'Foo',
     variables: {},
     extensions: {},
     getContext: () => ({}),
+    operationType: OperationTypeNode.QUERY,
+    client: createApolloClient(),
     setContext: (context) => context,
 
     ...overwrites,
