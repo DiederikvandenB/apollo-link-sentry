@@ -1,19 +1,28 @@
-import { Operation } from '@apollo/client/core';
+import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client/core';
 import { parse } from 'graphql';
 
 import { extractDefinition } from '../src/operation';
 
-export function makeOperation(overwrites: Partial<Operation> = {}): Operation {
+const dummyClient = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: ApolloLink.empty(),
+});
+
+export function makeOperation(
+  overwrites: Partial<ApolloLink.Operation> = {},
+): ApolloLink.Operation {
   return {
     query: parse(`query Foo { foo }`),
     operationName: 'Foo',
+    operationType: 'query',
     variables: {},
     extensions: {},
     getContext: () => ({}),
     setContext: (context) => context,
+    client: dummyClient,
 
     ...overwrites,
-  };
+  } as ApolloLink.Operation;
 }
 
 describe('extractDefinition', () => {

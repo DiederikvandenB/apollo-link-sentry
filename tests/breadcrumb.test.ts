@@ -1,9 +1,15 @@
+import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client/core';
 import { parse } from 'graphql';
 
 import { makeBreadcrumb } from '../src/breadcrumb';
 import { withDefaults } from '../src/options';
 
 import { makeOperation } from './operation.test';
+
+const dummyClient = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: ApolloLink.empty(),
+});
 
 describe('makeBreadcrumb', () => {
   it('should fill with all options disabled', () => {
@@ -12,6 +18,7 @@ describe('makeBreadcrumb', () => {
     const breadcrumb = makeBreadcrumb(
       {
         operationName: 'Foo',
+        operationType: 'query',
         query: document,
         variables: {},
         extensions: {},
@@ -26,7 +33,8 @@ describe('makeBreadcrumb', () => {
             bar: {},
           },
         }),
-      },
+        client: dummyClient,
+      } as ApolloLink.Operation,
       withDefaults({
         attachBreadcrumbs: {
           includeQuery: false,
@@ -63,6 +71,7 @@ describe('makeBreadcrumb', () => {
     const breadcrumb = makeBreadcrumb(
       {
         operationName: operationName,
+        operationType: 'query',
         query: document,
         variables: variables,
         extensions: {},
@@ -77,7 +86,8 @@ describe('makeBreadcrumb', () => {
             bar: foobar,
           },
         }),
-      },
+        client: dummyClient,
+      } as ApolloLink.Operation,
       withDefaults({
         uri,
         attachBreadcrumbs: {

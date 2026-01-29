@@ -14,8 +14,15 @@
 yarn add apollo-link-sentry
 ```
 
-**Note**: Due to a release issue, v3.0.0 of this package has been unpublished. Please use v3.0.1
-**Note**: starting from v2.0.0 of this package we support `@apollo/client` v3.0.
+### Compatibility
+
+| apollo-link-sentry | @apollo/client | peer dependency |
+| ------------------ | -------------- | --------------- |
+| v5.x               | v4.x           | rxjs            |
+| v4.x               | v3.x           | zen-observable  |
+
+Note: v5.0.0 requires `rxjs` as a peer dependency.
+If you're using Apollo Client v3, please use `apollo-link-sentry@4.x`.
 
 ## Features
 

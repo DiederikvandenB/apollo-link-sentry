@@ -1,13 +1,5 @@
-import {
-  ApolloError,
-  ApolloLink,
-  FetchResult,
-  NextLink,
-  Operation,
-  ServerError,
-} from '@apollo/client/core';
+import { ApolloLink, Observable, ServerError } from '@apollo/client/core';
 import type { SeverityLevel } from '@sentry/core';
-import { Observable } from 'zen-observable-ts';
 
 import { makeBreadcrumb } from './breadcrumb';
 import { FullOptions, SentryLinkOptions, withDefaults } from './options';
@@ -26,9 +18,9 @@ export class SentryLink extends ApolloLink {
   }
 
   request(
-    operation: Operation,
-    forward: NextLink,
-  ): Observable<FetchResult> | null {
+    operation: ApolloLink.Operation,
+    forward: ApolloLink.ForwardFunction,
+  ): Observable<ApolloLink.Result> {
     const { options } = this;
 
     if (!(options.shouldHandleOperation?.(operation) ?? true)) {
@@ -55,9 +47,9 @@ export class SentryLink extends ApolloLink {
     // before they are passed along to other observers. This guarantees we
     // get to run our instrumentation before others observers potentially
     // throw and thus flush the results to Sentry.
-    return new Observable<FetchResult>((originalObserver) => {
+    return new Observable<ApolloLink.Result>((originalObserver) => {
       const subscription = forward(operation).subscribe({
-        next: (result) => {
+        next: (result: ApolloLink.Result) => {
           breadcrumb.level = severityForResult(result);
 
           if (attachBreadcrumbs.includeFetchResult) {
@@ -69,9 +61,12 @@ export class SentryLink extends ApolloLink {
             result.errors &&
             result.errors.length > 0
           ) {
-            breadcrumb.data.error = new ApolloError({
+            breadcrumb.data.error = {
               graphQLErrors: result.errors,
-            });
+              message: result.errors
+                .map((e: { message: string }) => e.message)
+                .join(', '),
+            };
           }
 
           originalObserver.next(result);
@@ -81,16 +76,16 @@ export class SentryLink extends ApolloLink {
 
           originalObserver.complete();
         },
-        error: (error) => {
+        error: (error: Error) => {
           breadcrumb.level = 'error';
 
           let scrubbedError;
-          if (isServerError(error)) {
-            const { result, response, ...rest } = error;
+          if (ServerError.is(error)) {
+            const { bodyText, response, ...rest } = error;
             scrubbedError = rest;
 
             if (attachBreadcrumbs.includeFetchResult) {
-              breadcrumb.data.fetchResult = result;
+              breadcrumb.data.fetchResult = bodyText;
             }
           } else {
             scrubbedError = error;
@@ -113,16 +108,6 @@ export class SentryLink extends ApolloLink {
   }
 }
 
-function isServerError(error: unknown): error is ServerError {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'response' in error &&
-    'result' in error &&
-    'statusCode' in error
-  );
-}
-
-function severityForResult(result: FetchResult): SeverityLevel {
+function severityForResult(result: ApolloLink.Result): SeverityLevel {
   return result.errors && result.errors.length > 0 ? 'error' : 'info';
 }

@@ -21,6 +21,21 @@ module.exports = {
 
   // A map from regular expressions to paths to transformers
   transform: {
-    '.(ts|tsx)': 'ts-jest',
+    '^.+\\.(ts|tsx|js|jsx)$': [
+      'ts-jest',
+      {
+        useESM: true,
+        tsconfig: {
+          allowJs: true,
+          target: 'ES2020',
+        },
+      },
+    ],
   },
+
+  // Transform @apollo/client ESM modules
+  transformIgnorePatterns: ['/node_modules/(?!@apollo/client)'],
+
+  // Enable ESM support
+  extensionsToTreatAsEsm: ['.ts'],
 };

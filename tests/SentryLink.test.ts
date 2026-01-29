@@ -1,13 +1,15 @@
 import {
-  ApolloError,
+  ApolloClient,
   ApolloLink,
   execute,
+  InMemoryCache,
+  Observable,
   ServerError,
 } from '@apollo/client/core';
 import * as Sentry from '@sentry/browser';
 import { GraphQLError, parse } from 'graphql';
+import { EMPTY } from 'rxjs';
 import sentryTestkit from 'sentry-testkit';
-import { Observable } from 'zen-observable-ts';
 
 import { GraphQLBreadcrumb, SentryLink, SentryLinkOptions } from '../src';
 import { DEFAULT_FINGERPRINT } from '../src/sentry';
@@ -15,7 +17,14 @@ import { stringify } from '../src/utils';
 
 const { testkit, sentryTransport } = sentryTestkit();
 
-const nullLink = new ApolloLink(() => null);
+const nullLink = new ApolloLink(() => EMPTY as unknown as Observable<never>);
+
+const dummyClient = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: ApolloLink.empty(),
+});
+
+const executeContext: ApolloLink.ExecuteContext = { client: dummyClient };
 
 describe('SentryLink', () => {
   beforeAll(() => {
@@ -37,7 +46,11 @@ describe('SentryLink', () => {
   it('should attach a sentry breadcrumb for an apolloOperation', (done) => {
     const link = ApolloLink.from([new SentryLink(), nullLink]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(
+      link,
+      { query: parse(`query Foo { foo }`) },
+      executeContext,
+    ).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -85,13 +98,17 @@ describe('SentryLink', () => {
       }),
     ]);
 
-    execute(withResult, {
-      query: parse(`query SuccessQuery { foo }`),
-    }).subscribe({
+    execute(
+      withResult,
+      { query: parse(`query SuccessQuery { foo }`) },
+      executeContext,
+    ).subscribe({
       complete() {
-        execute(withError, {
-          query: parse(`mutation FailureMutation { bar }`),
-        }).subscribe({
+        execute(
+          withError,
+          { query: parse(`mutation FailureMutation { bar }`) },
+          executeContext,
+        ).subscribe({
           error(exception) {
             Sentry.captureException(exception);
 
@@ -139,9 +156,11 @@ describe('SentryLink', () => {
       ),
     ]);
 
-    execute(withPartialErrors, {
-      query: parse(`query PartialErrors { foo }`),
-    }).subscribe({
+    execute(
+      withPartialErrors,
+      { query: parse(`query PartialErrors { foo }`) },
+      executeContext,
+    ).subscribe({
       complete() {
         Sentry.captureException(new Error());
 
@@ -155,7 +174,10 @@ describe('SentryLink', () => {
         expect(breadcrumb.data.operationName).toBe('PartialErrors');
         expect(breadcrumb.data.fetchResult).not.toBeDefined();
         expect(breadcrumb.data.error).toBe(
-          stringify(new ApolloError({ graphQLErrors: errors })),
+          stringify({
+            graphQLErrors: errors,
+            message: errors.map((e) => e.message).join(', '),
+          }),
         );
 
         done();
@@ -185,9 +207,11 @@ describe('SentryLink', () => {
       ),
     ]);
 
-    execute(withPartialErrors, {
-      query: parse(`query PartialErrors { foo }`),
-    }).subscribe({
+    execute(
+      withPartialErrors,
+      { query: parse(`query PartialErrors { foo }`) },
+      executeContext,
+    ).subscribe({
       complete() {
         Sentry.captureException(new Error());
 
@@ -201,7 +225,10 @@ describe('SentryLink', () => {
         expect(breadcrumb.data.operationName).toBe('PartialErrors');
         expect(breadcrumb.data.fetchResult).toBe(stringify(result));
         expect(breadcrumb.data.error).toBe(
-          stringify(new ApolloError({ graphQLErrors: errors })),
+          stringify({
+            graphQLErrors: errors,
+            message: errors.map((e) => e.message).join(', '),
+          }),
         );
 
         done();
@@ -223,7 +250,11 @@ describe('SentryLink', () => {
       ),
     ]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(
+      link,
+      { query: parse(`query Foo { foo }`) },
+      executeContext,
+    ).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -240,15 +271,14 @@ describe('SentryLink', () => {
 
   it('should allow inclusion of results from server errors', (done) => {
     const message = 'some message';
-    const fetchResult = { errors: [{ message: 'GraphQL error message' }] };
+    const bodyText = JSON.stringify({
+      errors: [{ message: 'GraphQL error message' }],
+    });
 
-    const serverError: ServerError = {
-      name: 'bla',
-      message: message,
+    const serverError = new ServerError(message, {
       response: new Response(),
-      result: fetchResult,
-      statusCode: 500,
-    };
+      bodyText: bodyText,
+    });
 
     const link = ApolloLink.from([
       new SentryLink({
@@ -265,7 +295,11 @@ describe('SentryLink', () => {
       ),
     ]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(
+      link,
+      { query: parse(`query Foo { foo }`) },
+      executeContext,
+    ).subscribe({
       error: () => {
         Sentry.captureException(new Error());
 
@@ -273,14 +307,14 @@ describe('SentryLink', () => {
         expect(report.breadcrumbs).toHaveLength(1);
 
         const [breadcrumb] = report.breadcrumbs as Array<GraphQLBreadcrumb>;
+        // Note: Error properties like 'message' are not enumerable and won't be spread
         expect(breadcrumb.data.error).toEqual(
           stringify({
-            name: serverError.name,
-            message: serverError.message,
             statusCode: serverError.statusCode,
+            name: serverError.name,
           }),
         );
-        expect(breadcrumb.data.fetchResult).toEqual(stringify(fetchResult));
+        expect(breadcrumb.data.fetchResult).toEqual(bodyText);
 
         done();
       },
@@ -293,7 +327,11 @@ describe('SentryLink', () => {
       nullLink,
     ]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(
+      link,
+      { query: parse(`query Foo { foo }`) },
+      executeContext,
+    ).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -308,7 +346,11 @@ describe('SentryLink', () => {
   it('should set the transaction name by default', (done) => {
     const link = ApolloLink.from([new SentryLink(), nullLink]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(
+      link,
+      { query: parse(`query Foo { foo }`) },
+      executeContext,
+    ).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -328,7 +370,11 @@ describe('SentryLink', () => {
       nullLink,
     ]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(
+      link,
+      { query: parse(`query Foo { foo }`) },
+      executeContext,
+    ).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -345,7 +391,11 @@ describe('SentryLink', () => {
   it('should set the fingerprint by default', (done) => {
     const link = ApolloLink.from([new SentryLink(), nullLink]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(
+      link,
+      { query: parse(`query Foo { foo }`) },
+      executeContext,
+    ).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -368,7 +418,11 @@ describe('SentryLink', () => {
       nullLink,
     ]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(
+      link,
+      { query: parse(`query Foo { foo }`) },
+      executeContext,
+    ).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -391,9 +445,17 @@ describe('SentryLink', () => {
       nullLink,
     ]);
 
-    execute(link, { query: parse(`query Handle { foo }`) }).subscribe({
+    execute(
+      link,
+      { query: parse(`query Handle { foo }`) },
+      executeContext,
+    ).subscribe({
       complete: () => {
-        execute(link, { query: parse(`query Discard { foo }`) }).subscribe({
+        execute(
+          link,
+          { query: parse(`query Discard { foo }`) },
+          executeContext,
+        ).subscribe({
           complete: () => {
             Sentry.captureException(new Error());
 
@@ -427,7 +489,11 @@ describe('SentryLink', () => {
       nullLink,
     ]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(
+      link,
+      { query: parse(`query Foo { foo }`) },
+      executeContext,
+    ).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
