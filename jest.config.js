@@ -1,6 +1,8 @@
 // https://jestjs.io/docs/configuration
 
 module.exports = {
+  preset: 'ts-jest/presets/js-with-babel',
+
   // Automatically clear mock calls and instances between every test
   clearMocks: false,
 
@@ -19,8 +21,5 @@ module.exports = {
   // A list of paths to modules that run some code to configure or set up the testing environment
   setupFiles: ['./tests/setup.ts'],
 
-  // A map from regular expressions to paths to transformers
-  transform: {
-    '.(ts|tsx)': 'ts-jest',
-  },
+  transformIgnorePatterns: ['/node_modules/(?!@apollo/client)'],
 };
