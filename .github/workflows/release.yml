@@ -5,6 +5,9 @@ on:
       - master
       - alpha
 
+permissions:
+  id-token: write
+
 jobs:
   # https://docs.github.com/en/actions/guides/publishing-nodejs-packages#publishing-packages-using-yarn
   # https://github.com/semantic-release/semantic-release/blob/master/docs/recipes/github-actions.md
