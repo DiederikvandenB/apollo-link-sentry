@@ -10,10 +10,15 @@ jobs:
   # https://github.com/semantic-release/semantic-release/blob/master/docs/recipes/github-actions.md
   release:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
 
       - run: corepack enable
 
@@ -24,4 +29,3 @@ jobs:
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
