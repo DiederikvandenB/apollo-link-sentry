@@ -1,3 +1,10 @@
+# [4.5.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.4.0...v4.5.0) (2026-05-27)
+
+
+### Features
+
+* support `@apollo/client` version 4 ([#491](https://github.com/DiederikvandenB/apollo-link-sentry/issues/491)) ([8437878](https://github.com/DiederikvandenB/apollo-link-sentry/commit/8437878b847e48e5bb57f2ad6be97ed90eb08266))
+
 # [4.4.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.3.0...v4.4.0) (2025-08-06)
 
 
