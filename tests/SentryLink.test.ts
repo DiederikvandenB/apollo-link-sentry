@@ -5,6 +5,7 @@ import {
   ServerError,
 } from '@apollo/client/core';
 import * as Sentry from '@sentry/browser';
+import { startSpan } from '@sentry/core';
 import { GraphQLError, parse } from 'graphql';
 import sentryTestkit from 'sentry-testkit';
 import { Observable } from 'zen-observable-ts';
@@ -12,6 +13,16 @@ import { Observable } from 'zen-observable-ts';
 import { GraphQLBreadcrumb, SentryLink, SentryLinkOptions } from '../src';
 import { DEFAULT_FINGERPRINT } from '../src/sentry';
 import { stringify } from '../src/utils';
+
+jest.mock('@sentry/core', () => ({
+  ...jest.requireActual('@sentry/core'),
+  startSpan: jest.fn(
+    (_options: unknown, callback: (...args: unknown[]) => unknown) =>
+      callback(),
+  ),
+}));
+
+const startSpanMock = startSpan as jest.MockedFunction<typeof startSpan>;
 
 const { testkit, sentryTransport } = sentryTestkit();
 
@@ -435,6 +446,47 @@ describe('SentryLink', () => {
         const [breadcrumb] = report.breadcrumbs;
 
         expect(breadcrumb.data?.foo).toBe('Foo');
+
+        done();
+      },
+    });
+  });
+
+  it('should create a span when tracing is enabled', (done) => {
+    startSpanMock.mockClear();
+
+    const link = ApolloLink.from([new SentryLink({ tracing: true }), nullLink]);
+
+    execute(link, { query: parse(`query TracedQuery { foo }`) }).subscribe({
+      complete: () => {
+        expect(startSpanMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'graphql.query TracedQuery',
+            op: 'graphql',
+            attributes: {
+              'graphql.operation.type': 'query',
+              'graphql.operation.name': 'TracedQuery',
+            },
+          }),
+          expect.any(Function),
+        );
+
+        done();
+      },
+    });
+  });
+
+  it('should not create a span when tracing is disabled', (done) => {
+    startSpanMock.mockClear();
+
+    const link = ApolloLink.from([
+      new SentryLink({ tracing: false }),
+      nullLink,
+    ]);
+
+    execute(link, { query: parse(`query UntracedQuery { foo }`) }).subscribe({
+      complete: () => {
+        expect(startSpanMock).not.toHaveBeenCalled();
 
         done();
       },

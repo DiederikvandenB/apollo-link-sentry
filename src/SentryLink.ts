@@ -7,9 +7,11 @@ import {
   ServerError,
 } from '@apollo/client/core';
 import type { SeverityLevel } from '@sentry/core';
+import { startSpan } from '@sentry/core';
 import { Observable } from 'zen-observable-ts';
 
 import { makeBreadcrumb } from './breadcrumb';
+import { extractDefinition } from './operation';
 import { FullOptions, SentryLinkOptions, withDefaults } from './options';
 import {
   attachBreadcrumbToSentry,
@@ -45,6 +47,10 @@ export class SentryLink extends ApolloLink {
 
     const { attachBreadcrumbs } = options;
     if (!attachBreadcrumbs) {
+      if (options.tracing) {
+        return this.withSpan(operation, forward);
+      }
+
       return forward(operation);
     }
 
@@ -56,61 +62,103 @@ export class SentryLink extends ApolloLink {
     // get to run our instrumentation before others observers potentially
     // throw and thus flush the results to Sentry.
     return new Observable<FetchResult>((originalObserver) => {
-      const subscription = forward(operation).subscribe({
-        next: (result) => {
-          breadcrumb.level = severityForResult(result);
+      const spanOptions = options.tracing
+        ? spanOptionsForOperation(operation)
+        : undefined;
 
-          if (attachBreadcrumbs.includeFetchResult) {
-            breadcrumb.data.fetchResult = result;
-          }
-
-          if (
-            attachBreadcrumbs.includeError &&
-            result.errors &&
-            result.errors.length > 0
-          ) {
-            breadcrumb.data.error = new ApolloError({
-              graphQLErrors: result.errors,
-            });
-          }
-
-          originalObserver.next(result);
-        },
-        complete: () => {
-          attachBreadcrumbToSentry(operation, breadcrumb, options);
-
-          originalObserver.complete();
-        },
-        error: (error) => {
-          breadcrumb.level = 'error';
-
-          let scrubbedError;
-          if (isServerError(error)) {
-            const { result, response, ...rest } = error;
-            scrubbedError = rest;
+      const execute = () => {
+        const subscription = forward(operation).subscribe({
+          next: (result) => {
+            breadcrumb.level = severityForResult(result);
 
             if (attachBreadcrumbs.includeFetchResult) {
               breadcrumb.data.fetchResult = result;
             }
-          } else {
-            scrubbedError = error;
-          }
 
-          if (attachBreadcrumbs.includeError) {
-            breadcrumb.data.error = scrubbedError;
-          }
+            if (
+              attachBreadcrumbs.includeError &&
+              result.errors &&
+              result.errors.length > 0
+            ) {
+              breadcrumb.data.error = new ApolloError({
+                graphQLErrors: result.errors,
+              });
+            }
 
-          attachBreadcrumbToSentry(operation, breadcrumb, options);
+            originalObserver.next(result);
+          },
+          complete: () => {
+            attachBreadcrumbToSentry(operation, breadcrumb, options);
 
-          originalObserver.error(error);
-        },
-      });
+            originalObserver.complete();
+          },
+          error: (error) => {
+            breadcrumb.level = 'error';
 
-      return () => {
-        subscription.unsubscribe();
+            let scrubbedError;
+            if (isServerError(error)) {
+              const { result, response, ...rest } = error;
+              scrubbedError = rest;
+
+              if (attachBreadcrumbs.includeFetchResult) {
+                breadcrumb.data.fetchResult = result;
+              }
+            } else {
+              scrubbedError = error;
+            }
+
+            if (attachBreadcrumbs.includeError) {
+              breadcrumb.data.error = scrubbedError;
+            }
+
+            attachBreadcrumbToSentry(operation, breadcrumb, options);
+
+            originalObserver.error(error);
+          },
+        });
+
+        return () => {
+          subscription.unsubscribe();
+        };
       };
+
+      if (spanOptions) {
+        return startSpan(spanOptions, execute);
+      }
+
+      return execute();
     });
   }
+
+  private withSpan(
+    operation: Operation,
+    forward: NextLink,
+  ): Observable<FetchResult> {
+    return new Observable<FetchResult>((observer) => {
+      return startSpan(spanOptionsForOperation(operation), () => {
+        const subscription = forward(operation).subscribe(observer);
+
+        return () => {
+          subscription.unsubscribe();
+        };
+      });
+    });
+  }
+}
+
+function spanOptionsForOperation(operation: Operation) {
+  const definition = extractDefinition(operation);
+  const type = definition.operation;
+  const name = definition.name?.value ?? 'anonymous';
+
+  return {
+    name: `graphql.${type} ${name}`,
+    op: 'graphql',
+    attributes: {
+      'graphql.operation.type': type,
+      'graphql.operation.name': name,
+    },
+  };
 }
 
 function isServerError(error: unknown): error is ServerError {
