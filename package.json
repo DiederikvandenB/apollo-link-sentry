@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-sentry",
-  "version": "4.5.0",
+  "version": "5.0.0",
   "license": "MIT",
   "author": "Diederik van den Burger <diederikvandenburger@tab.capital>",
   "repository": "https://github.com/DiederikvandenB/apollo-link-sentry.git",

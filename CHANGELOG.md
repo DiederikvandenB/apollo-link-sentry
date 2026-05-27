@@ -1,3 +1,20 @@
+# [5.0.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.4.0...v5.0.0) (2026-05-27)
+
+
+* feat!: require `@apollo/client` v4 ([5c07bf1](https://github.com/DiederikvandenB/apollo-link-sentry/commit/5c07bf1c23110405ccf30f8cdb1c3528bb36ff31))
+
+
+### Features
+
+* support `@apollo/client` version 4 ([#491](https://github.com/DiederikvandenB/apollo-link-sentry/issues/491)) ([8437878](https://github.com/DiederikvandenB/apollo-link-sentry/commit/8437878b847e48e5bb57f2ad6be97ed90eb08266))
+
+
+### BREAKING CHANGES
+
+* Dropped support for `@apollo/client` v3. Users must upgrade to `@apollo/client` v4.
+
+🤖 Generated with Claude Code
+
 # [4.5.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.4.0...v4.5.0) (2026-05-27)
 
 
