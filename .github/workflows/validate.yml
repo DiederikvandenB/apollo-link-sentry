@@ -4,29 +4,40 @@ on: pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
 
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        sentry-version:
+          - ^8.33
+          - ^9
+          - ^10
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-node@v4
+
+    - run: corepack enable
+
+    - run: yarn add --dev @sentry/core@${{ matrix.sentry-version }} @sentry/browser@${{ matrix.sentry-version }}
 
     - run: yarn install
 
     - run: yarn run test:coverage
 
-    - uses: coverallsapp/github-action@master
+    - uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
+    - uses: actions/setup-node@v4
+
+    - run: corepack enable
 
     - run: yarn install
 
@@ -35,11 +46,11 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
+    - uses: actions/setup-node@v4
+
+    - run: corepack enable
 
     - run: yarn install
 

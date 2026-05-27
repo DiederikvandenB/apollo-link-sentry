@@ -1,6 +1,6 @@
-import { BrowserOptions } from '@sentry/browser';
+import { ClientOptions } from '@sentry/core';
 
-type BeforeBreadcrumbCallback = NonNullable<BrowserOptions['beforeBreadcrumb']>;
+type BeforeBreadcrumbCallback = NonNullable<ClientOptions['beforeBreadcrumb']>;
 
 export const excludeGraphQLFetch: BeforeBreadcrumbCallback = (breadcrumb) => {
   if (breadcrumb.category === 'fetch') {

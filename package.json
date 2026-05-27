@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-sentry",
-  "version": "4.0.0",
+  "version": "5.0.1",
   "license": "MIT",
   "author": "Diederik van den Burger <diederikvandenburger@tab.capital>",
   "repository": "https://github.com/DiederikvandenB/apollo-link-sentry.git",
@@ -10,8 +10,8 @@
   "browser": "lib-esm/index.js",
   "typings": "lib-esm/index.d.ts",
   "files": [
-    "lib-esm/**/*",
-    "lib-cjs/**/*"
+    "lib-cjs/**/*",
+    "lib-esm/**/*"
   ],
   "sideEffects": false,
   "keywords": [
@@ -34,40 +34,52 @@
   },
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "dot-prop": "^6.0.0",
-    "tslib": "^2.0.3",
-    "zen-observable-ts": "^1.2.5"
+    "dot-prop": "^6",
+    "rxjs": "^7.8.2",
+    "tslib": "^2.0.3"
   },
   "peerDependencies": {
-    "@apollo/client": "^3.2.3",
-    "@sentry/browser": "^8.33.0",
-    "graphql": "15 - 16"
+    "@apollo/client": "^4.0.10",
+    "@sentry/core": "^8.33 || ^9 || ^10",
+    "graphql": "^15 || ^16"
   },
   "devDependencies": {
-    "@apollo/client": "^3.5.6",
+    "@apollo/client": "^4.0.10",
+    "@babel/preset-env": "^7.28.5",
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/git": "^10.0.1",
-    "@sentry/browser": "^8.33.0",
+    "@sentry/browser": "^8.33 || ^9 || ^10",
+    "@sentry/core": "^8.33 || ^9 || ^10",
     "@types/jest": "^27.0.3",
-    "@typescript-eslint/eslint-plugin": "^5.7.0",
-    "@typescript-eslint/parser": "^5.7.0",
+    "@typescript-eslint/eslint-plugin": "^5.7",
+    "@typescript-eslint/parser": "^5.7",
     "eslint": "^8.4.1",
-    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-prettier": "^8.3",
     "eslint-plugin-import": "^2.25.3",
-    "eslint-plugin-prettier": "^4.0.0",
-    "graphql": "^15.8.0",
-    "isomorphic-fetch": "^3.0.0",
+    "eslint-plugin-prettier": "^4",
+    "graphql": "^15 || ^16",
+    "isomorphic-fetch": "^3",
     "jest": "^27.4.5",
     "jest-spec-reporter": "^1.0.17",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
-    "semantic-release": "^20.1.1",
+    "semantic-release": "^25.0.3",
     "sentry-testkit": "^5.0.5",
     "ts-jest": "^27.1.1",
-    "tsc-watch": "^4.5.0",
-    "typescript": "^4.5.4"
+    "tsc-watch": "^4.5",
+    "typescript": "^5"
+  },
+  "resolutions": {
+    "lodash": "^4.18.0",
+    "qs": "^6.15.2",
+    "js-yaml": "^4.1.1",
+    "minimatch": "^3.1.4",
+    "glob": "^10.5.0",
+    "ip-address": "^10.1.1",
+    "@tootallnate/once": "^2.0.1"
   },
   "volta": {
     "node": "18.15.0"
-  }
+  },
+  "packageManager": "yarn@4.9.2"
 }

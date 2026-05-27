@@ -1,12 +1,12 @@
-import { Operation } from '@apollo/client/core';
-import { Breadcrumb, addBreadcrumb, getCurrentScope } from '@sentry/browser';
+import { ApolloLink } from '@apollo/client/core';
+import { Breadcrumb, addBreadcrumb, getCurrentScope } from '@sentry/core';
 
 import { GraphQLBreadcrumb } from './breadcrumb';
 import { extractDefinition } from './operation';
 import { FullOptions } from './options';
 import { stringifyObjectKeys } from './utils';
 
-export function setTransaction(operation: Operation): void {
+export function setTransaction(operation: ApolloLink.Operation): void {
   const definition = extractDefinition(operation);
   const name = definition.name;
 
@@ -17,7 +17,7 @@ export function setTransaction(operation: Operation): void {
 
 export const DEFAULT_FINGERPRINT = '{{ default }}';
 
-export function setFingerprint(operation: Operation): void {
+export function setFingerprint(operation: ApolloLink.Operation): void {
   const definition = extractDefinition(operation);
   const name = definition.name;
 
@@ -27,7 +27,7 @@ export function setFingerprint(operation: Operation): void {
 }
 
 export function attachBreadcrumbToSentry(
-  operation: Operation,
+  operation: ApolloLink.Operation,
   breadcrumb: GraphQLBreadcrumb,
   options: FullOptions,
 ): void {

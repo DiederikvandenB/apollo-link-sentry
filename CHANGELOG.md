@@ -1,3 +1,62 @@
+## [5.0.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v5.0.0...v5.0.1) (2026-05-27)
+
+
+### Bug Fixes
+
+* **deps:** resolve security vulnerabilities in transitive dev dependencies ([a68b70e](https://github.com/DiederikvandenB/apollo-link-sentry/commit/a68b70eec3c13959e0455af117a4c3aaec3bc3e5))
+
+# [5.0.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.4.0...v5.0.0) (2026-05-27)
+
+
+* feat!: require `@apollo/client` v4 ([5c07bf1](https://github.com/DiederikvandenB/apollo-link-sentry/commit/5c07bf1c23110405ccf30f8cdb1c3528bb36ff31))
+
+
+### Features
+
+* support `@apollo/client` version 4 ([#491](https://github.com/DiederikvandenB/apollo-link-sentry/issues/491)) ([8437878](https://github.com/DiederikvandenB/apollo-link-sentry/commit/8437878b847e48e5bb57f2ad6be97ed90eb08266))
+
+
+### BREAKING CHANGES
+
+* Dropped support for `@apollo/client` v3. Users must upgrade to `@apollo/client` v4.
+
+🤖 Generated with Claude Code
+
+# [4.5.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.4.0...v4.5.0) (2026-05-27)
+
+
+### Features
+
+* support `@apollo/client` version 4 ([#491](https://github.com/DiederikvandenB/apollo-link-sentry/issues/491)) ([8437878](https://github.com/DiederikvandenB/apollo-link-sentry/commit/8437878b847e48e5bb57f2ad6be97ed90eb08266))
+
+# [4.4.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.3.0...v4.4.0) (2025-08-06)
+
+
+### Features
+
+* support @sentry/core 10 ([c0083a5](https://github.com/DiederikvandenB/apollo-link-sentry/commit/c0083a5386c3dd8435edab1eb4f597ff877e489e))
+
+# [4.3.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.2.0...v4.3.0) (2025-05-09)
+
+
+### Features
+
+* Simplify SentryLink to just forward the operation if `attachBreadcrumb` is not set ([#483](https://github.com/DiederikvandenB/apollo-link-sentry/issues/483)) ([dedb6ee](https://github.com/DiederikvandenB/apollo-link-sentry/commit/dedb6ee3cc1bb2e3f4b761216c595511c0758702))
+
+# [4.2.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.1.0...v4.2.0) (2025-03-24)
+
+
+### Features
+
+* allow @sentry/core 9 ([c97c51c](https://github.com/DiederikvandenB/apollo-link-sentry/commit/c97c51c3b656d43ee5070443429dc468c1e63be5))
+
+# [4.1.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.0.0...v4.1.0) (2025-02-04)
+
+
+### Features
+
+* depend on `@sentry/core` instead of `@sentry/browser` ([#480](https://github.com/DiederikvandenB/apollo-link-sentry/issues/480)) ([278a514](https://github.com/DiederikvandenB/apollo-link-sentry/commit/278a51469a238d2d5e1250c520b719a00b0e12fa))
+
 # [4.0.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v3.3.0...v4.0.0) (2024-05-21)
 
 

@@ -1,5 +1,5 @@
-# Directories
+.yarn
+coverage
 lib-esm
 lib-cjs
 node_modules
-coverage

@@ -1,13 +1,10 @@
 import {
-  ApolloError,
   ApolloLink,
-  FetchResult,
-  NextLink,
-  Operation,
+  CombinedGraphQLErrors,
   ServerError,
 } from '@apollo/client/core';
-import type { SeverityLevel } from '@sentry/types';
-import { Observable } from 'zen-observable-ts';
+import type { SeverityLevel } from '@sentry/core';
+import { Observable } from 'rxjs';
 
 import { makeBreadcrumb } from './breadcrumb';
 import { FullOptions, SentryLinkOptions, withDefaults } from './options';
@@ -26,10 +23,10 @@ export class SentryLink extends ApolloLink {
   }
 
   request(
-    operation: Operation,
-    forward: NextLink,
-  ): Observable<FetchResult> | null {
-    const options = this.options;
+    operation: ApolloLink.Operation,
+    forward: ApolloLink.ForwardFunction,
+  ): Observable<ApolloLink.Result> {
+    const { options } = this;
 
     if (!(options.shouldHandleOperation?.(operation) ?? true)) {
       return forward(operation);
@@ -43,36 +40,35 @@ export class SentryLink extends ApolloLink {
       setFingerprint(operation);
     }
 
-    const attachBreadcrumbs = options.attachBreadcrumbs;
+    const { attachBreadcrumbs } = options;
+    if (!attachBreadcrumbs) {
+      return forward(operation);
+    }
 
     // While this could be done more simplistically by simply subscribing,
     // wrapping the observer in our own observer ensures we get the results
     // before they are passed along to other observers. This guarantees we
     // get to run our instrumentation before others observers potentially
     // throw and thus flush the results to Sentry.
-    return new Observable<FetchResult>((originalObserver) => {
+    return new Observable<ApolloLink.Result>((originalObserver) => {
       const subscription = forward(operation).subscribe({
         next: (result) => {
-          if (attachBreadcrumbs) {
-            const breadcrumb = makeBreadcrumb(operation, options);
-            breadcrumb.level = severityForResult(result);
+          const breadcrumb = makeBreadcrumb(operation, options);
+          breadcrumb.level = severityForResult(result);
 
-            if (attachBreadcrumbs.includeFetchResult) {
-              breadcrumb.data.fetchResult = result;
-            }
-
-            if (
-              attachBreadcrumbs.includeError &&
-              result.errors &&
-              result.errors.length > 0
-            ) {
-              breadcrumb.data.error = new ApolloError({
-                graphQLErrors: result.errors,
-              });
-            }
-
-            attachBreadcrumbToSentry(operation, breadcrumb, options);
+          if (attachBreadcrumbs.includeFetchResult) {
+            breadcrumb.data.fetchResult = result;
           }
+
+          if (
+            attachBreadcrumbs.includeError &&
+            result.errors &&
+            result.errors.length > 0
+          ) {
+            breadcrumb.data.error = new CombinedGraphQLErrors(result);
+          }
+
+          attachBreadcrumbToSentry(operation, breadcrumb, options);
 
           originalObserver.next(result);
         },
@@ -80,28 +76,21 @@ export class SentryLink extends ApolloLink {
           originalObserver.complete();
         },
         error: (error) => {
-          if (attachBreadcrumbs) {
-            const breadcrumb = makeBreadcrumb(operation, options);
-            breadcrumb.level = 'error';
+          const breadcrumb = makeBreadcrumb(operation, options);
+          breadcrumb.level = 'error';
 
-            let scrubbedError;
-            if (isServerError(error)) {
-              const { result, response, ...rest } = error;
-              scrubbedError = rest;
-
-              if (attachBreadcrumbs.includeFetchResult) {
-                breadcrumb.data.fetchResult = result;
-              }
-            } else {
-              scrubbedError = error;
+          if (ServerError.is(error)) {
+            const { bodyText } = error;
+            if (attachBreadcrumbs.includeFetchResult) {
+              breadcrumb.data.fetchResult = bodyText;
             }
-
-            if (attachBreadcrumbs.includeError) {
-              breadcrumb.data.error = scrubbedError;
-            }
-
-            attachBreadcrumbToSentry(operation, breadcrumb, options);
           }
+
+          if (attachBreadcrumbs.includeError) {
+            breadcrumb.data.error = error;
+          }
+
+          attachBreadcrumbToSentry(operation, breadcrumb, options);
 
           originalObserver.error(error);
         },
@@ -114,16 +103,6 @@ export class SentryLink extends ApolloLink {
   }
 }
 
-function isServerError(error: unknown): error is ServerError {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'response' in error &&
-    'result' in error &&
-    'statusCode' in error
-  );
-}
-
-function severityForResult(result: FetchResult): SeverityLevel {
+function severityForResult(result: ApolloLink.Result): SeverityLevel {
   return result.errors && result.errors.length > 0 ? 'error' : 'info';
 }
