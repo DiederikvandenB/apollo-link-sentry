@@ -1,9 +1,10 @@
-import { parse } from 'graphql';
+import { OperationTypeNode, parse } from 'graphql';
 
 import { makeBreadcrumb } from '../src/breadcrumb';
 import { withDefaults } from '../src/options';
 
 import { makeOperation } from './operation.test';
+import { createApolloClient } from './utils';
 
 describe('makeBreadcrumb', () => {
   it('should fill with all options disabled', () => {
@@ -13,6 +14,8 @@ describe('makeBreadcrumb', () => {
       {
         operationName: 'Foo',
         query: document,
+        operationType: OperationTypeNode.QUERY,
+        client: createApolloClient(),
         variables: {},
         extensions: {},
         setContext: () => ({}),
@@ -64,6 +67,8 @@ describe('makeBreadcrumb', () => {
       {
         operationName: operationName,
         query: document,
+        operationType: OperationTypeNode.QUERY,
+        client: createApolloClient(),
         variables: variables,
         extensions: {},
         setContext: () => ({}),

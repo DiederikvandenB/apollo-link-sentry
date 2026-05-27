@@ -1,4 +1,4 @@
-import { Operation } from '@apollo/client/core';
+import { ApolloLink } from '@apollo/client/core';
 import { Breadcrumb } from '@sentry/core';
 import deepMerge from 'deepmerge';
 
@@ -12,7 +12,9 @@ export interface FullOptions {
    *
    * If undefined, all operations will be included.
    */
-  shouldHandleOperation: undefined | ((operation: Operation) => boolean);
+  shouldHandleOperation:
+    | undefined
+    | ((operation: ApolloLink.Operation) => boolean);
 
   /**
    * The uri of the GraphQL endpoint.
@@ -133,7 +135,10 @@ export type AttachBreadcrumbsOptions = {
    */
   transform:
     | undefined
-    | ((breadcrumb: GraphQLBreadcrumb, operation: Operation) => Breadcrumb);
+    | ((
+        breadcrumb: GraphQLBreadcrumb,
+        operation: ApolloLink.Operation,
+      ) => Breadcrumb);
 };
 
 export const defaultOptions = {

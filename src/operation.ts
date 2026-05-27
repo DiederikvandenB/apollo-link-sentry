@@ -1,8 +1,8 @@
-import { Operation } from '@apollo/client/core';
+import { ApolloLink } from '@apollo/client/core';
 import { OperationDefinitionNode } from 'graphql';
 
 export function extractDefinition(
-  operation: Operation,
+  operation: ApolloLink.Operation,
 ): OperationDefinitionNode {
   // We know we always have a single definition, because Apollo validates this before we get here.
   // With more then one query defined, an error like this is thrown and the query is never sent:

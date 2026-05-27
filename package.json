@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-sentry",
-  "version": "4.4.0",
+  "version": "5.0.2",
   "license": "MIT",
   "author": "Diederik van den Burger <diederikvandenburger@tab.capital>",
   "repository": "https://github.com/DiederikvandenB/apollo-link-sentry.git",
@@ -35,16 +35,17 @@
   "dependencies": {
     "deepmerge": "^4.2.2",
     "dot-prop": "^6",
-    "tslib": "^2.0.3",
-    "zen-observable-ts": "^1.2.5"
+    "rxjs": "^7.8.2",
+    "tslib": "^2.0.3"
   },
   "peerDependencies": {
-    "@apollo/client": "^3.2.3",
+    "@apollo/client": "^4.0.10",
     "@sentry/core": "^8.33 || ^9 || ^10",
     "graphql": "^15 || ^16"
   },
   "devDependencies": {
-    "@apollo/client": "^3.2.3",
+    "@apollo/client": "^4.0.10",
+    "@babel/preset-env": "^7.28.5",
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/git": "^10.0.1",
     "@sentry/browser": "^8.33 || ^9 || ^10",
@@ -67,6 +68,15 @@
     "ts-jest": "^27.1.1",
     "tsc-watch": "^4.5",
     "typescript": "^5"
+  },
+  "resolutions": {
+    "lodash": "^4.18.0",
+    "qs": "^6.15.2",
+    "js-yaml": "^4.1.1",
+    "glob": "^10.5.0",
+    "ip-address": "^10.1.1",
+    "@tootallnate/once": "^2.0.1",
+    "test-exclude": "^7.0.2"
   },
   "volta": {
     "node": "18.15.0"

@@ -1,34 +1,44 @@
 import {
-  ApolloError,
   ApolloLink,
+  CombinedGraphQLErrors,
   execute,
   ServerError,
 } from '@apollo/client/core';
 import * as Sentry from '@sentry/browser';
-import { startSpan } from '@sentry/core';
+import { startSpanManual } from '@sentry/core';
+import type { Span } from '@sentry/core';
 import { GraphQLError, parse } from 'graphql';
+import { Observable } from 'rxjs';
 import sentryTestkit from 'sentry-testkit';
-import { Observable } from 'zen-observable-ts';
 
 import { GraphQLBreadcrumb, SentryLink, SentryLinkOptions } from '../src';
 import { DEFAULT_FINGERPRINT } from '../src/sentry';
 import { stringify } from '../src/utils';
+import { createApolloClient } from './utils';
+
+const mockSpan = { end: jest.fn() } as unknown as Span;
 
 jest.mock('@sentry/core', () => ({
   ...jest.requireActual('@sentry/core'),
-  startSpan: jest.fn(
-    (_options: unknown, callback: (...args: unknown[]) => unknown) =>
-      callback(),
+  startSpanManual: jest.fn(
+    (_options: unknown, callback: (span: unknown) => unknown) =>
+      callback(mockSpan),
   ),
 }));
 
-const startSpanMock = startSpan as jest.MockedFunction<typeof startSpan>;
+const startSpanManualMock = startSpanManual as jest.MockedFunction<
+  typeof startSpanManual
+>;
 
 const { testkit, sentryTransport } = sentryTestkit();
 
-const nullLink = new ApolloLink(() => null);
+const nullLink = new ApolloLink((operation, forward) => {
+  return forward(operation);
+});
 
 describe('SentryLink', () => {
+  const context: ApolloLink.ExecuteContext = { client: createApolloClient() };
+
   beforeAll(() => {
     Sentry.init({
       dsn: 'https://acacaeaccacacacabcaacdacdacadaca@sentry.io/000001',
@@ -48,7 +58,7 @@ describe('SentryLink', () => {
   it('should attach a sentry breadcrumb for an apolloOperation', (done) => {
     const link = ApolloLink.from([new SentryLink(), nullLink]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(link, { query: parse(`query Foo { foo }`) }, context).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -96,13 +106,21 @@ describe('SentryLink', () => {
       }),
     ]);
 
-    execute(withResult, {
-      query: parse(`query SuccessQuery { foo }`),
-    }).subscribe({
+    execute(
+      withResult,
+      {
+        query: parse(`query SuccessQuery { foo }`),
+      },
+      context,
+    ).subscribe({
       complete() {
-        execute(withError, {
-          query: parse(`mutation FailureMutation { bar }`),
-        }).subscribe({
+        execute(
+          withError,
+          {
+            query: parse(`mutation FailureMutation { bar }`),
+          },
+          context,
+        ).subscribe({
           error(exception) {
             Sentry.captureException(exception);
 
@@ -150,9 +168,13 @@ describe('SentryLink', () => {
       ),
     ]);
 
-    execute(withPartialErrors, {
-      query: parse(`query PartialErrors { foo }`),
-    }).subscribe({
+    execute(
+      withPartialErrors,
+      {
+        query: parse(`query PartialErrors { foo }`),
+      },
+      context,
+    ).subscribe({
       complete() {
         Sentry.captureException(new Error());
 
@@ -166,7 +188,7 @@ describe('SentryLink', () => {
         expect(breadcrumb.data.operationName).toBe('PartialErrors');
         expect(breadcrumb.data.fetchResult).not.toBeDefined();
         expect(breadcrumb.data.error).toBe(
-          stringify(new ApolloError({ graphQLErrors: errors })),
+          stringify(new CombinedGraphQLErrors(result)),
         );
 
         done();
@@ -196,9 +218,13 @@ describe('SentryLink', () => {
       ),
     ]);
 
-    execute(withPartialErrors, {
-      query: parse(`query PartialErrors { foo }`),
-    }).subscribe({
+    execute(
+      withPartialErrors,
+      {
+        query: parse(`query PartialErrors { foo }`),
+      },
+      context,
+    ).subscribe({
       complete() {
         Sentry.captureException(new Error());
 
@@ -212,7 +238,7 @@ describe('SentryLink', () => {
         expect(breadcrumb.data.operationName).toBe('PartialErrors');
         expect(breadcrumb.data.fetchResult).toBe(stringify(result));
         expect(breadcrumb.data.error).toBe(
-          stringify(new ApolloError({ graphQLErrors: errors })),
+          stringify(new CombinedGraphQLErrors(result)),
         );
 
         done();
@@ -234,7 +260,7 @@ describe('SentryLink', () => {
       ),
     ]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(link, { query: parse(`query Foo { foo }`) }, context).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -253,13 +279,10 @@ describe('SentryLink', () => {
     const message = 'some message';
     const fetchResult = { errors: [{ message: 'GraphQL error message' }] };
 
-    const serverError: ServerError = {
-      name: 'bla',
-      message: message,
-      response: new Response(),
-      result: fetchResult,
-      statusCode: 500,
-    };
+    const serverError = new ServerError(message, {
+      response: new Response(null, { status: 500 }),
+      bodyText: stringify(fetchResult),
+    });
 
     const link = ApolloLink.from([
       new SentryLink({
@@ -276,7 +299,7 @@ describe('SentryLink', () => {
       ),
     ]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(link, { query: parse(`query Foo { foo }`) }, context).subscribe({
       error: () => {
         Sentry.captureException(new Error());
 
@@ -286,9 +309,10 @@ describe('SentryLink', () => {
         const [breadcrumb] = report.breadcrumbs as Array<GraphQLBreadcrumb>;
         expect(breadcrumb.data.error).toEqual(
           stringify({
-            name: serverError.name,
-            message: serverError.message,
+            response: serverError.response,
             statusCode: serverError.statusCode,
+            bodyText: serverError.bodyText,
+            name: serverError.name,
           }),
         );
         expect(breadcrumb.data.fetchResult).toEqual(stringify(fetchResult));
@@ -304,7 +328,7 @@ describe('SentryLink', () => {
       nullLink,
     ]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(link, { query: parse(`query Foo { foo }`) }, context).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -319,7 +343,7 @@ describe('SentryLink', () => {
   it('should set the transaction name by default', (done) => {
     const link = ApolloLink.from([new SentryLink(), nullLink]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(link, { query: parse(`query Foo { foo }`) }, context).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -339,7 +363,7 @@ describe('SentryLink', () => {
       nullLink,
     ]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(link, { query: parse(`query Foo { foo }`) }, context).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -356,7 +380,7 @@ describe('SentryLink', () => {
   it('should set the fingerprint by default', (done) => {
     const link = ApolloLink.from([new SentryLink(), nullLink]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(link, { query: parse(`query Foo { foo }`) }, context).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -379,7 +403,7 @@ describe('SentryLink', () => {
       nullLink,
     ]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(link, { query: parse(`query Foo { foo }`) }, context).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -402,9 +426,13 @@ describe('SentryLink', () => {
       nullLink,
     ]);
 
-    execute(link, { query: parse(`query Handle { foo }`) }).subscribe({
+    execute(link, { query: parse(`query Handle { foo }`) }, context).subscribe({
       complete: () => {
-        execute(link, { query: parse(`query Discard { foo }`) }).subscribe({
+        execute(
+          link,
+          { query: parse(`query Discard { foo }`) },
+          context,
+        ).subscribe({
           complete: () => {
             Sentry.captureException(new Error());
 
@@ -438,7 +466,7 @@ describe('SentryLink', () => {
       nullLink,
     ]);
 
-    execute(link, { query: parse(`query Foo { foo }`) }).subscribe({
+    execute(link, { query: parse(`query Foo { foo }`) }, context).subscribe({
       complete: () => {
         Sentry.captureException(new Error());
 
@@ -453,13 +481,14 @@ describe('SentryLink', () => {
   });
 
   it('should create a span when tracing is enabled', (done) => {
-    startSpanMock.mockClear();
+    startSpanManualMock.mockClear();
+    (mockSpan.end as jest.Mock).mockClear();
 
     const link = ApolloLink.from([new SentryLink({ tracing: true }), nullLink]);
 
-    execute(link, { query: parse(`query TracedQuery { foo }`) }).subscribe({
+    execute(link, { query: parse(`query TracedQuery { foo }`) }, context).subscribe({
       complete: () => {
-        expect(startSpanMock).toHaveBeenCalledWith(
+        expect(startSpanManualMock).toHaveBeenCalledWith(
           expect.objectContaining({
             name: 'graphql.query TracedQuery',
             op: 'graphql',
@@ -471,22 +500,48 @@ describe('SentryLink', () => {
           expect.any(Function),
         );
 
+        expect(mockSpan.end).toHaveBeenCalled();
+
+        done();
+      },
+    });
+  });
+
+  it('should end the span on error', (done) => {
+    startSpanManualMock.mockClear();
+    (mockSpan.end as jest.Mock).mockClear();
+
+    const error = new Error('network failure');
+    const errorLink = ApolloLink.from([
+      new SentryLink({ tracing: true }),
+      new ApolloLink(() => new Observable((observer) => observer.error(error))),
+    ]);
+
+    execute(
+      errorLink,
+      { query: parse(`query ErrorQuery { foo }`) },
+      context,
+    ).subscribe({
+      error: () => {
+        expect(startSpanManualMock).toHaveBeenCalled();
+        expect(mockSpan.end).toHaveBeenCalled();
+
         done();
       },
     });
   });
 
   it('should not create a span when tracing is disabled', (done) => {
-    startSpanMock.mockClear();
+    startSpanManualMock.mockClear();
 
     const link = ApolloLink.from([
       new SentryLink({ tracing: false }),
       nullLink,
     ]);
 
-    execute(link, { query: parse(`query UntracedQuery { foo }`) }).subscribe({
+    execute(link, { query: parse(`query UntracedQuery { foo }`) }, context).subscribe({
       complete: () => {
-        expect(startSpanMock).not.toHaveBeenCalled();
+        expect(startSpanManualMock).not.toHaveBeenCalled();
 
         done();
       },

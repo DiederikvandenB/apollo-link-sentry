@@ -1,14 +1,11 @@
 import {
-  ApolloError,
   ApolloLink,
-  FetchResult,
-  NextLink,
-  Operation,
+  CombinedGraphQLErrors,
   ServerError,
 } from '@apollo/client/core';
-import type { SeverityLevel } from '@sentry/core';
-import { startSpan } from '@sentry/core';
-import { Observable } from 'zen-observable-ts';
+import type { Span, SeverityLevel } from '@sentry/core';
+import { startSpanManual } from '@sentry/core';
+import { Observable } from 'rxjs';
 
 import { makeBreadcrumb } from './breadcrumb';
 import { extractDefinition } from './operation';
@@ -28,9 +25,9 @@ export class SentryLink extends ApolloLink {
   }
 
   request(
-    operation: Operation,
-    forward: NextLink,
-  ): Observable<FetchResult> | null {
+    operation: ApolloLink.Operation,
+    forward: ApolloLink.ForwardFunction,
+  ): Observable<ApolloLink.Result> {
     const { options } = this;
 
     if (!(options.shouldHandleOperation?.(operation) ?? true)) {
@@ -61,92 +58,99 @@ export class SentryLink extends ApolloLink {
     // before they are passed along to other observers. This guarantees we
     // get to run our instrumentation before others observers potentially
     // throw and thus flush the results to Sentry.
-    return new Observable<FetchResult>((originalObserver) => {
-      const spanOptions = options.tracing
-        ? spanOptionsForOperation(operation)
-        : undefined;
+    return new Observable<ApolloLink.Result>((originalObserver) => {
+      let span: Span | undefined;
 
-      const execute = () => {
-        const subscription = forward(operation).subscribe({
-          next: (result) => {
-            breadcrumb.level = severityForResult(result);
-
-            if (attachBreadcrumbs.includeFetchResult) {
-              breadcrumb.data.fetchResult = result;
-            }
-
-            if (
-              attachBreadcrumbs.includeError &&
-              result.errors &&
-              result.errors.length > 0
-            ) {
-              breadcrumb.data.error = new ApolloError({
-                graphQLErrors: result.errors,
-              });
-            }
-
-            originalObserver.next(result);
-          },
-          complete: () => {
-            attachBreadcrumbToSentry(operation, breadcrumb, options);
-
-            originalObserver.complete();
-          },
-          error: (error) => {
-            breadcrumb.level = 'error';
-
-            let scrubbedError;
-            if (isServerError(error)) {
-              const { result, response, ...rest } = error;
-              scrubbedError = rest;
-
-              if (attachBreadcrumbs.includeFetchResult) {
-                breadcrumb.data.fetchResult = result;
-              }
-            } else {
-              scrubbedError = error;
-            }
-
-            if (attachBreadcrumbs.includeError) {
-              breadcrumb.data.error = scrubbedError;
-            }
-
-            attachBreadcrumbToSentry(operation, breadcrumb, options);
-
-            originalObserver.error(error);
-          },
+      if (options.tracing) {
+        startSpanManual(spanOptionsForOperation(operation), (s) => {
+          span = s;
         });
-
-        return () => {
-          subscription.unsubscribe();
-        };
-      };
-
-      if (spanOptions) {
-        return startSpan(spanOptions, execute);
       }
 
-      return execute();
+      const subscription = forward(operation).subscribe({
+        next: (result) => {
+          breadcrumb.level = severityForResult(result);
+
+          if (attachBreadcrumbs.includeFetchResult) {
+            breadcrumb.data.fetchResult = result;
+          }
+
+          if (
+            attachBreadcrumbs.includeError &&
+            result.errors &&
+            result.errors.length > 0
+          ) {
+            breadcrumb.data.error = new CombinedGraphQLErrors(result);
+          }
+
+          originalObserver.next(result);
+        },
+        complete: () => {
+          span?.end();
+          attachBreadcrumbToSentry(operation, breadcrumb, options);
+
+          originalObserver.complete();
+        },
+        error: (error) => {
+          breadcrumb.level = 'error';
+
+          if (ServerError.is(error)) {
+            const { bodyText } = error;
+            if (attachBreadcrumbs.includeFetchResult) {
+              breadcrumb.data.fetchResult = bodyText;
+            }
+          }
+
+          if (attachBreadcrumbs.includeError) {
+            breadcrumb.data.error = error;
+          }
+
+          span?.end();
+          attachBreadcrumbToSentry(operation, breadcrumb, options);
+
+          originalObserver.error(error);
+        },
+      });
+
+      return () => {
+        span?.end();
+        subscription.unsubscribe();
+      };
     });
   }
 
   private withSpan(
-    operation: Operation,
-    forward: NextLink,
-  ): Observable<FetchResult> {
-    return new Observable<FetchResult>((observer) => {
-      return startSpan(spanOptionsForOperation(operation), () => {
-        const subscription = forward(operation).subscribe(observer);
+    operation: ApolloLink.Operation,
+    forward: ApolloLink.ForwardFunction,
+  ): Observable<ApolloLink.Result> {
+    return new Observable<ApolloLink.Result>((observer) => {
+      let span: Span | undefined;
 
-        return () => {
-          subscription.unsubscribe();
-        };
+      startSpanManual(spanOptionsForOperation(operation), (s) => {
+        span = s;
       });
+
+      const subscription = forward(operation).subscribe({
+        next: (result) => observer.next(result),
+        complete: () => {
+          span?.end();
+          observer.complete();
+        },
+        error: (error) => {
+          span?.end();
+          observer.error(error);
+        },
+      });
+
+      return () => {
+        span?.end();
+        subscription.unsubscribe();
+      };
     });
   }
 }
 
-function spanOptionsForOperation(operation: Operation) {
+function spanOptionsForOperation(operation: ApolloLink.Operation) {
   const definition = extractDefinition(operation);
   const type = definition.operation;
   const name = definition.name?.value ?? 'anonymous';
@@ -161,16 +165,6 @@ function spanOptionsForOperation(operation: Operation) {
   };
 }
 
-function isServerError(error: unknown): error is ServerError {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'response' in error &&
-    'result' in error &&
-    'statusCode' in error
-  );
-}
-
-function severityForResult(result: FetchResult): SeverityLevel {
+function severityForResult(result: ApolloLink.Result): SeverityLevel {
   return result.errors && result.errors.length > 0 ? 'error' : 'info';
 }
