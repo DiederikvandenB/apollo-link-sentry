@@ -1,3 +1,10 @@
+## [5.0.2](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v5.0.1...v5.0.2) (2026-05-27)
+
+
+### Bug Fixes
+
+* **ci:** resolve test-exclude/glob/minimatch incompatibility ([#506](https://github.com/DiederikvandenB/apollo-link-sentry/issues/506)) ([99ff3f6](https://github.com/DiederikvandenB/apollo-link-sentry/commit/99ff3f6649fd8b669ffa687f6cb25d0a3c81a95b))
+
 ## [5.0.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v5.0.0...v5.0.1) (2026-05-27)
 
 
