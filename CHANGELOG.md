@@ -1,3 +1,10 @@
+## [5.0.1](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v5.0.0...v5.0.1) (2026-05-27)
+
+
+### Bug Fixes
+
+* **deps:** resolve security vulnerabilities in transitive dev dependencies ([a68b70e](https://github.com/DiederikvandenB/apollo-link-sentry/commit/a68b70eec3c13959e0455af117a4c3aaec3bc3e5))
+
 # [5.0.0](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v4.4.0...v5.0.0) (2026-05-27)
 
 
