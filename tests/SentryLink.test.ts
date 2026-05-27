@@ -14,6 +14,7 @@ import sentryTestkit from 'sentry-testkit';
 import { GraphQLBreadcrumb, SentryLink, SentryLinkOptions } from '../src';
 import { DEFAULT_FINGERPRINT } from '../src/sentry';
 import { stringify } from '../src/utils';
+
 import { createApolloClient } from './utils';
 
 const mockSpan = { end: jest.fn() } as unknown as Span;
@@ -486,7 +487,11 @@ describe('SentryLink', () => {
 
     const link = ApolloLink.from([new SentryLink({ tracing: true }), nullLink]);
 
-    execute(link, { query: parse(`query TracedQuery { foo }`) }, context).subscribe({
+    execute(
+      link,
+      { query: parse(`query TracedQuery { foo }`) },
+      context,
+    ).subscribe({
       complete: () => {
         expect(startSpanManualMock).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -539,7 +544,11 @@ describe('SentryLink', () => {
       nullLink,
     ]);
 
-    execute(link, { query: parse(`query UntracedQuery { foo }`) }, context).subscribe({
+    execute(
+      link,
+      { query: parse(`query UntracedQuery { foo }`) },
+      context,
+    ).subscribe({
       complete: () => {
         expect(startSpanManualMock).not.toHaveBeenCalled();
 
