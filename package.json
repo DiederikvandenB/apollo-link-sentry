@@ -35,16 +35,17 @@
   "dependencies": {
     "deepmerge": "^4.2.2",
     "dot-prop": "^6",
-    "tslib": "^2.0.3",
-    "zen-observable-ts": "^1.2.5"
+    "rxjs": "^7.8.2",
+    "tslib": "^2.0.3"
   },
   "peerDependencies": {
-    "@apollo/client": "^3.2.3",
+    "@apollo/client": "^4.0.10",
     "@sentry/core": "^8.33 || ^9 || ^10",
     "graphql": "^15 || ^16"
   },
   "devDependencies": {
-    "@apollo/client": "^3.2.3",
+    "@apollo/client": "^4.0.10",
+    "@babel/preset-env": "^7.28.5",
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/git": "^10.0.1",
     "@sentry/browser": "^8.33 || ^9 || ^10",
