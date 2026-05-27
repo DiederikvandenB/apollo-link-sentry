@@ -9,7 +9,7 @@ import {
 import type { SeverityLevel } from '@sentry/types';
 import { Observable } from 'zen-observable-ts';
 
-import { GraphQLBreadcrumb, makeBreadcrumb } from './breadcrumb';
+import { makeBreadcrumb } from './breadcrumb';
 import { FullOptions, SentryLinkOptions, withDefaults } from './options';
 import {
   attachBreadcrumbToSentry,
@@ -44,9 +44,6 @@ export class SentryLink extends ApolloLink {
     }
 
     const attachBreadcrumbs = options.attachBreadcrumbs;
-    const breadcrumb = attachBreadcrumbs
-      ? makeBreadcrumb(operation, options)
-      : undefined;
 
     // While this could be done more simplistically by simply subscribing,
     // wrapping the observer in our own observer ensures we get the results
@@ -57,12 +54,11 @@ export class SentryLink extends ApolloLink {
       const subscription = forward(operation).subscribe({
         next: (result) => {
           if (attachBreadcrumbs) {
-            // We must have a breadcrumb if attachBreadcrumbs was set
-            (breadcrumb as GraphQLBreadcrumb).level = severityForResult(result);
+            const breadcrumb = makeBreadcrumb(operation, options);
+            breadcrumb.level = severityForResult(result);
 
             if (attachBreadcrumbs.includeFetchResult) {
-              // We must have a breadcrumb if attachBreadcrumbs was set
-              (breadcrumb as GraphQLBreadcrumb).data.fetchResult = result;
+              breadcrumb.data.fetchResult = result;
             }
 
             if (
@@ -70,18 +66,12 @@ export class SentryLink extends ApolloLink {
               result.errors &&
               result.errors.length > 0
             ) {
-              // We must have a breadcrumb if attachBreadcrumbs was set
-              (breadcrumb as GraphQLBreadcrumb).data.error = new ApolloError({
+              breadcrumb.data.error = new ApolloError({
                 graphQLErrors: result.errors,
               });
             }
 
-            attachBreadcrumbToSentry(
-              operation,
-              // We must have a breadcrumb if attachBreadcrumbs was set
-              breadcrumb as GraphQLBreadcrumb,
-              options,
-            );
+            attachBreadcrumbToSentry(operation, breadcrumb, options);
           }
 
           originalObserver.next(result);
@@ -91,8 +81,8 @@ export class SentryLink extends ApolloLink {
         },
         error: (error) => {
           if (attachBreadcrumbs) {
-            // We must have a breadcrumb if attachBreadcrumbs was set
-            (breadcrumb as GraphQLBreadcrumb).level = 'error';
+            const breadcrumb = makeBreadcrumb(operation, options);
+            breadcrumb.level = 'error';
 
             let scrubbedError;
             if (isServerError(error)) {
@@ -100,24 +90,17 @@ export class SentryLink extends ApolloLink {
               scrubbedError = rest;
 
               if (attachBreadcrumbs.includeFetchResult) {
-                // We must have a breadcrumb if attachBreadcrumbs was set
-                (breadcrumb as GraphQLBreadcrumb).data.fetchResult = result;
+                breadcrumb.data.fetchResult = result;
               }
             } else {
               scrubbedError = error;
             }
 
             if (attachBreadcrumbs.includeError) {
-              // We must have a breadcrumb if attachBreadcrumbs was set
-              (breadcrumb as GraphQLBreadcrumb).data.error = scrubbedError;
+              breadcrumb.data.error = scrubbedError;
             }
 
-            attachBreadcrumbToSentry(
-              operation,
-              // We must have a breadcrumb if attachBreadcrumbs was set
-              breadcrumb as GraphQLBreadcrumb,
-              options,
-            );
+            attachBreadcrumbToSentry(operation, breadcrumb, options);
           }
 
           originalObserver.error(error);

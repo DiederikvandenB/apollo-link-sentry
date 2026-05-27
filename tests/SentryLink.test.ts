@@ -411,6 +411,56 @@ describe('SentryLink', () => {
     });
   });
 
+  it('should not leak state between multiple next emissions', (done) => {
+    const errorResult = {
+      data: { foo: null },
+      errors: [new GraphQLError('failure')],
+    };
+    const successResult = { data: { foo: true } };
+
+    const link = ApolloLink.from([
+      new SentryLink({
+        attachBreadcrumbs: { includeFetchResult: true, includeError: true },
+      }),
+      new ApolloLink(
+        () =>
+          new Observable((observer) => {
+            observer.next(errorResult);
+            observer.next(successResult);
+            observer.complete();
+          }),
+      ),
+    ]);
+
+    execute(link, {
+      query: parse(`subscription OnFoo { foo }`),
+    }).subscribe({
+      complete() {
+        Sentry.captureException(new Error());
+
+        const [report] = testkit.reports();
+        expect(report.breadcrumbs).toHaveLength(2);
+
+        const [first, second] =
+          report.breadcrumbs as Array<GraphQLBreadcrumb>;
+
+        expect(first.level).toBe('error');
+        expect(first.data.fetchResult).toBe(stringify(errorResult));
+        expect(first.data.error).toBe(
+          stringify(
+            new ApolloError({ graphQLErrors: errorResult.errors }),
+          ),
+        );
+
+        expect(second.level).toBe('info');
+        expect(second.data.fetchResult).toBe(stringify(successResult));
+        expect(second.data).not.toHaveProperty('error');
+
+        done();
+      },
+    });
+  });
+
   it('should allow altering the breadcrumb with beforeBreadcrumb', (done) => {
     const link = ApolloLink.from([
       new SentryLink({
