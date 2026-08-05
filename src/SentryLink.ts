@@ -3,10 +3,12 @@ import {
   CombinedGraphQLErrors,
   ServerError,
 } from '@apollo/client/core';
-import type { SeverityLevel } from '@sentry/core';
+import type { Span, SeverityLevel } from '@sentry/core';
+import { startSpanManual } from '@sentry/core';
 import { Observable } from 'rxjs';
 
 import { makeBreadcrumb } from './breadcrumb';
+import { extractDefinition } from './operation';
 import { FullOptions, SentryLinkOptions, withDefaults } from './options';
 import {
   attachBreadcrumbToSentry,
@@ -42,6 +44,10 @@ export class SentryLink extends ApolloLink {
 
     const { attachBreadcrumbs } = options;
     if (!attachBreadcrumbs) {
+      if (options.tracing) {
+        return this.withSpan(operation, forward);
+      }
+
       return forward(operation);
     }
 
@@ -53,6 +59,14 @@ export class SentryLink extends ApolloLink {
     // get to run our instrumentation before others observers potentially
     // throw and thus flush the results to Sentry.
     return new Observable<ApolloLink.Result>((originalObserver) => {
+      let span: Span | undefined;
+
+      if (options.tracing) {
+        startSpanManual(spanOptionsForOperation(operation), (s) => {
+          span = s;
+        });
+      }
+
       const subscription = forward(operation).subscribe({
         next: (result) => {
           breadcrumb.level = severityForResult(result);
@@ -72,6 +86,7 @@ export class SentryLink extends ApolloLink {
           originalObserver.next(result);
         },
         complete: () => {
+          span?.end();
           attachBreadcrumbToSentry(operation, breadcrumb, options);
 
           originalObserver.complete();
@@ -90,6 +105,7 @@ export class SentryLink extends ApolloLink {
             breadcrumb.data.error = error;
           }
 
+          span?.end();
           attachBreadcrumbToSentry(operation, breadcrumb, options);
 
           originalObserver.error(error);
@@ -97,10 +113,56 @@ export class SentryLink extends ApolloLink {
       });
 
       return () => {
+        span?.end();
         subscription.unsubscribe();
       };
     });
   }
+
+  private withSpan(
+    operation: ApolloLink.Operation,
+    forward: ApolloLink.ForwardFunction,
+  ): Observable<ApolloLink.Result> {
+    return new Observable<ApolloLink.Result>((observer) => {
+      let span: Span | undefined;
+
+      startSpanManual(spanOptionsForOperation(operation), (s) => {
+        span = s;
+      });
+
+      const subscription = forward(operation).subscribe({
+        next: (result) => observer.next(result),
+        complete: () => {
+          span?.end();
+          observer.complete();
+        },
+        error: (error) => {
+          span?.end();
+          observer.error(error);
+        },
+      });
+
+      return () => {
+        span?.end();
+        subscription.unsubscribe();
+      };
+    });
+  }
+}
+
+function spanOptionsForOperation(operation: ApolloLink.Operation) {
+  const definition = extractDefinition(operation);
+  const type = definition.operation;
+  const name = definition.name?.value ?? 'anonymous';
+
+  return {
+    name: `graphql.${type} ${name}`,
+    op: 'graphql',
+    attributes: {
+      'graphql.operation.type': type,
+      'graphql.operation.name': name,
+    },
+  };
 }
 
 function severityForResult(result: ApolloLink.Result): SeverityLevel {

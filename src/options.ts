@@ -56,6 +56,17 @@ export interface FullOptions {
    * }
    */
   attachBreadcrumbs: AttachBreadcrumbsOptions | false;
+
+  /**
+   * Create a Sentry span for each GraphQL operation.
+   *
+   * When enabled, a child span is started for each operation and finished
+   * when the operation completes or errors. This provides timing data
+   * in your Sentry performance traces.
+   *
+   * Defaults to true.
+   */
+  tracing: true | false;
 }
 
 export type AttachBreadcrumbsOptions = {
@@ -145,6 +156,8 @@ export const defaultOptions = {
     includeContext: false,
     transform: undefined,
   },
+
+  tracing: true,
 } as const;
 
 export function withDefaults(options: SentryLinkOptions): FullOptions {
@@ -154,7 +167,11 @@ export function withDefaults(options: SentryLinkOptions): FullOptions {
 export type SentryLinkOptions = Partial<
   Pick<
     FullOptions,
-    'shouldHandleOperation' | 'uri' | 'setTransaction' | 'setFingerprint'
+    | 'shouldHandleOperation'
+    | 'uri'
+    | 'setTransaction'
+    | 'setFingerprint'
+    | 'tracing'
   >
 > & {
   attachBreadcrumbs?: Partial<AttachBreadcrumbsOptions> | false;
