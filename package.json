@@ -23,7 +23,7 @@
   "scripts": {
     "watch": "tsc-watch --project=tsconfig.json",
     "prebuild": "rimraf lib-cjs lib-esm",
-    "build": "tsc --target esnext --outDir lib-esm && tsc --target es5 --outDir lib-cjs",
+    "build": "tsc --target esnext --outDir lib-esm && tsc --module commonjs --outDir lib-cjs",
     "test": "jest",
     "test:coverage": "jest --coverage --watchAll=false",
     "lint": "eslint .",
