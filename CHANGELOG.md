@@ -1,3 +1,10 @@
+## [5.0.4](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v5.0.3...v5.0.4) (2026-09-02)
+
+
+### Bug Fixes
+
+* build the CJS output at the project's own target, not es5 ([66c4fbf](https://github.com/DiederikvandenB/apollo-link-sentry/commit/66c4fbffb6cc80509c7a9354e12a11872615822e))
+
 ## [5.0.3](https://github.com/DiederikvandenB/apollo-link-sentry/compare/v5.0.2...v5.0.3) (2026-05-27)
 
 
