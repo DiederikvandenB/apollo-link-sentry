@@ -598,6 +598,25 @@ describe('SentryLink', () => {
     });
   });
 
+  it('should end the span on unsubscribe', () => {
+    (mockSpan.end as jest.Mock).mockClear();
+
+    const pendingLink = ApolloLink.from([
+      new SentryLink(),
+      new ApolloLink(() => new Observable()),
+    ]);
+
+    execute(
+      pendingLink,
+      { query: parse(`subscription PendingSubscription { foo }`) },
+      context,
+    )
+      .subscribe({})
+      .unsubscribe();
+
+    expect(mockSpan.end).toHaveBeenCalled();
+  });
+
   it('should not create a span when tracing is disabled', (done) => {
     startSpanManualMock.mockClear();
 
