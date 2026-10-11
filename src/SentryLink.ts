@@ -3,8 +3,8 @@ import {
   CombinedGraphQLErrors,
   ServerError,
 } from '@apollo/client/core';
-import type { SeverityLevel } from '@sentry/core';
-import { startSpanManual } from '@sentry/core';
+import type { SeverityLevel, SpanStatus } from '@sentry/core';
+import { SPAN_STATUS_ERROR, startSpanManual } from '@sentry/core';
 import { Observable } from 'rxjs';
 
 import { makeBreadcrumb } from './breadcrumb';
@@ -109,6 +109,11 @@ export class SentryLink extends ApolloLink {
   }
 }
 
+const ERROR_STATUS: SpanStatus = {
+  code: SPAN_STATUS_ERROR,
+  message: 'internal_error',
+};
+
 function traced(
   operation: ApolloLink.Operation,
   forward: ApolloLink.ForwardFunction,
@@ -116,12 +121,19 @@ function traced(
   return new Observable<ApolloLink.Result>((observer) =>
     startSpanManual(spanOptionsForOperation(operation), (span) => {
       const subscription = forward(operation).subscribe({
-        next: (result) => observer.next(result),
+        next: (result) => {
+          if (severityForResult(result) === 'error') {
+            span.setStatus(ERROR_STATUS);
+          }
+
+          observer.next(result);
+        },
         complete: () => {
           span.end();
           observer.complete();
         },
         error: (error) => {
+          span.setStatus(ERROR_STATUS);
           span.end();
           observer.error(error);
         },

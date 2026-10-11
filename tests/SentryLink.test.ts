@@ -17,7 +17,7 @@ import { stringify } from '../src/utils';
 
 import { createApolloClient } from './utils';
 
-const mockSpan = { end: jest.fn() } as unknown as Span;
+const mockSpan = { end: jest.fn(), setStatus: jest.fn() } as unknown as Span;
 const mockActiveSpan: { current?: Span } = {};
 
 jest.mock('@sentry/core', () => ({
@@ -536,6 +536,10 @@ describe('SentryLink', () => {
     ).subscribe({
       error: () => {
         expect(startSpanManualMock).toHaveBeenCalled();
+        expect(mockSpan.setStatus).toHaveBeenCalledWith({
+          code: 2,
+          message: 'internal_error',
+        });
         expect(mockSpan.end).toHaveBeenCalled();
 
         done();
@@ -567,6 +571,32 @@ describe('SentryLink', () => {
       expect(spanDuringRequest).toBe(mockSpan);
     },
   );
+
+  it('should mark the span as errored for results with errors', () => {
+    (mockSpan.setStatus as jest.Mock).mockClear();
+
+    const link = ApolloLink.from([
+      new SentryLink(),
+      new ApolloLink(
+        () =>
+          new Observable((observer) => {
+            observer.next({ errors: [new GraphQLError('partial')] });
+            observer.complete();
+          }),
+      ),
+    ]);
+
+    execute(
+      link,
+      { query: parse(`query PartialErrorQuery { foo }`) },
+      context,
+    ).subscribe({});
+
+    expect(mockSpan.setStatus).toHaveBeenCalledWith({
+      code: 2,
+      message: 'internal_error',
+    });
+  });
 
   it('should not create a span when tracing is disabled', (done) => {
     startSpanManualMock.mockClear();
