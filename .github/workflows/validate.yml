@@ -1,5 +1,9 @@
 name: Validate
-on: pull_request
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   test:
@@ -32,6 +36,19 @@ jobs:
       continue-on-error: true
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        flag-name: sentry-${{ matrix.sentry-version }}
+        parallel: true
+
+  coverage:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    steps:
+    - uses: coverallsapp/github-action@v2
+      continue-on-error: true
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        parallel-finished: true
 
   build:
     runs-on: ubuntu-latest
