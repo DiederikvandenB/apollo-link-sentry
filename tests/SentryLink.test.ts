@@ -18,12 +18,19 @@ import { stringify } from '../src/utils';
 import { createApolloClient } from './utils';
 
 const mockSpan = { end: jest.fn() } as unknown as Span;
+const mockActiveSpan: { current?: Span } = {};
 
 jest.mock('@sentry/core', () => ({
   ...jest.requireActual('@sentry/core'),
   startSpanManual: jest.fn(
-    (_options: unknown, callback: (span: unknown) => unknown) =>
-      callback(mockSpan),
+    (_options: unknown, callback: (span: unknown) => unknown) => {
+      mockActiveSpan.current = mockSpan;
+      try {
+        return callback(mockSpan);
+      } finally {
+        mockActiveSpan.current = undefined;
+      }
+    },
   ),
 }));
 
@@ -535,6 +542,31 @@ describe('SentryLink', () => {
       },
     });
   });
+
+  it.each([{}, { attachBreadcrumbs: false as const }])(
+    'should keep the span active while the request runs with %p',
+    (options) => {
+      let spanDuringRequest: Span | undefined;
+      const link = ApolloLink.from([
+        new SentryLink(options),
+        new ApolloLink(
+          () =>
+            new Observable((observer) => {
+              spanDuringRequest = mockActiveSpan.current;
+              observer.complete();
+            }),
+        ),
+      ]);
+
+      execute(
+        link,
+        { query: parse(`query ActiveSpanQuery { foo }`) },
+        context,
+      ).subscribe({});
+
+      expect(spanDuringRequest).toBe(mockSpan);
+    },
+  );
 
   it('should not create a span when tracing is disabled', (done) => {
     startSpanManualMock.mockClear();

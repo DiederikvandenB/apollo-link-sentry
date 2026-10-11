@@ -3,7 +3,7 @@ import {
   CombinedGraphQLErrors,
   ServerError,
 } from '@apollo/client/core';
-import type { Span, SeverityLevel } from '@sentry/core';
+import type { SeverityLevel } from '@sentry/core';
 import { startSpanManual } from '@sentry/core';
 import { Observable } from 'rxjs';
 
@@ -42,13 +42,13 @@ export class SentryLink extends ApolloLink {
       setFingerprint(operation);
     }
 
+    const forwarded = options.tracing
+      ? traced(operation, forward)
+      : forward(operation);
+
     const { attachBreadcrumbs } = options;
     if (!attachBreadcrumbs) {
-      if (options.tracing) {
-        return this.withSpan(operation, forward);
-      }
-
-      return forward(operation);
+      return forwarded;
     }
 
     const breadcrumb = makeBreadcrumb(operation, options);
@@ -59,15 +59,7 @@ export class SentryLink extends ApolloLink {
     // get to run our instrumentation before others observers potentially
     // throw and thus flush the results to Sentry.
     return new Observable<ApolloLink.Result>((originalObserver) => {
-      let span: Span | undefined;
-
-      if (options.tracing) {
-        startSpanManual(spanOptionsForOperation(operation), (s) => {
-          span = s;
-        });
-      }
-
-      const subscription = forward(operation).subscribe({
+      const subscription = forwarded.subscribe({
         next: (result) => {
           breadcrumb.level = severityForResult(result);
 
@@ -86,7 +78,6 @@ export class SentryLink extends ApolloLink {
           originalObserver.next(result);
         },
         complete: () => {
-          span?.end();
           attachBreadcrumbToSentry(operation, breadcrumb, options);
 
           originalObserver.complete();
@@ -105,7 +96,6 @@ export class SentryLink extends ApolloLink {
             breadcrumb.data.error = error;
           }
 
-          span?.end();
           attachBreadcrumbToSentry(operation, breadcrumb, options);
 
           originalObserver.error(error);
@@ -113,41 +103,36 @@ export class SentryLink extends ApolloLink {
       });
 
       return () => {
-        span?.end();
         subscription.unsubscribe();
       };
     });
   }
+}
 
-  private withSpan(
-    operation: ApolloLink.Operation,
-    forward: ApolloLink.ForwardFunction,
-  ): Observable<ApolloLink.Result> {
-    return new Observable<ApolloLink.Result>((observer) => {
-      let span: Span | undefined;
-
-      startSpanManual(spanOptionsForOperation(operation), (s) => {
-        span = s;
-      });
-
+function traced(
+  operation: ApolloLink.Operation,
+  forward: ApolloLink.ForwardFunction,
+): Observable<ApolloLink.Result> {
+  return new Observable<ApolloLink.Result>((observer) =>
+    startSpanManual(spanOptionsForOperation(operation), (span) => {
       const subscription = forward(operation).subscribe({
         next: (result) => observer.next(result),
         complete: () => {
-          span?.end();
+          span.end();
           observer.complete();
         },
         error: (error) => {
-          span?.end();
+          span.end();
           observer.error(error);
         },
       });
 
       return () => {
-        span?.end();
+        span.end();
         subscription.unsubscribe();
       };
-    });
-  }
+    }),
+  );
 }
 
 function spanOptionsForOperation(operation: ApolloLink.Operation) {
