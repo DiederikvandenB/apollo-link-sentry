@@ -155,6 +155,7 @@ function spanOptionsForOperation(operation: ApolloLink.Operation) {
   return {
     name: `graphql.${type} ${name}`,
     op: 'graphql',
+    onlyIfParent: true,
     attributes: {
       'graphql.operation.type': type,
       'graphql.operation.name': name,

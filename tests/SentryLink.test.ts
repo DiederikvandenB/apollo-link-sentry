@@ -504,6 +504,7 @@ describe('SentryLink', () => {
           expect.objectContaining({
             name: 'graphql.query TracedQuery',
             op: 'graphql',
+            onlyIfParent: true,
             attributes: {
               'graphql.operation.type': 'query',
               'graphql.operation.name': 'TracedQuery',
