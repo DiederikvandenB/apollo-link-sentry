@@ -3,10 +3,12 @@ import {
   CombinedGraphQLErrors,
   ServerError,
 } from '@apollo/client/core';
-import type { SeverityLevel } from '@sentry/core';
+import type { SeverityLevel, SpanStatus } from '@sentry/core';
+import { SPAN_STATUS_ERROR, startSpanManual } from '@sentry/core';
 import { Observable } from 'rxjs';
 
 import { makeBreadcrumb } from './breadcrumb';
+import { extractDefinition } from './operation';
 import { FullOptions, SentryLinkOptions, withDefaults } from './options';
 import {
   attachBreadcrumbToSentry,
@@ -40,9 +42,13 @@ export class SentryLink extends ApolloLink {
       setFingerprint(operation);
     }
 
+    const forwarded = options.tracing
+      ? traced(operation, forward)
+      : forward(operation);
+
     const { attachBreadcrumbs } = options;
     if (!attachBreadcrumbs) {
-      return forward(operation);
+      return forwarded;
     }
 
     const breadcrumb = makeBreadcrumb(operation, options);
@@ -53,7 +59,7 @@ export class SentryLink extends ApolloLink {
     // get to run our instrumentation before others observers potentially
     // throw and thus flush the results to Sentry.
     return new Observable<ApolloLink.Result>((originalObserver) => {
-      const subscription = forward(operation).subscribe({
+      const subscription = forwarded.subscribe({
         next: (result) => {
           breadcrumb.level = severityForResult(result);
 
@@ -101,6 +107,60 @@ export class SentryLink extends ApolloLink {
       };
     });
   }
+}
+
+const ERROR_STATUS: SpanStatus = {
+  code: SPAN_STATUS_ERROR,
+  message: 'internal_error',
+};
+
+function traced(
+  operation: ApolloLink.Operation,
+  forward: ApolloLink.ForwardFunction,
+): Observable<ApolloLink.Result> {
+  return new Observable<ApolloLink.Result>((observer) =>
+    startSpanManual(spanOptionsForOperation(operation), (span) => {
+      const subscription = forward(operation).subscribe({
+        next: (result) => {
+          if (severityForResult(result) === 'error') {
+            span.setStatus(ERROR_STATUS);
+          }
+
+          observer.next(result);
+        },
+        complete: () => {
+          span.end();
+          observer.complete();
+        },
+        error: (error) => {
+          span.setStatus(ERROR_STATUS);
+          span.end();
+          observer.error(error);
+        },
+      });
+
+      return () => {
+        span.end();
+        subscription.unsubscribe();
+      };
+    }),
+  );
+}
+
+function spanOptionsForOperation(operation: ApolloLink.Operation) {
+  const definition = extractDefinition(operation);
+  const type = definition.operation;
+  const name = definition.name?.value ?? 'anonymous';
+
+  return {
+    name: `graphql.${type} ${name}`,
+    op: 'graphql',
+    onlyIfParent: true,
+    attributes: {
+      'graphql.operation.type': type,
+      'graphql.operation.name': name,
+    },
+  };
 }
 
 function severityForResult(result: ApolloLink.Result): SeverityLevel {

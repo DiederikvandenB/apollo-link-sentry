@@ -5,6 +5,8 @@ import {
   ServerError,
 } from '@apollo/client/core';
 import * as Sentry from '@sentry/browser';
+import { startSpanManual } from '@sentry/core';
+import type { Span } from '@sentry/core';
 import { GraphQLError, parse } from 'graphql';
 import { Observable } from 'rxjs';
 import sentryTestkit from 'sentry-testkit';
@@ -14,6 +16,27 @@ import { DEFAULT_FINGERPRINT } from '../src/sentry';
 import { stringify } from '../src/utils';
 
 import { createApolloClient } from './utils';
+
+const mockSpan = { end: jest.fn(), setStatus: jest.fn() } as unknown as Span;
+const mockActiveSpan: { current?: Span } = {};
+
+jest.mock('@sentry/core', () => ({
+  ...jest.requireActual('@sentry/core'),
+  startSpanManual: jest.fn(
+    (_options: unknown, callback: (span: unknown) => unknown) => {
+      mockActiveSpan.current = mockSpan;
+      try {
+        return callback(mockSpan);
+      } finally {
+        mockActiveSpan.current = undefined;
+      }
+    },
+  ),
+}));
+
+const startSpanManualMock = startSpanManual as jest.MockedFunction<
+  typeof startSpanManual
+>;
 
 const { testkit, sentryTransport } = sentryTestkit();
 
@@ -459,6 +482,157 @@ describe('SentryLink', () => {
         const [breadcrumb] = report.breadcrumbs;
 
         expect(breadcrumb.data?.foo).toBe('Foo');
+
+        done();
+      },
+    });
+  });
+
+  it('should create a span when tracing is enabled', (done) => {
+    startSpanManualMock.mockClear();
+    (mockSpan.end as jest.Mock).mockClear();
+
+    const link = ApolloLink.from([new SentryLink({ tracing: true }), nullLink]);
+
+    execute(
+      link,
+      { query: parse(`query TracedQuery { foo }`) },
+      context,
+    ).subscribe({
+      complete: () => {
+        expect(startSpanManualMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'graphql.query TracedQuery',
+            op: 'graphql',
+            onlyIfParent: true,
+            attributes: {
+              'graphql.operation.type': 'query',
+              'graphql.operation.name': 'TracedQuery',
+            },
+          }),
+          expect.any(Function),
+        );
+
+        expect(mockSpan.end).toHaveBeenCalled();
+
+        done();
+      },
+    });
+  });
+
+  it('should end the span on error', (done) => {
+    startSpanManualMock.mockClear();
+    (mockSpan.end as jest.Mock).mockClear();
+
+    const error = new Error('network failure');
+    const errorLink = ApolloLink.from([
+      new SentryLink({ tracing: true }),
+      new ApolloLink(() => new Observable((observer) => observer.error(error))),
+    ]);
+
+    execute(
+      errorLink,
+      { query: parse(`query ErrorQuery { foo }`) },
+      context,
+    ).subscribe({
+      error: () => {
+        expect(startSpanManualMock).toHaveBeenCalled();
+        expect(mockSpan.setStatus).toHaveBeenCalledWith({
+          code: 2,
+          message: 'internal_error',
+        });
+        expect(mockSpan.end).toHaveBeenCalled();
+
+        done();
+      },
+    });
+  });
+
+  it.each([{}, { attachBreadcrumbs: false as const }])(
+    'should keep the span active while the request runs with %p',
+    (options) => {
+      let spanDuringRequest: Span | undefined;
+      const link = ApolloLink.from([
+        new SentryLink(options),
+        new ApolloLink(
+          () =>
+            new Observable((observer) => {
+              spanDuringRequest = mockActiveSpan.current;
+              observer.complete();
+            }),
+        ),
+      ]);
+
+      execute(
+        link,
+        { query: parse(`query ActiveSpanQuery { foo }`) },
+        context,
+      ).subscribe({});
+
+      expect(spanDuringRequest).toBe(mockSpan);
+    },
+  );
+
+  it('should mark the span as errored for results with errors', () => {
+    (mockSpan.setStatus as jest.Mock).mockClear();
+
+    const link = ApolloLink.from([
+      new SentryLink(),
+      new ApolloLink(
+        () =>
+          new Observable((observer) => {
+            observer.next({ errors: [new GraphQLError('partial')] });
+            observer.complete();
+          }),
+      ),
+    ]);
+
+    execute(
+      link,
+      { query: parse(`query PartialErrorQuery { foo }`) },
+      context,
+    ).subscribe({});
+
+    expect(mockSpan.setStatus).toHaveBeenCalledWith({
+      code: 2,
+      message: 'internal_error',
+    });
+  });
+
+  it('should end the span on unsubscribe', () => {
+    (mockSpan.end as jest.Mock).mockClear();
+
+    const pendingLink = ApolloLink.from([
+      new SentryLink(),
+      new ApolloLink(() => new Observable()),
+    ]);
+
+    execute(
+      pendingLink,
+      { query: parse(`subscription PendingSubscription { foo }`) },
+      context,
+    )
+      .subscribe({})
+      .unsubscribe();
+
+    expect(mockSpan.end).toHaveBeenCalled();
+  });
+
+  it('should not create a span when tracing is disabled', (done) => {
+    startSpanManualMock.mockClear();
+
+    const link = ApolloLink.from([
+      new SentryLink({ tracing: false }),
+      nullLink,
+    ]);
+
+    execute(
+      link,
+      { query: parse(`query UntracedQuery { foo }`) },
+      context,
+    ).subscribe({
+      complete: () => {
+        expect(startSpanManualMock).not.toHaveBeenCalled();
 
         done();
       },
