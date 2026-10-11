@@ -66,7 +66,7 @@ export interface FullOptions {
    *
    * Defaults to true.
    */
-  tracing: true | false;
+  tracing: boolean;
 }
 
 export type AttachBreadcrumbsOptions = {
