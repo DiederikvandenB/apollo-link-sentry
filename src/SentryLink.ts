@@ -45,8 +45,6 @@ export class SentryLink extends ApolloLink {
       return forward(operation);
     }
 
-    const breadcrumb = makeBreadcrumb(operation, options);
-
     // While this could be done more simplistically by simply subscribing,
     // wrapping the observer in our own observer ensures we get the results
     // before they are passed along to other observers. This guarantees we
@@ -55,6 +53,7 @@ export class SentryLink extends ApolloLink {
     return new Observable<ApolloLink.Result>((originalObserver) => {
       const subscription = forward(operation).subscribe({
         next: (result) => {
+          const breadcrumb = makeBreadcrumb(operation, options);
           breadcrumb.level = severityForResult(result);
 
           if (attachBreadcrumbs.includeFetchResult) {
@@ -69,14 +68,15 @@ export class SentryLink extends ApolloLink {
             breadcrumb.data.error = new CombinedGraphQLErrors(result);
           }
 
+          attachBreadcrumbToSentry(operation, breadcrumb, options);
+
           originalObserver.next(result);
         },
         complete: () => {
-          attachBreadcrumbToSentry(operation, breadcrumb, options);
-
           originalObserver.complete();
         },
         error: (error) => {
+          const breadcrumb = makeBreadcrumb(operation, options);
           breadcrumb.level = 'error';
 
           if (ServerError.is(error)) {
